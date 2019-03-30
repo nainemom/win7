@@ -1,5 +1,5 @@
 <template>
-  <span class="icon" tabindex="0">
+  <span class="icon" tabindex="0" @dblclick="$emit('click', $event)">
     <div class="icon" :style="{backgroundImage: 'url(' + icon + ')'}" alt="i" />
     <img class="short" src="/icons/163.ico" alt="i" v-if="typeof $attrs.shortcut !== 'undefined'"/>
     <div class="title"> {{title}} </div>
