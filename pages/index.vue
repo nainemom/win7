@@ -13,6 +13,7 @@
     </AppDesktop>
     <AppPanel  @click="openApp"/>
     <AppBluePage v-model="bluePage" :repo="repo"/>
+    <AppDownloading v-if="loading"/>
   </AppView>
 </template>
 
@@ -25,6 +26,7 @@
   import AppWidgets from '../components/AppWidgets.vue'
   import AppClockWidget from '../components/AppClockWidget.vue'
   import AppBluePage from '../components/AppBluePage.vue'
+  import AppDownloading from '../components/AppDownloading.vue'
 
   export default {
     components: {
@@ -35,13 +37,15 @@
       AppIcon,
       AppWidgets,
       AppClockWidget,
-      AppBluePage
+      AppBluePage,
+      AppDownloading
     },
     data() {
       return {
         opaningTimeout: null,
         bluePage: false,
-        repo: 'https://github.com/nainemom/winvista'
+        repo: 'https://github.com/nainemom/winvista',
+        loading: true
       }
     },
     methods: {
@@ -56,6 +60,13 @@
       openRepo() {
         window.open(this.repo)
       }
+    },
+    mounted() {
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.loading = false
+        }, 6000)
+      })
     }
   }
 </script>
