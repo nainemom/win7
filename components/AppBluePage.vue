@@ -1,22 +1,22 @@
 <template>
-  <div class="blu">
+  <div class="blu" v-if="value">
     <div class="content">
-      problem has been detected and windows has been shut down to prevent damage o your computer.
+      Problem has been detected and windows has been restart to prevent damage on your computer.
       <br>
       <br>
       he problem seems to be caused by the following file: SPCmDCON.SYS
       <br>
       <br>
-      PAGE_FAULT_XN_NONPAGEO_AREA 
+      PAGE_FAULT_XN_NONPAGEO_AREA
       <br>
       <br>
-      if this is the first time you've seen this stop error screen, estart your computer. if this screen appears again, follow hese steps:
+      If this is the first time you've seen this stop error screen, Follow these steps:
       <br>
       <br>
-      check to make sure any new hardware or software is properly installed. If this is a new installation, ask your hardware or software manufacturer or any windows updates you might need.
+      Check to make sure any new hardware or software is properly installed. If this is a new installation, ask your hardware or software manufacturer or any windows updates you might need.
       <br>
       <br>
-      If problems continue, disable or remove any newly installed hardware software. Disable BIOS memory options such as caching or shadowing. If you need to use safe mode to remove or disable components, restart sour computer, press F8 to select Advanced startup Options, and then select safe mode. 
+      If problems continue, disable or remove any newly installed hardware or software. Disable BIOS memory options such as caching or shadowing. If you need to use safe mode to remove or disable components, restart sour computer, press F8 to select Advanced startup Options, and then select safe mode. 
       <br>
       <br>
       <br>
@@ -27,10 +27,58 @@
       *** STOP: 0x00000050 (OxFD30940,0x00000001,0xFPFE7617,0x00000000)
       <br>
       <br>
-      *** SPCmDCON.SYS - Address F6FE7617 base at FEFE5000, oatestamp 3d6dd67c 
+      *** SPCmDCON.SYS - Address F6FE7617 base at FEFE5000, timestamp 3d6dd67c 
+      <br>
+      <br>
+      <br>
+      <br>
+      <h2 class="support">
+      If you like this funny repository, star it on github before system restarts:
+      <br>
+      <br>
+      <a class="repo-link" target="_blank" :href="$attrs.repo"> WinVista by Nainemom </a>
+      </h2>
+      <br>
+      <br>
+      System will be restart in:
+      <b>{{remainingTime}}</b>
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  props: {
+    value: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      secs: 0
+    }
+  },
+  computed: {
+    remainingTime() {
+      return `00:${(15 - this.secs).toString().padStart(2, '0')}`
+    }
+  },
+  watch: {
+    value(v) {
+      if (v) {
+        this.secs = 0
+        const timer = setInterval(() => {
+          this.secs++
+          if (this.secs === 15) {
+            this.$emit('input', false)
+          }
+        }, 1000)
+      }
+    }
+  }
+}
+</script>
 
 <style scoped lang="scss">
 .blu {
@@ -52,6 +100,16 @@
     min-width: 400px;
     width: 1080px;
     max-width: 90%;
+
+    & .support {
+
+      & .repo-link {
+        color: #fff;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    }
+
   }
 }
 </style>
