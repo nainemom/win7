@@ -2,7 +2,7 @@
   <nuxt />
 </template>
 
-<style>
+<style lang="scss">
 html {
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -32,5 +32,10 @@ html, body, #__nuxt, #__layout {
   background-size: cover;
   background-position: bottom;
   user-select: none;
+
+  &.waiting,
+  &.waiting * {
+    cursor: wait !important;
+  }
 }
 </style>
