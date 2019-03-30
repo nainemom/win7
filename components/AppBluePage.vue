@@ -1,5 +1,5 @@
 <template>
-  <div class="blu" v-if="value">
+  <div class="blu" v-if="value" @dblclick="$emit('input', false)">
     <div class="content">
       Problem has been detected and windows has been restart to prevent damage on your computer.
       <br>
