@@ -2,16 +2,17 @@
   <AppView>
     <AppBackground />
     <AppDesktop>
-      <AppIcon icon="/icons/109.ico" title="My Computer" shortcut/>
-      <AppIcon icon="/icons/123.ico" title="My Documents" shortcut/>
-      <AppIcon icon="/icons/54.ico" title="Recycle Bin"/>
-      <AppIcon icon="/icons/174.ico" title="asdasd.zip"/>
+      <AppIcon icon="/icons/109.ico" title="My Computer" shortcut @click="openApp"/>
+      <AppIcon icon="/icons/123.ico" title="My Documents" shortcut @click="openApp"/>
+      <AppIcon icon="/icons/54.ico" title="Recycle Bin" @click="openApp"/>
+      <AppIcon icon="/icons/3.ico" title="New Folder (8)" @click="openApp"/>
+      <AppIcon icon="/icons/ie.png" title="Github Repo" @click="openRepo"/>
     </AppDesktop>
     <AppWidgets>
       <AppClockWidget />
     </AppWidgets>
-    <AppPanel />
-    <AppBluePage />
+    <AppPanel  @click="openApp"/>
+    <AppBluePage v-model="bluePage" :repo="repo"/>
   </AppView>
 </template>
 
@@ -35,6 +36,26 @@
       AppWidgets,
       AppClockWidget,
       AppBluePage
+    },
+    data() {
+      return {
+        opaningTimeout: null,
+        bluePage: false,
+        repo: 'https://github.com/nainemom/winvista'
+      }
+    },
+    methods: {
+      openApp() {
+        document.body.classList.add('waiting')
+        clearTimeout(this.opaningTimeout)
+        this.opaningTimeout = setTimeout(() => {
+          document.body.classList.remove('waiting')
+          this.bluePage = true
+        }, 4000)
+      },
+      openRepo() {
+        window.open(this.repo)
+      }
     }
   }
 </script>
