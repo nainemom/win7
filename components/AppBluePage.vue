@@ -97,7 +97,7 @@ export default {
   justify-content: center;
   
   & > .content {
-    min-width: 400px;
+    min-width: 320px;
     width: 1080px;
     max-width: 90%;
 
