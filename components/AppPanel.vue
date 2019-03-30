@@ -1,13 +1,13 @@
 <template>
   <div class="panel">
-    <section class="orb-container">
+    <section class="orb-container" @click="$emit('click', $event)">
       <div class="orb" />
     </section>
     <section class="dark to-left">
-      <img class="notif-icon" src="/icons/152.ico" alt="i"/>
-      <img class="notif-icon" src="/icons/vol.svg" alt="i"/>
-      <img class="notif-icon" src="/icons/105.ico" alt="i"/>
-      <span class="clock" v-html="dateString"></span>
+      <img class="notif-icon" src="/icons/152.ico" alt="i" @click="$emit('click', $event)"/>
+      <img class="notif-icon" src="/icons/vol.svg" alt="i" @click="$emit('click', $event)"/>
+      <img class="notif-icon" src="/icons/105.ico" alt="i" @click="$emit('click', $event)"/>
+      <span class="clock" v-html="dateString" @click="$emit('click', $event)" />
     </section>
   </div>
 </template>
