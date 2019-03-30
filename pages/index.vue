@@ -1,6 +1,9 @@
 <template>
   <AppView>
     <AppBackground />
+    <AppWidgets>
+      <AppClockWidget />
+    </AppWidgets>
     <AppDesktop>
       <AppIcon icon="/icons/109.ico" title="My Computer" shortcut @click="openApp"/>
       <AppIcon icon="/icons/123.ico" title="My Documents" shortcut @click="openApp"/>
@@ -8,9 +11,6 @@
       <AppIcon icon="/icons/3.ico" title="New Folder (8)" @click="openApp"/>
       <AppIcon icon="/icons/ie.png" title="Github Repo" @click="openRepo"/>
     </AppDesktop>
-    <AppWidgets>
-      <AppClockWidget />
-    </AppWidgets>
     <AppPanel  @click="openApp"/>
     <AppBluePage v-model="bluePage" :repo="repo"/>
   </AppView>
