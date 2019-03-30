@@ -117,7 +117,7 @@
     padding: 0 10px;
 
     & .orb {
-      background-image: url('../assets/orb/normal.png');
+      background-image: url('/orb/normal.png');
       width: 43px;
       height: 43px;
       background-size: 100%;
@@ -129,17 +129,15 @@
         7px 0 0.4px -3px rgba(255, 255, 255, 0.4),
         -7px 0 0.4px -3px rgba(255, 255, 255, 0.4)
       ;
-      // border-left: solid 2px rgba(0, 0, 0, 0.6);
-      // border-right: solid 2px rgba(0, 0, 0, 0.6);
       cursor: pointer;
 
       &:hover,
       &:focus {
-        background-image: url('../assets/orb/hover.png');
+        background-image: url('/orb/hover.png');
       }
 
       &:active {
-        background-image: url('../assets/orb/active.png');
+        background-image: url('/orb/active.png');
       }
     }
   }

@@ -4,7 +4,7 @@
 
 <style scoped>
   .bg {
-    background: url('../assets/wallpaper.jpg');
+    background: url('/wallpaper.jpg');
     position: absolute;
     top: 0;
     left: 0;
