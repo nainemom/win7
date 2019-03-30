@@ -11,6 +11,7 @@
       <AppClockWidget />
     </AppWidgets>
     <AppPanel />
+    <AppBluePage />
   </AppView>
 </template>
 
@@ -22,6 +23,7 @@
   import AppIcon from '../components/AppIcon.vue'
   import AppWidgets from '../components/AppWidgets.vue'
   import AppClockWidget from '../components/AppClockWidget.vue'
+  import AppBluePage from '../components/AppBluePage.vue'
 
   export default {
     components: {
@@ -31,7 +33,8 @@
       AppPanel,
       AppIcon,
       AppWidgets,
-      AppClockWidget
+      AppClockWidget,
+      AppBluePage
     }
   }
 </script>
