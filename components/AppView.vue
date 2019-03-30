@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <div class="view">
     <slot />
   </div>
 </template>
 
 <style scoped>
-div {
+.view {
   position: relative;
   height: 100%;
   min-height: 100%;
