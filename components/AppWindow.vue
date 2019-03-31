@@ -1,11 +1,11 @@
 <template>
-  <div class="window">
-    <div class="header">
-      <div class="title" @mousedown="moveStart" @touchstart="moveStart"> Notepad - untitled.txt* </div>
+  <div class="window" :style="{ visibility: minimized ? 'hidden' : 'visible' }" @mousedown="goToTop" @touchstart="goToTop">
+    <div class="header" @mousedown="moveStart" @touchstart="moveStart" @click="moveEnd">
+      <div class="title"> {{$attrs.title}} </div>
       <div class="btns">
-        <span class="minimize"> - </span>
-        <span class="maxmize" @click="toggleMaxmize"> # </span>
-        <span class="close"> x </span>
+        <span class="minimize" @touchstart="toggleMinimize" @mousedown="toggleMinimize"> - </span>
+        <span class="maxmize" @touchstart="toggleMaxmize" @mousedown="toggleMaxmize"> # </span>
+        <span class="close" @touchstart="$emit('close')" @mousedown="$emit('close')"> x </span>
       </div>
     </div>
     <div class="content">
@@ -20,8 +20,21 @@ export default {
     return {
       movingData: {},
       normalState: null,
-      maxmized: false
+      maxmized: false,
+      minimized: false
     }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.$el.style.width = this.$attrs.width || '40%'
+      this.$el.style.height = this.$attrs.height || '40%'
+      this.$nextTick(() => {
+        const width = this.$el.offsetWidth
+        const height = this.$el.offsetHeight
+        this.$el.style.left = this.$attrs.left || (((document.body.offsetWidth / 2) - (width / 2)) + (Math.random() * 120)) + 'px'
+        this.$el.style.top = this.$attrs.top || (((document.body.offsetHeight / 2) - (height / 2)) + (Math.random() * 120)) + 'px'
+      })
+    })
   },
   methods: {
     getPos(event) {
@@ -37,7 +50,11 @@ export default {
         }
       }
     },
+    goToTop(){
+      this.$emit('go-to-top')
+    },
     moveStart(event) {
+      this.goToTop()
       const pos = this.getPos(event)
       this.movingData = {
         offsetX: pos.x - this.$el.offsetLeft,
@@ -60,7 +77,8 @@ export default {
       document.body.removeEventListener('touchend', this.moveEnd)
     },
     toggleMaxmize() {
-      if (this.maxmized) {
+      this.goToTop()
+      if (!this.maxmized) {
         this.normalState = {
           left: this.$el.style.left,
           top: this.$el.style.top,
@@ -86,6 +104,9 @@ export default {
       }
       this.maxmized = !this.maxmized
 
+    },
+    toggleMinimize(){
+      this.minimized = !this.minimized
     }
   }
 }
@@ -97,13 +118,6 @@ export default {
 .window {
   position: absolute;
   @include gradient(#a8b8ca, 0.85);
-  // background: rgba(206, 218, 233, 0.8);
-  height: 40%;
-  min-height: 420px;
-  width: 40%;
-  min-width: 300px;
-  left: 40px;
-  top: 50px;
   display: flex;
   flex-direction: column;
   border-top-left-radius: 6px;
@@ -113,9 +127,9 @@ export default {
 
   & > .header {
     padding: 0 8px;
-    min-height: 31px;
-    height: 31px;
-    max-height: 31px;
+    min-height: 25px;
+    height: 25px;
+    max-height: 25px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -123,6 +137,7 @@ export default {
 
     & .title {
       flex-grow: 1;
+      padding-top: 8px;
     }
 
     & .btns {

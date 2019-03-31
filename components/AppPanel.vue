@@ -3,6 +3,11 @@
     <section class="orb-container" @click="$emit('click', $event)">
       <div class="orb" />
     </section>
+    <div class="windows-list">
+      <div class="window" v-for="window in windowsList" :key="window.id" @click="$emit('focus', window)">
+        {{ window.title }}
+      </div>
+    </div>
     <section class="dark to-left">
       <img class="notif-icon" src="/winvista/icons/152.ico" alt="i" @click="$emit('click', $event)"/>
       <img class="notif-icon" src="/winvista/icons/vol.svg" alt="i" @click="$emit('click', $event)"/>
@@ -14,7 +19,12 @@
 
 <script>
   export default {
-    name: 'panel',
+    props: {
+      windowsList: {
+        type: Array,
+        default: () => []
+      }
+    },
     data() {
       return {
         clockTimer: null,
@@ -50,17 +60,6 @@
 
 .panel {
   @include gradient(#2b2b2b, 0.7);
-  // background: #000000;
-  // background: linear-gradient(to bottom,
-  //   rgba(0,0,0,0.7) 0%,
-  //   rgba(255,255,255,0.8) 9%,
-  //   rgba(190,190,190,0.7) 12%,
-  //   rgba(90,90,90,0.7) 48%,
-  //   rgba(0,0,0,0.7) 52%,
-  //   rgba(66,66,66,0.7) 99%,
-  //   rgba(38,38,38,0.7) 99%,
-  //   rgba(0,0,0,0.7) 100%
-  // );
   height: 30px;
   min-height: 30px;
   max-height: 30px;
@@ -141,6 +140,28 @@
 
       &:active {
         background-image: url('/winvista/orb/active.png');
+      }
+    }
+  }
+  & .windows-list {
+    flex-grow: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  
+    & > .window {
+      @include gradient(#6e6e6e, 0.7);
+      height: calc(100% - 4px);
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      margin: 3px 2px;
+      min-width: 200px;
+      border-radius: 2px;
+      box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.2);
+
+      &:hover {
+        @include gradient(#6b7c80, 0.7);
       }
     }
   }
