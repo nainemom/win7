@@ -1,0 +1,15 @@
+
+
+
+@mixin gradient($color, $opacity: 0.8) {
+    background: $color;
+    background: linear-gradient(to bottom, 
+        rgba(lighten($color, 1%), $opacity) 0%,
+        rgba(lighten($color, 30%), $opacity) 9%,
+        rgba(lighten($color, 44%), $opacity) 12%,
+        rgba(lighten($color, 23%), $opacity) 46%,
+        rgba($color, $opacity) 51%,
+        rgba(lighten($color, 13%), $opacity) 99%,
+        rgba(darken($color, 20%), $opacity) 100%
+    );
+  }
