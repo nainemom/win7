@@ -5,11 +5,11 @@
       <AppClockWidget />
     </AppWidgets>
     <AppDesktop>
-      <AppIcon icon="/icons/109.ico" title="My Computer" shortcut @click="openApp"/>
-      <AppIcon icon="/icons/123.ico" title="My Documents" shortcut @click="openApp"/>
-      <AppIcon icon="/icons/54.ico" title="Recycle Bin" @click="openApp"/>
-      <AppIcon icon="/icons/3.ico" title="New Folder (8)" @click="openApp"/>
-      <AppIcon icon="/icons/ie.png" title="Github Repo" @click="openRepo"/>
+      <AppIcon icon="/winvista/icons/109.ico" title="My Computer" shortcut @click="openApp"/>
+      <AppIcon icon="/winvista/icons/123.ico" title="My Documents" shortcut @click="openApp"/>
+      <AppIcon icon="/winvista/icons/54.ico" title="Recycle Bin" @click="openApp"/>
+      <AppIcon icon="/winvista/icons/3.ico" title="New Folder (8)" @click="openApp"/>
+      <AppIcon icon="/winvista/icons/ie.png" title="Github Repo" @click="openRepo"/>
     </AppDesktop>
     <AppPanel  @click="openApp"/>
     <AppBluePage v-model="bluePage" :repo="repo"/>
@@ -55,7 +55,7 @@
         this.opaningTimeout = setTimeout(() => {
           document.body.classList.remove('waiting')
           this.bluePage = true
-        }, 4000)
+        }, 3000)
       },
       openRepo() {
         window.open(this.repo)

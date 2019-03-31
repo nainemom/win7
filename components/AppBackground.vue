@@ -4,7 +4,7 @@
 
 <style scoped>
   .bg {
-    background: url('/wallpaper.jpg');
+    background: url('/winvista/wallpaper.jpg');
     position: absolute;
     top: 0;
     left: 0;

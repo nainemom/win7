@@ -4,9 +4,9 @@
       <div class="orb" />
     </section>
     <section class="dark to-left">
-      <img class="notif-icon" src="/icons/152.ico" alt="i" @click="$emit('click', $event)"/>
-      <img class="notif-icon" src="/icons/vol.svg" alt="i" @click="$emit('click', $event)"/>
-      <img class="notif-icon" src="/icons/105.ico" alt="i" @click="$emit('click', $event)"/>
+      <img class="notif-icon" src="/winvista/icons/152.ico" alt="i" @click="$emit('click', $event)"/>
+      <img class="notif-icon" src="/winvista/icons/vol.svg" alt="i" @click="$emit('click', $event)"/>
+      <img class="notif-icon" src="/winvista/icons/105.ico" alt="i" @click="$emit('click', $event)"/>
       <span class="clock" v-html="dateString" @click="$emit('click', $event)" />
     </section>
   </div>
@@ -117,7 +117,7 @@
     padding: 0 10px;
 
     & .orb {
-      background-image: url('/orb/normal.png');
+      background-image: url('/winvista/orb/normal.png');
       width: 43px;
       height: 43px;
       background-size: 100%;
@@ -133,11 +133,11 @@
 
       &:hover,
       &:focus {
-        background-image: url('/orb/hover.png');
+        background-image: url('/winvista/orb/hover.png');
       }
 
       &:active {
-        background-image: url('/orb/active.png');
+        background-image: url('/winvista/orb/active.png');
       }
     }
   }
