@@ -10,10 +10,10 @@
       <AppIcon icon="/winvista/icons/54.ico" title="Recycle Bin" @click="openApp"/>
       <AppIcon icon="/winvista/icons/3.ico" title="New Folder (8)" @click="openApp"/>
       <AppIcon icon="/winvista/icons/ie.png" title="Github Repo" @click="openRepo"/>
+      <AppWindow>
+        <textarea class="notepad"> asdasdasdasd </textarea>
+      </AppWindow>
     </AppDesktop>
-    <AppWindow>
-      <textarea class="notepad"> asdasdasdasd </textarea>
-    </AppWindow>
     <AppPanel  @click="openApp"/>
     <AppBluePage v-model="bluePage" :repo="repo"/>
     <AppDownloading v-if="loading"/>

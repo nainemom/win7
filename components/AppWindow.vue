@@ -1,10 +1,10 @@
 <template>
   <div class="window">
     <div class="header">
-      <div class="title" @mousedown="moveStart"> Notepad - untitled.txt* </div>
+      <div class="title" @mousedown="moveStart" @touchstart="moveStart"> Notepad - untitled.txt* </div>
       <div class="btns">
         <span class="minimize"> - </span>
-        <span class="maxmize"> # </span>
+        <span class="maxmize" @click="toggleMaxmize"> # </span>
         <span class="close"> x </span>
       </div>
     </div>
@@ -18,26 +18,74 @@
 export default {
   data() {
     return {
-      movingData: {}
+      movingData: {},
+      normalState: null,
+      maxmized: false
     }
   },
   methods: {
+    getPos(event) {
+      if (event.type.indexOf('touch') === -1) {
+        return {
+          x: event.clientX,
+          y: event.clientY
+        }
+      } else {
+        return {
+          x: event.changedTouches[0].clientX,
+          y: event.changedTouches[0].clientY
+        }
+      }
+    },
     moveStart(event) {
+      const pos = this.getPos(event)
       this.movingData = {
-        offsetX: event.x - this.$el.offsetLeft,
-        offsetY: event.y - this.$el.offsetTop
+        offsetX: pos.x - this.$el.offsetLeft,
+        offsetY: pos.y - this.$el.offsetTop
       }
       document.body.addEventListener('mousemove', this.moving, false)
+      document.body.addEventListener('touchmove', this.moving, false)
       document.body.addEventListener('mouseup', this.moveEnd, false)
+      document.body.addEventListener('touchend', this.moveEnd, false)
     },
     moving(event) {
-      this.$el.style.left = (event.x - this.movingData.offsetX) + 'px'
-      this.$el.style.top = (event.y - this.movingData.offsetY) + 'px'
-      console.log('moving')
+      const pos = this.getPos(event)
+      this.$el.style.left = (pos.x - this.movingData.offsetX) + 'px'
+      this.$el.style.top = (pos.y - this.movingData.offsetY) + 'px'
     },
     moveEnd() {
       document.body.removeEventListener('mousemove', this.moving)
+      document.body.removeEventListener('touchmove', this.moving)
       document.body.removeEventListener('mouseup', this.moveEnd)
+      document.body.removeEventListener('touchend', this.moveEnd)
+    },
+    toggleMaxmize() {
+      if (this.maxmized) {
+        this.normalState = {
+          left: this.$el.style.left,
+          top: this.$el.style.top,
+          width: this.$el.style.width,
+          height: this.$el.style.height
+        }
+        this.$el.style.left = '0px'
+        this.$el.style.top = '0px'
+        this.$el.style.width = '100%'
+        this.$el.style.height = '100%'
+      } else {
+        if (this.normalState) {
+          this.$el.style.left = this.normalState.left
+          this.$el.style.top = this.normalState.top
+          this.$el.style.width = this.normalState.width
+          this.$el.style.height = this.normalState.height
+        } else {
+          this.$el.style.left = '40px'
+          this.$el.style.top = '50px'
+          this.$el.style.width = '40%'
+          this.$el.style.height = '40%'
+        }
+      }
+      this.maxmized = !this.maxmized
+
     }
   }
 }
@@ -52,10 +100,8 @@ export default {
   // background: rgba(206, 218, 233, 0.8);
   height: 40%;
   min-height: 420px;
-  max-height: 500px;
   width: 40%;
   min-width: 300px;
-  max-width: 850px;
   left: 40px;
   top: 50px;
   display: flex;

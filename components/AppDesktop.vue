@@ -7,9 +7,9 @@
 <style scoped>
 .desk {
   position: relative;
-  height: 100%;
-  min-height: 100%;
-  max-height: 100%;
+  height: calc(100% - 30px);
+  min-height: calc(100% - 30px);
+  max-height: calc(100% - 30px);
   overflow: hidden;
   flex-direction: column;
   display: flex;
