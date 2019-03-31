@@ -21,7 +21,9 @@ html {
   box-sizing: border-box;
   margin: 0;
 }
-
+*:focus {
+  outline: none;
+}
 html, body, #__nuxt, #__layout {
   height: 100%;
   min-height: 100%;

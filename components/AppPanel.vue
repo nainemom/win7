@@ -46,18 +46,21 @@
 </script>
 
 <style scoped lang="scss">
+@import '../assets/mixins';
+
 .panel {
-  background: #000000;
-  background: linear-gradient(to bottom,
-    rgba(0,0,0,0.7) 0%,
-    rgba(255,255,255,0.8) 9%,
-    rgba(190,190,190,0.7) 12%,
-    rgba(90,90,90,0.7) 48%,
-    rgba(0,0,0,0.7) 52%,
-    rgba(66,66,66,0.7) 99%,
-    rgba(38,38,38,0.7) 99%,
-    rgba(0,0,0,0.7) 100%
-  );
+  @include gradient(#2b2b2b, 0.7);
+  // background: #000000;
+  // background: linear-gradient(to bottom,
+  //   rgba(0,0,0,0.7) 0%,
+  //   rgba(255,255,255,0.8) 9%,
+  //   rgba(190,190,190,0.7) 12%,
+  //   rgba(90,90,90,0.7) 48%,
+  //   rgba(0,0,0,0.7) 52%,
+  //   rgba(66,66,66,0.7) 99%,
+  //   rgba(38,38,38,0.7) 99%,
+  //   rgba(0,0,0,0.7) 100%
+  // );
   height: 30px;
   min-height: 30px;
   max-height: 30px;

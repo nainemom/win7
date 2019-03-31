@@ -11,6 +11,9 @@
       <AppIcon icon="/winvista/icons/3.ico" title="New Folder (8)" @click="openApp"/>
       <AppIcon icon="/winvista/icons/ie.png" title="Github Repo" @click="openRepo"/>
     </AppDesktop>
+    <AppWindow>
+      <textarea class="notepad"> asdasdasdasd </textarea>
+    </AppWindow>
     <AppPanel  @click="openApp"/>
     <AppBluePage v-model="bluePage" :repo="repo"/>
     <AppDownloading v-if="loading"/>
@@ -27,6 +30,7 @@
   import AppClockWidget from '../components/AppClockWidget.vue'
   import AppBluePage from '../components/AppBluePage.vue'
   import AppDownloading from '../components/AppDownloading.vue'
+  import AppWindow from '../components/AppWindow.vue'
 
   export default {
     components: {
@@ -38,7 +42,8 @@
       AppWidgets,
       AppClockWidget,
       AppBluePage,
-      AppDownloading
+      AppDownloading,
+      AppWindow
     },
     data() {
       return {
@@ -65,27 +70,18 @@
       this.$nextTick(() => {
         setTimeout(() => {
           this.loading = false
-        }, 6000)
+        }, 1000)
       })
     }
   }
 </script>
 
 <style>
-  html, body, #app {
+  .notepad {
+    width: 100%;
     height: 100%;
-    min-height: 100%;
-    max-height: 100%;
-    overflow: hidden;
-    padding: 0;
-    margin: 0;
-    background-size: cover;
-    background-position: bottom;
-  }
-  * {
-    box-sizing: border-box;
-  }
-  #app {
-    position: relative;
+    border: none;
+    padding: 8px;
+    resize: none;
   }
 </style>
