@@ -1,6 +1,7 @@
 <template>
-    <video class="camera" muted autoplay playsinline />
+  <video class="camera" muted autoplay playsinline />
 </template>
+
 <script>
 export default {
   mounted() {
@@ -12,16 +13,17 @@ export default {
     }).then(stream => {
       this.$el.srcObject = stream;
     });
-  }
+  },
+  style({ className }){
+    return [
+      className('camera', {
+        width: '100%',
+        height: '100%',
+        border: 'none',
+        resize: 'none',
+      }),
+    ];
+  },
 }
 </script>
-
-<style>
-  .camera {
-    width: 100%;
-    height: 100%;
-    border: none;
-    resize: none;
-  }
-</style>
 
