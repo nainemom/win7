@@ -13,9 +13,7 @@
         <div class="close" @click="close">🗙</div>
       </div>
     </div>
-    <div :class="$style.content" ref="content">
-      <slot />
-    </div>
+    <component :class="$style.content" ref="content" :is="component" v-bind="data" />
   </div>
 </template>
 
@@ -26,7 +24,7 @@ import Swipe from '/src/utils/Swipe';
 
 export default {
   inject: ['$windows'],
-  props: ['id', 'title', 'maximizable', 'maximized', 'minimized', 'width', 'height', 'left', 'top', 'zIndex'],
+  props: ['id', 'title', 'maximizable', 'maximized', 'minimized', 'width', 'height', 'left', 'top', 'zIndex', 'component', 'data'],
   data() {
     return {
       mover: null,

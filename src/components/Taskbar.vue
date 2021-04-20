@@ -18,8 +18,6 @@
 import { panelSize } from '/src/styles/constants';
 import { rgba } from '/src/styles/utils';
 import OrbNormal from '/src/assets/orb/normal.png';
-import OrbHover from '/src/assets/orb/hover.png';
-import OrbActive from '/src/assets/orb/active.png';
 import TaskbarRunningWindow from '/src/components/TaskbarRunningWindow.vue';
 
 export default {

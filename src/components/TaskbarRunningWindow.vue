@@ -45,7 +45,7 @@ export default {
         fontFamily: 'sans-serif',
         fontSize: '14px',
         fontWeight: 'bold',
-        color: '#fff',
+        color: rgba(255, 1),
         textShadow: new Array(4).fill(`0 0 1px ${rgba(0, 1)}`).join(','),
         whiteSpace: 'nowrap',
         overflow: 'hidden',

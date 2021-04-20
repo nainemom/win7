@@ -1,6 +1,6 @@
 <template>
   <View>
-    <Desktop :wallpaper="wallpaper" />
+    <Desktop :wallpaper="wallpaper" :icons="icons" />
     <Taskbar />
   </View>
 </template>
@@ -23,6 +23,12 @@
   // import AppError from '../components/AppError.vue'
   import WallpaperImage from '/src/assets/wallpaper.jpg';
 
+  import CameraApp from '/src/apps/Camera.vue';
+  import CameraIcon from '/src/assets/icons/Camera.ico';
+  import NotepadApp from '/src/apps/Notepad.vue';
+  import NotepadIcon from '/src/assets/icons/Notepad.ico';
+  import TextIcon from '/src/assets/icons/Text.ico';
+
   export default {
     components: {
       View,
@@ -37,6 +43,31 @@
     computed: {
       wallpaper() {
         return WallpaperImage;
+      },
+      icons() {
+        return [
+          {
+            component: CameraApp,
+            title: 'Camera App',
+            icon: CameraIcon,
+            type: 'app',
+          },
+          {
+            component: NotepadApp,
+            title: 'Notepad',
+            icon: NotepadIcon,
+            type: 'app',
+          },
+          {
+            component: NotepadApp,
+            title: 'Text File',
+            icon: TextIcon,
+            type: 'file',
+            data: {
+              value: 'Salam Golaye nemune'
+            }
+          },
+        ];
       },
     },
     methods: {

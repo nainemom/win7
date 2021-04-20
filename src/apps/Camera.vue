@@ -1,5 +1,5 @@
 <template>
-  <video class="camera" muted autoplay playsinline />
+  <video :class="$style.camera" muted autoplay playsinline />
 </template>
 
 <script>
@@ -17,10 +17,9 @@ export default {
   style({ className }){
     return [
       className('camera', {
-        width: '100%',
-        height: '100%',
         border: 'none',
         resize: 'none',
+        objectFit: 'cover',
       }),
     ];
   },

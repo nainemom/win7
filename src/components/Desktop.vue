@@ -1,34 +1,19 @@
-<!--template>
-  <div class="desk">
-    <slot />
-  </div>
-</template>
-
-<style scoped>
-.desk {
-  position: relative;
-  height: calc(100% - 30px);
-  min-height: calc(100% - 30px);
-  max-height: calc(100% - 30px);
-  overflow: hidden;
-  flex-direction: column;
-  display: flex;
-}
-</style-->
-
 <template>
   <div :class="$style.desktop">
-    <slot />
+    <DesktopIcon v-for="(icon, index) in icons" :key="index" v-bind="icon" />
   </div>
 </template>
 
 <script>
 import { fitSize } from '/src/styles/common';
 import { panelSize } from '/src/styles/constants';
-
+import DesktopIcon from '/src/components/DesktopIcon.vue';
 
 export default {
-  props: ['wallpaper'],
+  props: ['wallpaper', 'icons'],
+  components: {
+    DesktopIcon,
+  },
   style({ className }) {
     return [
       className('desktop', {
