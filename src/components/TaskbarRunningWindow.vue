@@ -10,21 +10,21 @@ import { rgba } from '/src/styles/utils';
 
 export default {
   emits: ['close', 'minimize'],
-  inject: ['$windows'],
+  inject: ['$os'],
   props: ['id', 'title', 'zIndex', 'minimized'],
   computed: {
     focused() {
-      return this.$windows.isWindowFocused(this.id);
+      return this.$os.isWindowFocused(this.id);
     },
   },
   methods: {
     click() {
       if (this.minimized) {
-        this.$windows.minimizeWindow(this.id, false);
+        this.$os.minimizeWindow(this.id, false);
       } else if (this.focused) {
-        this.$windows.minimizeWindow(this.id, true);
+        this.$os.minimizeWindow(this.id, true);
       } else {
-        this.$windows.focusWindow(this.id);
+        this.$os.focusWindow(this.id);
       }
     },
   },

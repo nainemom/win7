@@ -23,7 +23,7 @@ import { panelSize } from '/src/styles/constants';
 import Swipe from '/src/utils/Swipe';
 
 export default {
-  inject: ['$windows'],
+  inject: ['$os'],
   props: ['id', 'title', 'maximizable', 'maximized', 'minimized', 'width', 'height', 'left', 'top', 'zIndex', 'component', 'data'],
   data() {
     return {
@@ -33,7 +33,7 @@ export default {
   },
   computed: {
     focused() {
-      return this.$windows.isWindowFocused(this.id);
+      return this.$os.isWindowFocused(this.id);
     },
   },
   mounted() {
@@ -53,10 +53,10 @@ export default {
   },
   methods: {
     close() {
-      this.$windows.closeWindow(this.id);
+      this.$os.closeWindow(this.id);
     },
     focus() {
-      this.$windows.focusWindow(this.id);
+      this.$os.focusWindow(this.id);
     },
     moveStart() {
       if (this.maximized) {
@@ -72,10 +72,10 @@ export default {
       });
     },
     minimize() {
-      this.$windows.minimizeWindow(this.id);
+      this.$os.minimizeWindow(this.id);
     },
     maximize() {
-      this.$windows.maximizeWindow(this.id);
+      this.$os.maximizeWindow(this.id);
     },
     setPosition(position) {
       Object.keys(position).forEach((key) => {

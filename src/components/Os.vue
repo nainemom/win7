@@ -26,7 +26,7 @@ export default {
   },
   provide() {
     return {
-      $windows: this,
+      $os: this,
     };
   },
   methods: {

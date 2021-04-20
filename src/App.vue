@@ -1,12 +1,12 @@
 <template>
-  <View>
+  <Os>
     <Desktop :wallpaper="wallpaper" :icons="icons" />
     <Taskbar />
-  </View>
+  </Os>
 </template>
 
 <script>
-  import View from '/src/components/View.vue'
+  import Os from '/src/components/Os.vue'
   // import AppBackground from '../components/AppBackground.vue'
   import Desktop from '/src/components/Desktop.vue'
   import Taskbar from '/src/components/Taskbar.vue'
@@ -31,7 +31,7 @@
 
   export default {
     components: {
-      View,
+      Os,
       Desktop,
       Taskbar,
       // Window,

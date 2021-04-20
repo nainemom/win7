@@ -11,10 +11,10 @@ import { rgba } from '/src/styles/utils';
 
 export default {
   props: ['icon', 'title', 'component', 'type', 'data'],
-  inject: ['$windows'],
+  inject: ['$os'],
   methods: {
     click() {
-      this.$windows.openWindow(this.component, {
+      this.$os.openWindow(this.component, {
         title: this.title,
         data: this.data,
       });

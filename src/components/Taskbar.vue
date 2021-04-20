@@ -2,7 +2,7 @@
   <div :class="$style.taskbar">
     <div :class="$style.orb" @click="orbClick" />
     <div :class="$style.windowsList">
-      <TaskbarRunningWindow v-for="window in $windows.list" :key="window.id" v-bind="window"/>
+      <TaskbarRunningWindow v-for="window in $os.list" :key="window.id" v-bind="window"/>
     </div>
     <!--
     <section class="dark to-left">
@@ -21,7 +21,7 @@ import OrbNormal from '/src/assets/orb/normal.png';
 import TaskbarRunningWindow from '/src/components/TaskbarRunningWindow.vue';
 
 export default {
-  inject: ['$windows'],
+  inject: ['$os'],
   components: {
     TaskbarRunningWindow,
   },
@@ -37,12 +37,12 @@ export default {
   },
   methods: {
     orbClick() {
-      this.$windows.openWindow('div', {
+      this.$os.openWindow('div', {
         title: 'ORB App ' + Date.now(),
       });
     },
     clickWindow(window) {
-      this.$windows.focusWindow(window.id);
+      this.$os.focusWindow(window.id);
       console.log(window);
     },
     syncTime(){
