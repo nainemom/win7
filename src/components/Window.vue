@@ -126,6 +126,8 @@ export default {
           top: '0 !important',
           left: '0 !important',
           borderRadius: '0 !important',
+          resize: 'none !important',
+          boxShadow: 'none !important',
         },
         '&.minimized': {
           display: 'none',
