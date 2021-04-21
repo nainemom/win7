@@ -1,6 +1,6 @@
 <template>
   <Os>
-    <Desktop :wallpaper="wallpaper" :icons="icons" />
+    <Desktop :wallpaper="wallpaper" />
     <Taskbar />
   </Os>
 </template>

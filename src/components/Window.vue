@@ -1,19 +1,19 @@
 <template>
   <div
-    :class="[$style.window, minimized && 'minimized', focused && 'focused', maximized && 'maximized']"
-    :style="{ zIndex: zIndex }"
+    :class="[$style.window, window.minimized && 'minimized', focused && 'focused', window.maximized && 'maximized']"
+    :style="{ zIndex: window.zIndex }"
     @click.capture="focus">
     <div :class="$style.titlebar">
       <div class="title" ref="title">
-        {{title}}
+        {{window.title}}
       </div>
       <div class="buttons" :class="focused && 'focused'">
         <div class="minimize" @click="minimize">🗕</div>
-        <div class="maximize" v-show="maximizable" @click="maximize">{{ maximized ? '🗗' : '🗖' }} </div>
+        <div class="maximize" v-show="window.maximizable" @click="maximize">{{ window.maximized ? '🗗' : '🗖' }} </div>
         <div class="close" @click="close">🗙</div>
       </div>
     </div>
-    <component :class="$style.content" ref="content" :is="component" v-bind="data" />
+    <component :class="$style.content" ref="content" :is="window._.component" v-bind="window.data" />
   </div>
 </template>
 
@@ -24,7 +24,7 @@ import Swipe from '/src/utils/Swipe';
 
 export default {
   inject: ['$os'],
-  props: ['id', 'title', 'maximizable', 'maximized', 'minimized', 'width', 'height', 'left', 'top', 'zIndex', 'component', 'data'],
+  props: ['window'],
   data() {
     return {
       mover: null,
@@ -33,7 +33,7 @@ export default {
   },
   computed: {
     focused() {
-      return this.$os.isWindowFocused(this.id);
+      return this.$os.isWindowFocused(this.window.id);
     },
   },
   mounted() {
@@ -53,13 +53,13 @@ export default {
   },
   methods: {
     close() {
-      this.$os.closeWindow(this.id);
+      this.$os.closeWindow(this.window.id);
     },
     focus() {
-      this.$os.focusWindow(this.id);
+      this.$os.focusWindow(this.window.id);
     },
     moveStart() {
-      if (this.maximized) {
+      if (this.window.maximized) {
         this.maximize();
       }
       this.focus();
@@ -72,10 +72,10 @@ export default {
       });
     },
     minimize() {
-      this.$os.minimizeWindow(this.id);
+      this.$os.minimizeWindow(this.window.id);
     },
     maximize() {
-      this.$os.maximizeWindow(this.id);
+      this.$os.maximizeWindow(this.window.id);
     },
     setPosition(position) {
       Object.keys(position).forEach((key) => {
@@ -202,10 +202,13 @@ export default {
       }),
       className('content', {
         flexGrow: 1,
-        background: rgba(255, 1),
         border: `solid 1px ${rgba(10, 0.5)}`,
-        overflow: 'scroll',
+        overflow: 'hidden',
         margin: '0 5px 5px 5px',
+        maxWidth: 'calc(100% - 10px)',
+        '&.no-border': {
+          border: 0,
+        },
       }),
     ];
   },

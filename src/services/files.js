@@ -7,55 +7,77 @@ import myComputerIcon from '/src/assets/icons/my-computer.png';
 import driveIcon from '/src/assets/icons/drive.png';
 import cameraIcon from '/src/assets/icons/camera.ico';
 import notepadIcon from '/src/assets/icons/notepad.png';
-import txtIcon from '/src/assets/icons/txt.png';
 import jpgIcon from '/src/assets/icons/jpg.png';
+import txtIcon from '/src/assets/icons/txt.png';
 
-const drive = (name, files = []) => ({
+export const drive = (name, files = []) => ({
   type: 'drive',
   name,
   icon: driveIcon,
   files,
 });
 
-const folder = (name, files = []) => ({
+export const folder = (name, files = []) => ({
   type: 'folder',
   name,
-  icon: folderIcon,
+  app: () => {
+    return systemApps.find((item) => {
+      if ((item.config.types || []).includes('folder')) {
+        return item;
+      }
+    });
+  },
   files,
 });
 
-const shortcut = (target) => ({
-  type: 'shortcut',
-  target,
-});
 
-const app = (name, icon, component) => ({
-  type: 'app',
-  name,
-  icon,
-  component,
-});
-
-const file = (name, icon, component, data = {}) => ({
+export const file = (name, data = {}) => ({
   type: 'file',
   name,
-  icon,
-  component,
+  app: () => {
+    const ext = name.substr(name.lastIndexOf('.') + 1);
+    return apps.find((item) => {
+      console.log(item);
+      if ((item.config.exts || []).includes(ext)) {
+        return item;
+      }
+    });
+  },
   data,
 });
 
-const files = [
+export const shortcut = (path) => ({
+  type: 'shortcut',
+  target: () => getFile(path),
+});
+
+export const app = (name, component) => ({
+  type: 'app',
+  name,
+  config: component.appConfig,
+  component,
+});
+
+export const systemApps = [
+  app('My Computer', MyComputer),
+];
+
+export const apps = [
+  app('Notepad.exe', Notepad),
+  app('Camera.exe', Camera),
+]
+
+
+export const files = [
   drive('C:', [
-    folder('Program Files', [
-      app('Camera.exe', cameraIcon, Camera),
-      app('Notepad.exe', notepadIcon, Notepad),
-    ]),
+    folder('Windows', systemApps),
+    folder('Program Files', apps),
     folder('User', [
       folder('Desktop', [
-        app('My Computer', myComputerIcon, MyComputer),
+        shortcut(['C:', 'Windows', 'My Computer']),
         shortcut(['C:', 'Program Files', 'Camera.exe']),
         shortcut(['C:', 'Program Files', 'Notepad.exe']),
-        file('Creator.txt', txtIcon, Notepad, {
+        file('Creator.txt', {
           value: 'My Name is Amir!!!'
         }),
       ]),
@@ -82,3 +104,5 @@ export const getFile = (path = []) => {
   });
   return target;
 };
+
+// export const createFile = (type, name, path)

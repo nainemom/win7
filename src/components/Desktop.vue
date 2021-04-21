@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.desktop">
-    <File v-for="(file, index) in desktopFiles" :key="index" v-bind="file" />
+    <File v-for="(file, index) in desktopFiles" :key="index" :file="file" />
   </div>
 </template>
 

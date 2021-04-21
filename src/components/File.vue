@@ -1,7 +1,7 @@
 <template>
   <div :class="$style.desktopIcon" @dblclick="click">
-    <img :src="trueProps.icon" />
-    <div> {{ trueProps.name }} </div>
+    <img :src="icon" />
+    <div> {{ target.name }} </div>
   </div>
 </template>
 
@@ -11,25 +11,30 @@ import { getFile } from '/src/services/files';
 
 
 export default {
-  props: ['icon', 'name', 'component', 'type', 'data', 'target', 'files', 'onClick'],
+  props: ['file', 'onClick'],
   inject: ['$os'],
   methods: {
     click() {
-      if (this.onClick && this.onClick(this.$props) === true) {
+      if (this.onClick && this.onClick(this.target) === true) {
         return;
       }
-      this.$os.openWindow(this.trueProps.component, {
-        title: this.trueProps.name,
-        data: this.trueProps.data,
-      });
+      console.log(this.target);
+      this.$os.openWindow(this.target);
     },
   },
   computed: {
-    trueProps() {
-      if (this.type === 'shortcut') {
-        return getFile(this.target);
+    target() {
+      let target = this.file;
+      while (target.type === 'shortcut') {
+        target = target.target();
       }
-      return this.$props;
+      return target;
+    },
+    icon() {
+      if (this.target.app) {
+        return this.target.app().config.fileIcon;
+      }
+      return this.target.config.icon;
     },
   },
   style({ className }) {

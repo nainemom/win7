@@ -4,17 +4,25 @@
       {{ localPath.join('\\') }}
     </div>
     <div :class="$style.content">
-      <component :is="File" v-for="(file, index) in dirContent" :key="file.name + index" v-bind="file" @click="click"/>
+      <component :is="File" v-for="(file, index) in dirContent" :key="file.name + index" :file="file" @click="click"/>
     </div>
   </div>
 </template>
 
 <script>
+import icon from '/src/assets/icons/my-computer.png';
+import fileIcon from '/src/assets/icons/folder.png';
 import File from '/src/components/File.vue';
 import { getFile } from '/src/services/files';
 
 
 export default {
+  appConfig: {
+    icon,
+    exts: [],
+    types: ['folder'],
+    fileIcon,
+  },
   props: ['path'],
   data() {
     return {

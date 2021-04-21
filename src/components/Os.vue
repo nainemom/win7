@@ -1,10 +1,10 @@
 <template>
-  <div :class="$style.view">
+  <div :class="$style.os">
     <slot />
     <Window
       v-for="window in list"
       :key="window.id"
-      v-bind="window"
+      :window="window"
     />
   </div>
 </template>
@@ -30,22 +30,27 @@ export default {
     };
   },
   methods: {
-    openWindow(component, config = {}) {
+    openWindow(file) {
       const id = `x-${Date.now()}`;
+      console.log(file);
+      const component = file.component || file.app().component;
+      // return;
       this.list.push({
         id,
         createdDate: Date.now(),
-        component,
-        title: `New Window #${id}`,
+        _: Object.freeze({
+          component
+        }),
+        title: file.name,
         width: '200px',
         height: '200px',
         left: `${(Math.random() * 400)}px`,
         top: `${(Math.random() * 400)}px`,
         maximizable: true,
+        data: file.data || {},
         maximized: false,
         minimized: false,
         zIndex: ++this.latestZIndex,
-        ...config,
       });
     },
     closeWindow(id) {
@@ -87,9 +92,12 @@ export default {
   },
   style({ className }) {
     return [
-      className('view', {
+      className('os', {
         position: 'fixed',
         ...fitSize,
+        '& *, & *:after': {
+          bixSizing: 'content-box',
+        },
       }),
     ];
   },
