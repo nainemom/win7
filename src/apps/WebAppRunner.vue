@@ -6,6 +6,7 @@
 
 <script>
 import icon from '/src/assets/icons/html.png';
+import { rgba } from '/src/styles/utils';
 
 export default {
   appConfig: {
@@ -29,6 +30,7 @@ export default {
     return [
       className('webAppRunner', {
         '& > iframe': {
+          background: rgba(255, 1),
           width: '100%',
           height: '100%',
         }
