@@ -14,6 +14,10 @@ export default {
     exts: [],
     types: [],
     fileIcon: null,
+    windowConfig: {
+      width: '600px',
+      height: '500px',
+    },
   },
   mounted() {
     navigator.mediaDevices.getUserMedia({

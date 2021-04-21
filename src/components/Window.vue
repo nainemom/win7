@@ -13,7 +13,7 @@
         <div class="close" @click="close">🗙</div>
       </div>
     </div>
-    <component :class="$style.content" ref="content" :is="window._.component" v-bind="window.data" />
+    <component :class="$style.content" ref="content" :is="component" v-bind="window.data" />
   </div>
 </template>
 
@@ -34,6 +34,9 @@ export default {
   computed: {
     focused() {
       return this.$os.isWindowFocused(this.window.id);
+    },
+    component() {
+      return this.window._.component;
     },
   },
   mounted() {
@@ -94,6 +97,8 @@ export default {
   style({ className }) {
     const baseAlpha = 0.1;
     const titleHeight = '32px';
+    const width = this.component?.appConfig?.windowConfig?.width || '400px';
+    const height = this.component?.appConfig?.windowConfig?.height || '300px';
     return [
       className('window', {
         userSelect: 'none',
@@ -116,8 +121,8 @@ export default {
         overflow: 'hidden',
         fontFamily: 'sans-serif',
         fontSize: '15px',
-        minWidth: '400px',
-        minHeight: '300px',
+        width,
+        height,
         '&.maximized': {
           width: '100% !important',
           height: `calc(100% - ${panelSize}) !important`,
