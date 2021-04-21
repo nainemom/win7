@@ -47,8 +47,8 @@ export default {
         padding: '2px',
         textAlign: 'center',
         '& > img': {
-          width: '75%',
-          marginBottom: '4px',
+          width: '55px',
+          marginBottom: '14px',
           filter: `drop-shadow(2px 4px 6px ${rgba(0, 0.5)})`,
         },
         '& > div':{

@@ -33,10 +33,10 @@ export default {
         return true;
       }
     },
-    windowConfig: {
+    windowConfig: () => ({
       width: '600px',
       height: '500px',
-    },
+    }),
   },
   inject: ['$fs'],
   props: ['path'],

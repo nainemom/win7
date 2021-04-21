@@ -46,8 +46,8 @@ export default {
         windowProps: Object.freeze({
           id: `x-${Date.now()}`,
           createdDate: Date.now(),
-          width: runner.component.appConfig.windowConfig?.width || '400px',
-          height: runner.component.appConfig.windowConfig?.height || '300px',
+          width: runner.component.appConfig.windowConfig(file)?.width || '400px',
+          height: runner.component.appConfig.windowConfig(file)?.height || '300px',
           left: `${(Math.random() * 400)}px`,
           top: `${(Math.random() * 400)}px`,
           maximizable: true,

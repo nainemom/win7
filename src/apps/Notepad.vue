@@ -17,10 +17,10 @@ export default {
         return true;
       }
     },
-    windowConfig: {
+    windowConfig: () => ({
       width: '600px',
       height: '500px',
-    },
+    }),
   },
   props: ['value'],
    markRaw: true,
