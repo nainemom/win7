@@ -1,19 +1,20 @@
 <template>
   <div
-    :class="[$style.window, window.minimized && 'minimized', focused && 'focused', window.maximized && 'maximized']"
-    :style="{ zIndex: window.zIndex }"
+    :class="[$style.window, runtimeProps.minimized && 'minimized', focused && 'focused', runtimeProps.maximized && 'maximized']"
+    :style="{ zIndex: runtimeProps.zIndex }"
     @click.capture="focus">
     <div :class="$style.titlebar">
       <div class="title" ref="title">
-        {{window.title}}
+        <img :src="windowProps.icon" />
+        {{windowProps.title}}
       </div>
       <div class="buttons" :class="focused && 'focused'">
         <div class="minimize" @click="minimize">🗕</div>
-        <div class="maximize" v-show="window.maximizable" @click="maximize">{{ window.maximized ? '🗗' : '🗖' }} </div>
+        <div class="maximize" v-show="windowProps.maximizable" @click="maximize">{{ runtimeProps.maximized ? '🗗' : '🗖' }} </div>
         <div class="close" @click="close">🗙</div>
       </div>
     </div>
-    <component :class="$style.content" ref="content" :is="component" v-bind="window.data" />
+    <component :class="$style.content" ref="content" :is="componentProps.runner.component" v-bind="componentProps.data" />
   </div>
 </template>
 
@@ -23,8 +24,8 @@ import { panelSize } from '/src/styles/constants';
 import Swipe from '/src/utils/Swipe';
 
 export default {
-  inject: ['$os'],
-  props: ['window'],
+  inject: ['$wm'],
+  props: ['runtimeProps', 'componentProps', 'windowProps'],
   data() {
     return {
       mover: null,
@@ -33,18 +34,15 @@ export default {
   },
   computed: {
     focused() {
-      return this.$os.isWindowFocused(this.window.id);
-    },
-    component() {
-      return this.window._.component;
+      return this.$wm.isWindowFocused(this.windowProps.id);
     },
   },
   mounted() {
     this.setPosition({
-      height: this.height,
-      width: this.width,
-      left: this.left,
-      top: this.top,
+      height: this.windowProps.height,
+      width: this.windowProps.width,
+      left: this.windowProps.left,
+      top: this.windowProps.top,
     });
     this.mover = Swipe(this.$refs.title);
     this.mover.before(this.moveStart);
@@ -56,13 +54,13 @@ export default {
   },
   methods: {
     close() {
-      this.$os.closeWindow(this.window.id);
+      this.$wm.closeWindow(this.windowProps.id);
     },
     focus() {
-      this.$os.focusWindow(this.window.id);
+      this.$wm.focusWindow(this.windowProps.id);
     },
     moveStart() {
-      if (this.window.maximized) {
+      if (this.runtimeProps.maximized) {
         this.maximize();
       }
       this.focus();
@@ -75,10 +73,10 @@ export default {
       });
     },
     minimize() {
-      this.$os.minimizeWindow(this.window.id);
+      this.$wm.minimizeWindow(this.windowProps.id);
     },
     maximize() {
-      this.$os.maximizeWindow(this.window.id);
+      this.$wm.maximizeWindow(this.windowProps.id);
     },
     setPosition(position) {
       Object.keys(position).forEach((key) => {
@@ -97,8 +95,7 @@ export default {
   style({ className }) {
     const baseAlpha = 0.1;
     const titleHeight = '32px';
-    const width = this.component?.appConfig?.windowConfig?.width || '400px';
-    const height = this.component?.appConfig?.windowConfig?.height || '300px';
+
     return [
       className('window', {
         userSelect: 'none',
@@ -119,10 +116,9 @@ export default {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        fontFamily: 'sans-serif',
         fontSize: '15px',
-        width,
-        height,
+        minWidth: '400px',
+        minHeight: '200px',
         '&.maximized': {
           width: '100% !important',
           height: `calc(100% - ${panelSize}) !important`,
@@ -152,6 +148,11 @@ export default {
           flexGrow: 1,
           height: '100%',
           lineHeight: titleHeight,
+          '& > img': {
+            width: '20px',
+            marginRight: '5px',
+            verticalAlign: 'middle',
+          },
         },
         '& > .buttons': {
           display: 'flex',

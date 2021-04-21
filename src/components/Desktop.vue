@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.desktop">
-    <File v-for="(file, index) in desktopFiles" :key="index" :file="file" />
+    <File v-for="(file, index) in desktopFiles" :key="file.name + index" :file="file" />
   </div>
 </template>
 
@@ -8,16 +8,28 @@
 import { fitSize } from '/src/styles/common';
 import { panelSize } from '/src/styles/constants';
 import File from '/src/components/File.vue';
-import { getFile } from '/src/services/files';
 
 export default {
   props: ['wallpaper'],
   components: {
     File,
   },
-  computed: {
-    desktopFiles() {
-      return getFile(['C:', 'User', 'Desktop']).files;
+  inject: ['$fs'],
+  data() {
+    return {
+      desktopFiles: [],
+    };
+  },
+  created() {
+    this.reload();
+    this.$fs.onReload(this.reload);
+  },
+  beforeUnmount() {
+    this.$fs.offReload(this.reload);
+  },
+  methods: {
+    reload() {
+      this.desktopFiles = [...this.$fs.resolvePath(['C:', 'User', 'Desktop']).files];
     },
   },
   style({ className }) {
@@ -29,6 +41,10 @@ export default {
         paddingBottom: panelSize,
         backgroundPosition: 'bottom center',
         backgroundSize: 'cover',
+        display: 'flex',
+        flexDirection: 'column',
+        flexWrap: 'wrap',
+        alignContent: 'flex-start',
       }),
     ];
   },

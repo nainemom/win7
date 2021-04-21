@@ -10,10 +10,17 @@ import fileIcon from '/src/assets/icons/txt.png';
 
 export default {
   appConfig: {
-    icon,
-    exts: ['txt', 'md'],
-    types: [],
-    fileIcon,
+    icon: () => icon,
+    fileIcon: () => fileIcon,
+    canHandle: (file) => {
+      if (file.type === 'file' && file.name.endsWith('txt')) {
+        return true;
+      }
+    },
+    windowConfig: {
+      width: '600px',
+      height: '500px',
+    },
   },
   props: ['value'],
    markRaw: true,

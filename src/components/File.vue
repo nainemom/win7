@@ -1,40 +1,34 @@
 <template>
   <div :class="$style.desktopIcon" @dblclick="click">
     <img :src="icon" />
-    <div> {{ target.name }} </div>
+    <div> {{ file.name }} </div>
   </div>
 </template>
 
 <script>
 import { rgba } from '/src/styles/utils';
-import { getFile } from '/src/services/files';
 
 
 export default {
   props: ['file', 'onClick'],
-  inject: ['$os'],
+  inject: ['$wm', '$fs'],
   methods: {
     click() {
-      if (this.onClick && this.onClick(this.target) === true) {
+      if (this.onClick && this.onClick(this.resolvedFile) === true) {
         return;
       }
-      console.log(this.target);
-      this.$os.openWindow(this.target);
+      this.$wm.openWindow(this.resolvedFile);
     },
   },
   computed: {
-    target() {
-      let target = this.file;
-      while (target.type === 'shortcut') {
-        target = target.target();
-      }
-      return target;
+    resolvedFile() {
+      return this.$fs.resolveFile(this.file);
+    },
+    runner() {
+      return this.$fs.resolveFileRunner(this.resolvedFile);
     },
     icon() {
-      if (this.target.app) {
-        return this.target.app().config.fileIcon;
-      }
-      return this.target.config.icon;
+      return this.runner.component.appConfig[this.resolvedFile.type === 'app' ? 'icon' : 'fileIcon'](this.resolvedFile);
     },
   },
   style({ className }) {
@@ -42,20 +36,27 @@ export default {
       className('desktopIcon', {
         width: '96px',
         height: 'auto',
-        fontFamily: 'sans-serif',
         fontSize: '15px',
         color: rgba(255, 1),
-        textShadow: new Array(4).fill(`0 0 5px ${rgba(0, 0.4)}`).join(','),
+        textShadow: new Array(2).fill(`0 0 5px ${rgba(0, 0.8)}`).join(','),
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        margin: '15px 10px',
+        margin: '15px',
+        padding: '2px',
+        textAlign: 'center',
         '& > img': {
           width: '75%',
           marginBottom: '4px',
           filter: `drop-shadow(2px 4px 6px ${rgba(0, 0.5)})`,
-        }
+        },
+        '& > div':{
+          width: '100%',
+          maxWidth: '100%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
       }),
     ];
   },

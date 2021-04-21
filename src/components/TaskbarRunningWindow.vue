@@ -1,7 +1,7 @@
 
 <template>
   <div :class="[focused && 'focused', $style.taskbarRunningWindow]" @click="click">
-    {{ title }}
+    <img :src="windowProps.icon" /> {{ windowProps.title }}
   </div>
 </template>
 
@@ -10,21 +10,21 @@ import { rgba } from '/src/styles/utils';
 
 export default {
   emits: ['close', 'minimize'],
-  inject: ['$os'],
-  props: ['id', 'title', 'zIndex', 'minimized'],
+  inject: ['$wm'],
+  props: ['runtimeProps', 'windowProps', 'componentProps'],
   computed: {
     focused() {
-      return this.$os.isWindowFocused(this.id);
+      return this.$wm.isWindowFocused(this.windowProps.id);
     },
   },
   methods: {
     click() {
-      if (this.minimized) {
-        this.$os.minimizeWindow(this.id, false);
+      if (this.runtimeProps.minimized) {
+        this.$wm.minimizeWindow(this.windowProps.id, false);
       } else if (this.focused) {
-        this.$os.minimizeWindow(this.id, true);
+        this.$wm.minimizeWindow(this.windowProps.id, true);
       } else {
-        this.$os.focusWindow(this.id);
+        this.$wm.focusWindow(this.windowProps.id);
       }
     },
   },
@@ -40,9 +40,8 @@ export default {
         border: `solid 1px ${rgba(0, 0.6)}`,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         padding: '0 10px',
-        fontFamily: 'sans-serif',
         fontSize: '14px',
         fontWeight: 'bold',
         color: rgba(255, 1),
@@ -50,8 +49,13 @@ export default {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'clip',
-        maxWidth: '180px',
-
+        width: '200px',
+        textAlign: 'left',
+        '& > img': {
+          width: '20px',
+          marginRight: '5px',
+          verticalAlign: 'middle',
+        },
         '&.focused': {
           backgroundColor: rgba(0, 0.3),
         },
