@@ -27,21 +27,16 @@
       *** STOP: 0x00000050 (OxFD30940,0x00000001,0xFPFE7617,0x00000000)
       <br>
       <br>
-      *** SPCmDCON.SYS - Address F6FE7617 base at FEFE5000, timestamp 3d6dd67c
+      Address F6FE7617 base at FEFE5000, timestamp 3d6dd67c
+      <br>
+      <br>
+      *** SPCmDCON.SYS - {{ value }}
       <br>
       <br>
       <br>
       <br>
-      <h2 class="support">
-      If you like this funny repository, star it on github before system restarts:
       <br>
-      <br>
-      <a class="repo-link" target="_blank" :href="$attrs.repo"> WinVista by Nainemom </a>
-      </h2>
-      <br>
-      <br>
-      System will be restart in:
-      <b>{{remainingTime}}</b>
+      System will be restart in 5 seconds...
     </div>
   </div>
 </template>
@@ -51,27 +46,13 @@ export default {
   props: {
     value: Boolean,
   },
-  emits: ['input'],
-  data() {
-    return {
-      secs: 0
-    }
-  },
-  computed: {
-    remainingTime() {
-      return `00:${(15 - this.secs).toString().padStart(2, '0')}`
-    }
-  },
+  emits: ['update:value'],
   watch: {
     value(v) {
       if (v) {
-        this.secs = 0
-        const timer = setInterval(() => {
-          this.secs++
-          if (this.secs === 15) {
-            this.$emit('input', false)
-          }
-        }, 1000)
+        setTimeout(() => {
+          this.$emit('update:value', false);
+        }, 5000);
       }
     }
   },
@@ -91,18 +72,6 @@ export default {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        '& > .content': {
-          minWidth: '320px',
-          width: '1080px',
-          maxWidth: '90%',
-          '& .support': {
-            '& .repo-link': {
-              color: '#fff',
-              textDecoration: 'underline',
-              cursor: 'pointer',
-            },
-          },
-        },
       }),
     ];
   },
