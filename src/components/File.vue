@@ -8,7 +8,6 @@
 <script>
 import { rgba } from '/src/styles/utils';
 
-
 export default {
   props: ['file', 'onClick'],
   inject: ['$wm', '$fs'],
@@ -50,6 +49,7 @@ export default {
           width: '55px',
           marginBottom: '14px',
           filter: `drop-shadow(2px 4px 6px ${rgba(0, 0.5)})`,
+          borderRadius: '9px',
         },
         '& > div':{
           width: '100%',

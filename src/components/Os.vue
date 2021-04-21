@@ -22,6 +22,7 @@ export default {
       list: [],
       latestZIndex: 0,
       bluePage: false,
+      time: Date.now(),
     };
   },
   components: {
@@ -127,6 +128,7 @@ export default {
         fontFamily: 'sans-serif',
       }),
       custom('*', {
+        userSelect: 'none',
         fontFamily: 'inherit',
         padding: 0,
         margin: 0,

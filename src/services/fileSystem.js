@@ -70,6 +70,12 @@ const root = directory('root', [
           width: '1000px',
           height: '800px',
         }),
+        webapp('Snapp!', {
+          icon: 'https://passenger-pwa-cdn.snapp.ir/logos/square-minimal-144.png',
+          url: 'https://app.snapp.taxi/',
+          width: '500px',
+          height: '800px',
+        }),
         file('Creator.txt', {
           value: 'My Name is Amir!!!',
         }),
