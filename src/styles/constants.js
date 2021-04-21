@@ -1,1 +1,1 @@
-export const panelSize = '36px';
+export const panelSize = '44px';

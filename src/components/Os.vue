@@ -45,7 +45,7 @@ export default {
     openWindow(_file) {
       const file = resolveFile(_file);
       const runner = resolveFileRunner(_file);
-      this.list.push({
+      const window = {
         windowProps: Object.freeze({
           id: `x-${Date.now()}`,
           createdDate: Date.now(),
@@ -66,7 +66,8 @@ export default {
           minimized: false,
           zIndex: ++this.latestZIndex,
         },
-      });
+      };
+      this.list.push(window);
     },
     findById(id, returnIndex = false) {
       return this.list[returnIndex ? 'findIndex' : 'find']((w) => w.windowProps.id === id);
@@ -86,7 +87,8 @@ export default {
     isWindowFocused(id) {
       const window = this.findById(id);
       if (window) {
-        return Math.max(...this.list.map((w) => w.runtimeProps.zIndex)) === window.runtimeProps.zIndex;
+        const max = Math.max(...this.list.map((w) => w.runtimeProps.zIndex));
+        return max !== -1 && max === window.runtimeProps.zIndex;
       }
       return false;
     },

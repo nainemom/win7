@@ -59,7 +59,7 @@ export default {
     return [
       className('camera', {
         position: 'relative',
-        '& > video': {
+        '& > video, & > img': {
           width: '100%',
           height: '100%',
           border: 'none',

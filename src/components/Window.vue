@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="[$style.window, runtimeProps.minimized && 'minimized', focused && 'focused', runtimeProps.maximized && 'maximized']"
+    :class="[$style.window, runtimeProps, focused && 'focused']"
     :style="{ zIndex: runtimeProps.zIndex }"
     @click.capture="focus">
     <div :class="$style.titlebar">
@@ -111,7 +111,7 @@ export default {
           0 0 0 1px ${rgba(255, 0.9)},
           0 0 8px 3px ${rgba(10, 0.6)}
         `,
-        backdropFilter: 'hue-rotate(16deg) blur(7px) brightness(1.2)',
+        backdropFilter: 'blur(7px) brightness(1.1)',
         borderRadius: '8px',
         display: 'flex',
         flexDirection: 'column',
@@ -132,9 +132,12 @@ export default {
           display: 'none',
         },
         '&:not(.focused)': {
-          opacity: 0.9,
-          filter: 'grayscale(1)',
-          backdropFilter: 'none',
+          opacity: 0.83,
+          backdropFilter: 'blur(4px)',
+          boxShadow: `
+            0 0 0 1px ${rgba(255, 0.9)},
+            0 0 8px 3px ${rgba(10, 0.4)}
+          `,
         },
       }),
       className('titlebar', {
@@ -157,8 +160,7 @@ export default {
         '& > .buttons': {
           display: 'flex',
           flexDirection: 'row',
-          height: '100%',
-          height: '17px',
+          height: '18px',
           alignSelf: 'flex-start',
           border: `solid 1px ${rgba(0, 0.6)}`,
           borderTop: 'none',

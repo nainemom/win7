@@ -4,6 +4,7 @@
     <div :class="$style.windowsList">
       <TaskbarRunningWindow v-for="window in $wm.list" :key="window.id" v-bind="window"/>
     </div>
+    <div :class="$style.showDesktop" @click="showDesktop" />
   </div>
 </template>
 
@@ -31,6 +32,14 @@ export default {
   methods: {
     orbClick() {
     },
+    showDesktop() {
+      const isAllWindowsMinimized = this.$wm.list.every((window) => window.runtimeProps.minimized);
+      this.$wm.list.forEach((window) => {
+        if (isAllWindowsMinimized || !window.runtimeProps.minimized) {
+          this.$wm.minimizeWindow(window.windowProps.id);
+        }
+      });
+    },
     clickWindow(window) {
       this.$wm.focusWindow(window.id);
     },
@@ -51,7 +60,8 @@ export default {
     clearInterval(this.clockTimer)
   },
   style({ className }) {
-    const baseAlpha = 0.9;
+    const itemSize = `${(parseInt(panelSize) - 1)}px`;
+
     return [
       className('taskbar', {
         position: 'absolute',
@@ -63,38 +73,54 @@ export default {
         left: 0,
         bottom: 0,
         background: `linear-gradient(180deg,
-          ${rgba(40, baseAlpha)} 0%,
-          ${rgba(200, baseAlpha)} 4%,
-          ${rgba(150, baseAlpha)} 6%,
-          ${rgba(124, baseAlpha)} 47%,
-          ${rgba(82, baseAlpha)} 53%,
-          ${rgba(40, baseAlpha)} 100%
+          ${rgba(10, 0.8)} 0%,
+          ${rgba(200, 0.9)} 4%,
+          ${rgba(70, 0.4)} 5%,
+          ${rgba(70, 0.4)} 100%
         )`,
-        backdropFilter: 'hue-rotate(300deg) brightness(0.75)',
+        backdropFilter: 'blur(4px)',
       }),
       className('orb', {
         margin: '0 9px',
-        width: `calc(${panelSize} + 6px)`,
-        minWidth: `calc(${panelSize} + 6px)`,
-        height: `calc(${panelSize} + 6px)`,
+        width: panelSize,
+        minWidth: panelSize,
+        height: panelSize,
         backgroundImage: `url("${OrbNormal}");`,
         backgroundPosition: 'center',
-        backgroundSize: 'contain',
+        backgroundSize: itemSize,
         backgroundRepeat: 'no-repeat',
-        marginTop: '-6px',
-        filter: 'drop-shadow(0 0 1px #000) brightness(1)',
-        transition: 'filter 0.3s',
+        filter: 'brightness(1)',
+        transition: 'filter 0.1s',
         '&:hover, &:focus': {
-          filter: 'drop-shadow(0 0 1px #000) brightness(1.5)'
+          filter: 'brightness(1.2)'
         },
         '&:active': {
-          filter: 'drop-shadow(0 0 1px #000) brightness(0.8)'
-        }
+          filter: 'brightness(1)'
+        },
       }),
       className('windowsList', {
         flexGrow: 1,
         display: 'flex',
-        maxWidth: '70%'
+      }),
+      className('showDesktop', {
+        width: '12px',
+        minWidth: '12px',
+        height: itemSize,
+        marginTop: '2px',
+        background: `linear-gradient(150deg,
+          ${rgba(250, 0.3)} 0%,
+          ${rgba(200, 0.3)} 15%,
+          ${rgba(70, 0.3)} 30%,
+          ${rgba(70, 0.3)} 80%,
+          ${rgba(200, 0.3)} 100%
+        )`,
+        borderLeft: `solid 1px ${rgba(200, 0.3)}`,
+        '&:hover, &:focus': {
+          filter: 'brightness(1.4)',
+        },
+        '&:active': {
+          filter: 'brightness(1)',
+        },
       }),
     ];
   },
