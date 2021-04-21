@@ -1,18 +1,24 @@
 <template>
   <div :class="$style.desktop">
-    <DesktopIcon v-for="(icon, index) in icons" :key="index" v-bind="icon" />
+    <File v-for="(file, index) in desktopFiles" :key="index" v-bind="file" />
   </div>
 </template>
 
 <script>
 import { fitSize } from '/src/styles/common';
 import { panelSize } from '/src/styles/constants';
-import DesktopIcon from '/src/components/DesktopIcon.vue';
+import File from '/src/components/File.vue';
+import { getFile } from '/src/services/files';
 
 export default {
-  props: ['wallpaper', 'icons'],
+  props: ['wallpaper'],
   components: {
-    DesktopIcon,
+    File,
+  },
+  computed: {
+    desktopFiles() {
+      return getFile(['C:', 'User', 'Desktop']).files;
+    },
   },
   style({ className }) {
     return [

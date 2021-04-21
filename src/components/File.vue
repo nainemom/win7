@@ -1,23 +1,35 @@
 <template>
   <div :class="$style.desktopIcon" @dblclick="click">
-    <img :src="icon" />
-    <div> {{ title }} </div>
+    <img :src="trueProps.icon" />
+    <div> {{ trueProps.name }} </div>
   </div>
 </template>
 
 <script>
 import { rgba } from '/src/styles/utils';
+import { getFile } from '/src/services/files';
 
 
 export default {
-  props: ['icon', 'title', 'component', 'type', 'data'],
+  props: ['icon', 'name', 'component', 'type', 'data', 'target', 'files', 'onClick'],
   inject: ['$os'],
   methods: {
     click() {
-      this.$os.openWindow(this.component, {
-        title: this.title,
-        data: this.data,
+      if (this.onClick && this.onClick(this.$props) === true) {
+        return;
+      }
+      this.$os.openWindow(this.trueProps.component, {
+        title: this.trueProps.name,
+        data: this.trueProps.data,
       });
+    },
+  },
+  computed: {
+    trueProps() {
+      if (this.type === 'shortcut') {
+        return getFile(this.target);
+      }
+      return this.$props;
     },
   },
   style({ className }) {
