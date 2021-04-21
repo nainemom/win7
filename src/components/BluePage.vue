@@ -1,5 +1,5 @@
 <template>
-  <div class="blu" v-if="value" @dblclick="$emit('input', false)">
+  <div :class="$style.bluePage" v-show="value" >
     <div class="content">
       Problem has been detected and windows has been restart to prevent damage on your computer.
       <br>
@@ -16,18 +16,18 @@
       Check to make sure any new hardware or software is properly installed. If this is a new installation, ask your hardware or software manufacturer or any windows updates you might need.
       <br>
       <br>
-      If problems continue, disable or remove any newly installed hardware or software. Disable BIOS memory options such as caching or shadowing. If you need to use safe mode to remove or disable components, restart sour computer, press F8 to select Advanced startup Options, and then select safe mode. 
+      If problems continue, disable or remove any newly installed hardware or software. Disable BIOS memory options such as caching or shadowing. If you need to use safe mode to remove or disable components, restart sour computer, press F8 to select Advanced startup Options, and then select safe mode.
       <br>
       <br>
       <br>
       <br>
-      Technical information: 
+      Technical information:
       <br>
       <br>
       *** STOP: 0x00000050 (OxFD30940,0x00000001,0xFPFE7617,0x00000000)
       <br>
       <br>
-      *** SPCmDCON.SYS - Address F6FE7617 base at FEFE5000, timestamp 3d6dd67c 
+      *** SPCmDCON.SYS - Address F6FE7617 base at FEFE5000, timestamp 3d6dd67c
       <br>
       <br>
       <br>
@@ -49,11 +49,9 @@
 <script>
 export default {
   props: {
-    value: {
-      type: Boolean,
-      default: false
-    }
+    value: Boolean,
   },
+  emits: ['input'],
   data() {
     return {
       secs: 0
@@ -76,40 +74,37 @@ export default {
         }, 1000)
       }
     }
-  }
+  },
+  style({ className }) {
+    return [
+      className('bluePage', {
+        position: 'fixed',
+        height: '100%',
+        width: '100%',
+        overflow: 'hidden',
+        left: 0,
+        top: 0,
+        background: '#000082',
+        color: '#fff',
+        zIndex: 99999,
+        padding: '50px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        '& > .content': {
+          minWidth: '320px',
+          width: '1080px',
+          maxWidth: '90%',
+          '& .support': {
+            '& .repo-link': {
+              color: '#fff',
+              textDecoration: 'underline',
+              cursor: 'pointer',
+            },
+          },
+        },
+      }),
+    ];
+  },
 }
 </script>
-
-<style scoped lang="scss">
-.blu {
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  left: 0;
-  top: 0;
-  background: #000082;
-  color: #fff;
-  z-index: 999;
-  padding: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  & > .content {
-    min-width: 320px;
-    width: 1080px;
-    max-width: 90%;
-
-    & .support {
-
-      & .repo-link {
-        color: #fff;
-        text-decoration: underline;
-        cursor: pointer;
-      }
-    }
-
-  }
-}
-</style>

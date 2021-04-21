@@ -95,22 +95,14 @@ export const resolveFile = (item) => {
 export const resolvePath = (...path) => {
   const pathList = path.flat();
   const length = pathList.length;
-
   let target = root;
-  try {
-    for (let i = 0; i < length; i++) {
-      target = target.files.find((dir) => dir.name === pathList[i]);
-      if (!target) {
-        throw new Error(`${pathList[i]} Not Found in ${pathList.join('\\')}, ${path}`);
-      }
-      if (target.type === 'shortcut') {
-        target = target.resolve();
-      }
+  for (let i = 0; i < length; i++) {
+    target = target.files.find((dir) => dir.name === pathList[i]);
+    if (target.type === 'shortcut') {
+      target = target.resolve();
     }
-    return target;
-  } catch (e) {
-    throw new Error(e);
   }
+  return target;
 };
 
 export const resolveFileRunner = (file) => {

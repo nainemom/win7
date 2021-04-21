@@ -6,24 +6,27 @@
       :key="window.windowProps.id"
       v-bind="window"
     />
+    <BluePage v-model:value="bluePage" />
   </div>
 </template>
 
 <script>
-import { fitSize } from '/src/styles/common';
+import BluePage from '/src/components/BluePage.vue';
 import Window from '/src/components/Window.vue'
 import { resolveFile, resolveFileRunner, resolvePath, createFile, onReload, offReload } from '/src/services/fileSystem';
-
+import { fitSize } from '/src/styles/common';
 
 export default {
   data() {
     return {
       list: [],
       latestZIndex: 0,
+      bluePage: false,
     };
   },
   components: {
     Window,
+    BluePage,
   },
   provide() {
     return {
@@ -104,6 +107,10 @@ export default {
         }
       }
     }
+  },
+  errorCaptured() {
+    this.bluePage = true;
+    return true;
   },
   style({ className, custom }) {
     return [
