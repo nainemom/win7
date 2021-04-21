@@ -2,9 +2,9 @@
   <div :class="$style.os">
     <slot />
     <Window
-      v-for="window in list"
-      :key="window.windowProps.id"
-      v-bind="window"
+      v-for="win in list"
+      :key="win.windowProps.id"
+      v-bind="win"
     />
     <BluePage v-model:value="bluePage" />
   </div>
@@ -46,14 +46,17 @@ export default {
     openWindow(_file) {
       const file = resolveFile(_file);
       const runner = resolveFileRunner(_file);
-      const window = {
+      const windowConfig = runner.component.appConfig.windowConfig(file) || {};
+      const width = windowConfig.width || '400px';
+      const height = windowConfig.height || '300px';
+      const win = {
         windowProps: Object.freeze({
           id: `x-${Date.now()}`,
           createdDate: Date.now(),
-          width: runner.component.appConfig.windowConfig(file)?.width || '400px',
-          height: runner.component.appConfig.windowConfig(file)?.height || '300px',
-          left: `${(Math.random() * 400)}px`,
-          top: `${(Math.random() * 400)}px`,
+          width,
+          height,
+          left: `${((window.innerWidth / 2) - (parseInt(width) / 2) - 25) + (Math.random() * 50)}px`,
+          top: `${((window.innerHeight / 2) - (parseInt(height) / 2) - 25) + (Math.random() * 50)}px`,
           maximizable: true,
           title: file.name,
           icon: runner.component.appConfig[file.type === 'app' ? 'icon' : 'fileIcon'](file),
@@ -68,7 +71,7 @@ export default {
           zIndex: ++this.latestZIndex,
         },
       };
-      this.list.push(window);
+      this.list.push(win);
     },
     findById(id, returnIndex = false) {
       return this.list[returnIndex ? 'findIndex' : 'find']((w) => w.windowProps.id === id);
@@ -80,39 +83,39 @@ export default {
       }
     },
     focusWindow(id) {
-      const window = this.findById(id);
-      if (window) {
-        window.runtimeProps.zIndex = ++this.latestZIndex;
+      const win = this.findById(id);
+      if (win) {
+        win.runtimeProps.zIndex = ++this.latestZIndex;
       }
     },
     isWindowFocused(id) {
-      const window = this.findById(id);
-      if (window) {
+      const win = this.findById(id);
+      if (win) {
         const max = Math.max(...this.list.map((w) => w.runtimeProps.zIndex));
-        return max !== -1 && max === window.runtimeProps.zIndex;
+        return max !== -1 && max === win.runtimeProps.zIndex;
       }
       return false;
     },
     maximizeWindow(id, newValue) {
-      const window = this.findById(id);
-      if (window) {
-        window.runtimeProps.maximized = typeof newValue !== 'undefined' ? newValue : !window.runtimeProps.maximized;
+      const win = this.findById(id);
+      if (winz) {
+        win.runtimeProps.maximized = typeof newValue !== 'undefined' ? newValue : !win.runtimeProps.maximized;
       }
     },
     minimizeWindow(id, newValue) {
-      const window = this.findById(id);
-      if (window) {
-        window.runtimeProps.minimized = typeof newValue !== 'undefined' ? newValue : !window.runtimeProps.minimized;
-        if (window.runtimeProps.minimized) {
-          window.runtimeProps.zIndex = -1;
+      const win = this.findById(id);
+      if (win) {
+        win.runtimeProps.minimized = typeof newValue !== 'undefined' ? newValue : !win.runtimeProps.minimized;
+        if (win.runtimeProps.minimized) {
+          win.runtimeProps.zIndex = -1;
         } else {
-          window.runtimeProps.zIndex = ++this.latestZIndex;
+          win.runtimeProps.zIndex = ++this.latestZIndex;
         }
       }
     }
   },
-  errorCaptured() {
-    this.bluePage = true;
+  errorCaptured(e) {
+    this.bluePage = e.toString();
     return true;
   },
   style({ className, custom }) {
