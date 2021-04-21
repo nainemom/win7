@@ -98,7 +98,7 @@ export default {
     },
     maximizeWindow(id, newValue) {
       const win = this.findById(id);
-      if (winz) {
+      if (win) {
         win.runtimeProps.maximized = typeof newValue !== 'undefined' ? newValue : !win.runtimeProps.maximized;
       }
     },
