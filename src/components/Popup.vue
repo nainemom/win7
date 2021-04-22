@@ -13,7 +13,6 @@
 
 <script>
 import { rgba } from '/src/styles/utils';
-import { panelSize } from '/src/styles/constants';
 
 export default {
   emits: ['update:visible'],

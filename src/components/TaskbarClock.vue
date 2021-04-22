@@ -1,20 +1,20 @@
 <template>
   <div :class="$style.taskbarClock" @click.capture="showPopup">
     {{ formattedFime }}
-    <StaticWindow v-model:visible="popup" :position="popupPosition">
+    <Popup v-model:visible="popup" :position="popupPosition">
       alam
-    </StaticWindow>
+    </Popup>
   </div>
 </template>
 
 <script>
 import { rgba } from '/src/styles/utils';
 import { panelSize } from '/src/styles/constants';
-import StaticWindow from '/src/components/StaticWindow.vue';
+import Popup from '/src/components/Popup.vue';
 
 export default {
   components: {
-    StaticWindow,
+    Popup,
   },
   data() {
     return {
