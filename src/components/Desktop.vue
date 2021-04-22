@@ -8,9 +8,9 @@
 import { fitSize } from '/src/styles/common';
 import { panelSize } from '/src/styles/constants';
 import File from '/src/components/File.vue';
+import WallpaperImage from '/src/assets/wallpaper.jpg';
 
 export default {
-  props: ['wallpaper'],
   components: {
     File,
   },
@@ -35,7 +35,7 @@ export default {
   style({ className }) {
     return [
       className('desktop', {
-        background: `url("${this.wallpaper}") blue`,
+        background: `url("${WallpaperImage}")`,
         position: 'absolute',
         ...fitSize,
         paddingBottom: panelSize,

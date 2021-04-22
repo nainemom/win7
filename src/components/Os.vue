@@ -1,6 +1,7 @@
 <template>
   <div :class="$style.os">
-    <slot />
+    <Desktop />
+    <Taskbar />
     <Window
       v-for="win in list"
       :key="win.windowProps.id"
@@ -12,7 +13,9 @@
 
 <script>
 import BluePage from '/src/components/BluePage.vue';
-import Window from '/src/components/Window.vue'
+import Window from '/src/components/Window.vue';
+import Desktop from '/src/components/Desktop.vue';
+import Taskbar from '/src/components/Taskbar.vue';
 import { resolveFile, resolveFileRunner, resolvePath, createFile, onReload, offReload } from '/src/services/fileSystem';
 import { fitSize } from '/src/styles/common';
 
@@ -28,6 +31,8 @@ export default {
   components: {
     Window,
     BluePage,
+    Desktop,
+    Taskbar,
   },
   provide() {
     return {
