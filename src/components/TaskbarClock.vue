@@ -1,7 +1,7 @@
 <template>
-  <div :class="$style.taskbarClock">
+  <div :class="$style.taskbarClock" @click.capture="showPopup">
     {{ formattedFime }}
-    <StaticWindow :visible="popup" :position="popupPosition">
+    <StaticWindow v-model:visible="popup" :position="popupPosition">
       alam
     </StaticWindow>
   </div>
@@ -27,10 +27,10 @@ export default {
       this.time = new Date();
     }, 1000);
   },
-  mounted() {
-    setTimeout(() => {
+  methods: {
+    showPopup() {
       this.popup = true;
-    }, 100);
+    },
   },
   computed: {
     formattedFime() {
@@ -42,10 +42,6 @@ export default {
         right: '15px',
         bottom: `${parseInt(panelSize) + 15}px`,
       }
-    },
-  },
-  methods: {
-    click() {
     },
   },
   style({ className }) {

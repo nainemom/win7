@@ -2,8 +2,8 @@
   <Teleport to="body">
     <div
       :class="$style.staticWindow"
-      v-show="visible"
-      @click.capture="focus">
+      ref="popup"
+      v-show="visible">
       <div :class="$style.content">
         <slot />
       </div>
@@ -16,22 +16,45 @@ import { rgba } from '/src/styles/utils';
 import { panelSize } from '/src/styles/constants';
 
 export default {
-  inject: ['$wm'],
+  emits: ['update:visible'],
   props: {
     visible: Boolean,
     position: Object,
   },
+  watch: {
+    visible: {
+      handler(visible) {
+        if (visible) {
+          this.bindEvents();
+        } else {
+          this.unbindEvents();
+        }
+      },
+      immidiate: true,
+    }
+  },
   methods: {
-    close() {
-      this.$wm.closeWindow(this.windowProps.id);
+    closeIf(event) {
+      if (!this.$refs.popup.contains(event.target)) {
+        this.$emit('update:visible', false);
+        event.stopPropagation();
+        event.preventDefault();
+      }
     },
-    focus() {
-      this.$wm.focusWindow(this.windowProps.id);
+    bindEvents() {
+      setTimeout(() => {
+        window.addEventListener('click', this.closeIf, true);
+      }, 200);
     },
+    unbindEvents() {
+      window.removeEventListener('click', this.closeIf, true);
+    },
+  },
+  beforeUnmount() {
+    this.unbindEvents();
   },
   style({ className }) {
     const baseAlpha = 0.1;
-    const titleHeight = '32px';
 
     return [
       className('staticWindow', {
