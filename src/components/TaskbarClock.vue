@@ -2,7 +2,10 @@
   <div :class="$style.taskbarClock" @click.capture="showPopup">
     {{ formattedFime }}
     <Popup v-model:visible="popup" :position="popupPosition">
-      alam
+      <div :class="$style.popup">
+        <CalendarWidget />
+        <ClockWidget />
+      </div>
     </Popup>
   </div>
 </template>
@@ -11,10 +14,14 @@
 import { rgba } from '/src/styles/utils';
 import { panelSize } from '/src/styles/constants';
 import Popup from '/src/components/Popup.vue';
+import ClockWidget from '/src/components/ClockWidget.vue';
+import CalendarWidget from '/src/components/CalendarWidget.vue';
 
 export default {
   components: {
     Popup,
+    ClockWidget,
+    CalendarWidget,
   },
   data() {
     return {
@@ -48,7 +55,6 @@ export default {
     return [
       className('taskbarClock', {
         width: 'auto',
-        // minWidth: '100px',
         whiteSpace: 'pre',
         textAlign: 'center',
         color: rgba(255, 1),
@@ -58,6 +64,21 @@ export default {
         justifyContent: 'center',
         lineHeight: 1.25,
         fontSize: '15px',
+      }),
+      className('popup', {
+        display: 'flex',
+        flexDirection: 'row',
+        background: rgba(255, 1),
+        borderRadius: '6px',
+        padding: '15px',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: `solid 1px ${rgba(0, 0.5)}`,
+        '& > *': {
+          '&:first-child': {
+            marginRight: '15px',
+          }
+        }
       }),
     ];
   },
