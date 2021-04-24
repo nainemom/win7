@@ -2,7 +2,7 @@
   <div :class="$style.taskbar">
     <TaskbarOrb />
     <div :class="$style.windowsList">
-      <TaskbarRunningWindow v-for="window in $wm.list" :key="window.id" v-bind="window"/>
+      <TaskbarRunningWindow v-for="window in $wm.windowsList" :key="window.id" v-bind="window"/>
     </div>
     <div :class="$style.try">
       <TaskbarClock />

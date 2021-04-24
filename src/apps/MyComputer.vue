@@ -57,7 +57,10 @@ export default {
       return `Search ${this.localPath.length ? this.localPath[this.localPath.length - 1] : 'My Computer'}`;
     },
     dirFiles() {
-      return this.$fs.resolvePath(this.localPath).files.filter((file) => file.name.toLowerCase().includes(this.searchString.toLowerCase()));
+      if (this.searchString) {
+        return this.$fs.searchFiles(this.searchString, this.localPath, false);// this.$fs.resolvePath(this.localPath).files.filter((file) => file.name.toLowerCase().includes(this.searchString.toLowerCase()));
+      }
+      return this.$fs.resolvePath(this.localPath).files;
     },
   },
   methods: {

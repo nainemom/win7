@@ -3,7 +3,7 @@
     <Desktop />
     <Taskbar />
     <Window
-      v-for="win in list"
+      v-for="win in windowsList"
       :key="win.windowProps.id"
       v-bind="win"
     />
@@ -16,16 +16,78 @@ import BluePage from '/src/components/BluePage.vue';
 import Window from '/src/components/Window.vue';
 import Desktop from '/src/components/Desktop.vue';
 import Taskbar from '/src/components/Taskbar.vue';
-import { resolveFile, resolveFileRunner, resolvePath, createFile, onReload, offReload } from '/src/services/fileSystem';
+
+import MyComputer from '/src/apps/MyComputer.vue';
+import Camera from '/src/apps/Camera.vue';
+import Notepad from '/src/apps/Notepad.vue';
+import WebAppRunner from '/src/apps/WebAppRunner.vue';
+
+import { initFileManager, directory, app, file, shortcut, webapp, resolveFile, resolveFileRunner, resolvePath, createFile, searchFiles } from '/src/services/fileSystem';
+import { initWindowManager, openWindow, findWindowById, closeWindow, focusWindow, isWindowFocused, maximizeWindow, minimizeWindow } from '/src/services/windowManager';
 import { fitSize } from '/src/styles/common';
 
 export default {
   data() {
     return {
-      list: [],
-      latestZIndex: 0,
+      windowsList: [],
+      files: [
+        directory('C:', [
+          directory('Program Files', [
+            app('My Computer', MyComputer),
+            app('Camera.exe', Camera),
+            app('Notepad.exe', Notepad),
+            app('Web App Runner.exe', WebAppRunner),
+          ]),
+          directory('User', [
+            directory('Desktop', [
+              shortcut('My Computer', ['C:', 'Program Files', 'My Computer']),
+              shortcut('Camera', ['C:', 'Program Files', 'Camera.exe']),
+              shortcut('Notepad', ['C:', 'Program Files', 'Notepad.exe']),
+              webapp('Viska', {
+                icon: 'https://viska.chat/logo-transparent.png',
+                url: 'https://viska.chat/',
+                width: '500px',
+                height: '800px',
+              }),
+              webapp('Method Draw', {
+                icon: 'https://editor.method.ac/images/favicon.svg',
+                url: 'https://editor.method.ac/',
+                width: '900px',
+                height: '700px',
+              }),
+              webapp('Tower Game', {
+                icon: 'https://www.towergame.app/assets/apple-touch-icon.png',
+                url: 'https://www.towergame.app/',
+                width: '400px',
+                height: '700px',
+              }),
+              webapp('Windows 93 (vm)', {
+                icon: 'http://v1.windows93.net/favicon.ico',
+                url: 'http://v1.windows93.net/',
+                width: '1000px',
+                height: '800px',
+              }),
+              webapp('Snapp!', {
+                icon: 'https://passenger-pwa-cdn.snapp.ir/logos/square-minimal-144.png',
+                url: 'https://app.snapp.taxi/',
+                width: '500px',
+                height: '800px',
+              }),
+              file('Creator.txt', {
+                value: 'My Name is Amir!!!',
+              }),
+            ]),
+          ]),
+        ]),
+        directory('D:', [
+          directory('New Folder', [
+            directory('New Folder (2)', [
+
+            ]),
+          ]),
+        ]),
+      ],
       bluePage: false,
-      time: Date.now(),
     };
   },
   components: {
@@ -36,88 +98,32 @@ export default {
   },
   provide() {
     return {
-      $wm: this,
+      $wm: {
+        windowsList: this.windowsList,
+        openWindow,
+        findWindowById,
+        closeWindow,
+        focusWindow,
+        isWindowFocused,
+        maximizeWindow,
+        minimizeWindow,
+      },
       $fs: {
+        files: this.files,
         resolveFile,
         resolveFileRunner,
         resolvePath,
         createFile,
-        onReload,
-        offReload,
+        searchFiles,
       },
     };
   },
   methods: {
-    openWindow(_file) {
-      const file = resolveFile(_file);
-      const runner = resolveFileRunner(_file);
-      const windowConfig = runner.component.appConfig.windowConfig(file) || {};
-      const width = windowConfig.width || '400px';
-      const height = windowConfig.height || '300px';
-      const win = {
-        windowProps: Object.freeze({
-          id: `x-${Date.now()}`,
-          createdDate: Date.now(),
-          width,
-          height,
-          left: `${((window.innerWidth / 2) - (parseInt(width) / 2) - 25) + (Math.random() * 50)}px`,
-          top: `${((window.innerHeight / 2) - (parseInt(height) / 2) - 25) + (Math.random() * 50)}px`,
-          maximizable: true,
-          title: file.name,
-          icon: runner.component.appConfig[file.type === 'app' ? 'icon' : 'fileIcon'](file),
-        }),
-        componentProps: Object.freeze({
-          runner,
-          data: file.data,
-        }),
-        runtimeProps: {
-          maximized: false,
-          minimized: false,
-          zIndex: ++this.latestZIndex,
-        },
-      };
-      this.list.push(win);
-    },
-    findById(id, returnIndex = false) {
-      return this.list[returnIndex ? 'findIndex' : 'find']((w) => w.windowProps.id === id);
-    },
-    closeWindow(id) {
-      const listIndex = this.findById(id, true);
-      if (listIndex !== -1) {
-        this.list.splice(listIndex, 1);
-      }
-    },
-    focusWindow(id) {
-      const win = this.findById(id);
-      if (win) {
-        win.runtimeProps.zIndex = ++this.latestZIndex;
-      }
-    },
-    isWindowFocused(id) {
-      const win = this.findById(id);
-      if (win) {
-        const max = Math.max(...this.list.map((w) => w.runtimeProps.zIndex));
-        return max !== -1 && max === win.runtimeProps.zIndex;
-      }
-      return false;
-    },
-    maximizeWindow(id, newValue) {
-      const win = this.findById(id);
-      if (win) {
-        win.runtimeProps.maximized = typeof newValue !== 'undefined' ? newValue : !win.runtimeProps.maximized;
-      }
-    },
-    minimizeWindow(id, newValue) {
-      const win = this.findById(id);
-      if (win) {
-        win.runtimeProps.minimized = typeof newValue !== 'undefined' ? newValue : !win.runtimeProps.minimized;
-        if (win.runtimeProps.minimized) {
-          win.runtimeProps.zIndex = -1;
-        } else {
-          win.runtimeProps.zIndex = ++this.latestZIndex;
-        }
-      }
-    }
+
+  },
+  created() {
+    initFileManager(this.files);
+    initWindowManager(this.windowsList);
   },
   errorCaptured(e) {
     this.bluePage = e.toString();

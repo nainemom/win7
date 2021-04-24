@@ -1,95 +1,43 @@
-import MyComputer from '/src/apps/MyComputer.vue';
-import Camera from '/src/apps/Camera.vue';
-import Notepad from '/src/apps/Notepad.vue';
-import WebAppRunner from '/src/apps/WebAppRunner.vue';
+// import MyComputer from '/src/apps/MyComputer.vue';
+// import Camera from '/src/apps/Camera.vue';
+// import Notepad from '/src/apps/Notepad.vue';
+// import WebAppRunner from '/src/apps/WebAppRunner.vue';
 
-const app = (name, component) => ({
+export const app = (name, component) => Object.freeze({
   type: 'app',
   name,
   component,
 });
 
-const webapp = (name, data) => ({
+export const webapp = (name, data) => Object.freeze({
   type: 'webapp',
   name,
   data,
 });
 
-const file = (name, data) => ({
+export const file = (name, data) => Object.freeze({
   type: 'file',
   name,
   data,
 });
 
-const directory = (name, files = []) => ({
+export const directory = (name, files = []) => ({
   type: 'directory',
   name,
   files,
 });
 
-const shortcut = (name, path) => ({
+export const shortcut = (name, path) => Object.freeze({
   type: 'shortcut',
   name,
   resolve: () => resolvePath(path),
 });
 
-const root = directory('root', [
-  directory('C:', [
-    directory('Program Files', [
-      app('My Computer', MyComputer),
-      app('Camera.exe', Camera),
-      app('Notepad.exe', Notepad),
-      app('Web App Runner.exe', WebAppRunner),
-    ]),
-    directory('User', [
-      directory('Desktop', [
-        shortcut('My Computer', ['C:', 'Program Files', 'My Computer']),
-        shortcut('Camera', ['C:', 'Program Files', 'Camera.exe']),
-        shortcut('Notepad', ['C:', 'Program Files', 'Notepad.exe']),
-        webapp('Viska', {
-          icon: 'https://viska.chat/logo-transparent.png',
-          url: 'https://viska.chat/',
-          width: '500px',
-          height: '800px',
-        }),
-        webapp('Method Draw', {
-          icon: 'https://editor.method.ac/images/favicon.svg',
-          url: 'https://editor.method.ac/',
-          width: '900px',
-          height: '700px',
-        }),
-        webapp('Tower Game', {
-          icon: 'https://www.towergame.app/assets/apple-touch-icon.png',
-          url: 'https://www.towergame.app/',
-          width: '400px',
-          height: '700px',
-        }),
-        webapp('Windows 93 (vm)', {
-          icon: 'http://v1.windows93.net/favicon.ico',
-          url: 'http://v1.windows93.net/',
-          width: '1000px',
-          height: '800px',
-        }),
-        webapp('Snapp!', {
-          icon: 'https://passenger-pwa-cdn.snapp.ir/logos/square-minimal-144.png',
-          url: 'https://app.snapp.taxi/',
-          width: '500px',
-          height: '800px',
-        }),
-        file('Creator.txt', {
-          value: 'My Name is Amir!!!',
-        }),
-      ]),
-    ]),
-  ]),
-  directory('D:', [
-    directory('New Folder', [
-      directory('New Folder (2)', [
+export let root = directory('root', []);
 
-      ]),
-    ]),
-  ]),
-]);
+export const initFileManager = (rootFiles = []) => {
+  root = directory('root', rootFiles);
+};
 
 export const resolveFile = (item) => {
   if (item.type === 'shortcut') {
@@ -127,6 +75,28 @@ export const createFile = (name, _path, data) => {
   const resolvedPath = resolvePath(_path);
   resolvedPath.files.push(file(name, data));
   reload();
+};
+
+
+export const searchFiles = (text, basePathOrDirFile = [], recursive = true) => {
+  const matcher = (_file) => _file.name.toLowerCase().includes(text.toLowerCase());
+  const dir = basePathOrDirFile.type === 'directory' ? basePathOrDirFile : resolvePath(basePathOrDirFile);
+  let ret = [];
+
+  if (recursive) {
+    for (let i = 0; i < dir.files.length; i++) {
+      if (matcher(dir.files[i])) {
+        ret.push(dir.files[i]);
+      }
+      const resolvedFile = resolveFile(dir.files[i]);
+      if (resolvedFile.type === 'directory') {
+        ret = [...ret, ...searchFiles(text, resolvedFile, true)];
+      }
+    }
+  } else {
+    ret = dir.files.filter(matcher);
+  }
+  return ret;
 };
 
 const reloadListeners = [];

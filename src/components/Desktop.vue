@@ -15,21 +15,9 @@ export default {
     File,
   },
   inject: ['$fs'],
-  data() {
-    return {
-      desktopFiles: [],
-    };
-  },
-  created() {
-    this.reload();
-    this.$fs.onReload(this.reload);
-  },
-  beforeUnmount() {
-    this.$fs.offReload(this.reload);
-  },
-  methods: {
-    reload() {
-      this.desktopFiles = [...this.$fs.resolvePath(['C:', 'User', 'Desktop']).files];
+  computed: {
+    desktopFiles() {
+      return this.$fs.resolvePath(['C:', 'User', 'Desktop']).files;
     },
   },
   style({ className }) {
