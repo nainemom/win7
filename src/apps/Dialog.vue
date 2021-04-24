@@ -76,7 +76,7 @@ export default {
           },
           '& > .content': {
             flexGrow: 1,
-            padding: '10px',
+            padding: '20px',
           }
         },
         '& > .buttons': {
