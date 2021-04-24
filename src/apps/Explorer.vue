@@ -137,6 +137,8 @@ export default {
         flexDirection: 'row',
         flexWrap: 'wrap',
         alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        alignContent: 'flex-start',
       }),
     ];
   },
