@@ -9,9 +9,16 @@
         {{windowProps.title}}
       </div>
       <div class="buttons" :class="focused && 'focused'">
-        <div class="minimize" @click="minimize">🗕</div>
-        <div class="maximize" v-show="windowProps.maximizable" @click="maximize">{{ runtimeProps.maximized ? '🗗' : '🗖' }} </div>
-        <div class="close" @click="close">🗙</div>
+        <div class="minimize" @click="minimize">
+          <img :src="icons.minimize" />
+        </div>
+        <div class="maximize" v-show="windowProps.maximizable" @click="maximize">
+          <img v-if="runtimeProps.maximized" :src="icons.unmaximize" />
+          <img v-else :src="icons.maximize" />
+        </div>
+        <div class="close" @click="close">
+          <img :src="icons.close" />
+        </div>
       </div>
     </div>
     <component :class="$style.content" ref="content" :is="componentProps.runner.component" v-bind="componentProps.data" />
@@ -22,6 +29,10 @@
 import { rgba } from '/src/styles/utils';
 import { panelSize } from '/src/styles/constants';
 import Swipe from '/src/utils/Swipe';
+import MaximizeIcon from '/src/assets/window/maximize.png';
+import UnmaximizeIcon from '/src/assets/window/unmaximize.png';
+import MinimizeIcon from '/src/assets/window/minimize.png';
+import CloseIcon from '/src/assets/window/close.png';
 
 export default {
   inject: ['$wm'],
@@ -33,6 +44,14 @@ export default {
     };
   },
   computed: {
+    icons() {
+      return {
+        maximize: MaximizeIcon,
+        unmaximize: UnmaximizeIcon,
+        minimize: MinimizeIcon,
+        close: CloseIcon,
+      };
+    },
     focused() {
       return this.$wm.isWindowFocused(this.windowProps.id);
     },
@@ -174,7 +193,6 @@ export default {
             fontSize: '12px',
             fontWeight: 'bold',
             color: '#fff',
-            textShadow: new Array(6).fill(`0 0 1px ${rgba(0, 1)}`).join(','),
             width: '26px',
             background: `linear-gradient(180deg,
               ${rgba(250, 0.4)} 0%,
@@ -183,6 +201,11 @@ export default {
               ${rgba(200, 0.3)} 90%,
               ${rgba(230, 0.3)} 100%
             )`,
+            '& > img': {
+              height: '12px',
+              marginTop: '2px',
+              filter: `drop-shadow(1px 0 1px ${rgba(0, 0.4)})`,
+            },
 
             '&:not(:last-child)': {
               borderRight: `solid 1px ${rgba(0, 0.4)}`,
