@@ -10,7 +10,7 @@ export const initWindowManager = (_list = [], _latestZIndex = 0) => {
 
 export const openFile = (_file) => {
   const file = resolveFile(_file);
-  const runner = resolveFileRunner(_file);
+  const runner = resolveFileRunner(file);
   const windowConfig = runner.component.appConfig.windowConfig(file) || {};
   const width = windowConfig.width || '400px';
   const height = windowConfig.height || '300px';
@@ -23,7 +23,7 @@ export const openFile = (_file) => {
       left: `${((window.innerWidth / 2) - (parseInt(width) / 2) - 25) + (Math.random() * 50)}px`,
       top: `${((window.innerHeight / 2) - (parseInt(height) / 2) - 25) + (Math.random() * 50)}px`,
       maximizable: true,
-      title: file.name,
+      title: _file.name || file.name,
       icon: runner.component.appConfig[file.type === 'app' ? 'icon' : 'fileIcon'](file),
     }),
     componentProps: Object.freeze({
@@ -39,10 +39,19 @@ export const openFile = (_file) => {
     },
   };
   windowsList.push(win);
+  return win;
 };
 
-export const findWindowById = (id, returnIndex = false) =>
-  windowsList[returnIndex ? 'findIndex' : 'find']((w) => w.windowProps.id === id);
+export const findWindowById = (id, returnIndex = false) => {
+  const finder = (win) => {
+    if (typeof id === 'object') {
+      return win === id;
+    } else {
+      return win.windowProps.id === id;
+    }
+  }
+  return windowsList[returnIndex ? 'findIndex' : 'find'](finder);
+}
 
 export const closeWindow = (id) => {
   const listIndex = findWindowById(id, true);

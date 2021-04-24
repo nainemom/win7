@@ -204,7 +204,7 @@ export default {
             '& > img': {
               height: '12px',
               marginTop: '2px',
-              filter: `drop-shadow(1px 0 1px ${rgba(0, 0.4)})`,
+              filter: `drop-shadow(0 0 2px ${rgba(0, 0.9)})`,
             },
 
             '&:not(:last-child)': {

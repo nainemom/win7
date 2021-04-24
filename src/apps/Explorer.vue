@@ -48,7 +48,7 @@ export default {
   },
   data() {
     let localPath = this.path || [];
-    if (localPath.join('\\') === 'C:\\Program Files\\My Computer') {
+    if (localPath.join('\\') === 'C:\\Windows\\Explorer.dll') {
       localPath = [];
     }
     return {

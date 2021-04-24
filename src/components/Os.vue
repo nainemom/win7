@@ -17,7 +17,8 @@ import Window from '/src/components/Window.vue';
 import Desktop from '/src/components/Desktop.vue';
 import Taskbar from '/src/components/Taskbar/Taskbar.vue';
 
-import MyComputer from '/src/apps/MyComputer.vue';
+import Explorer from '/src/apps/Explorer.vue';
+import Dialog from '/src/apps/Dialog.vue';
 import Camera from '/src/apps/Camera.vue';
 import Notepad from '/src/apps/Notepad.vue';
 import WebAppRunner from '/src/apps/WebAppRunner.vue';
@@ -32,48 +33,51 @@ export default {
       windowsList: [],
       files: [
         directory('C:', [
+          directory('Windows', [
+            app('Explorer.dll', Explorer),
+            app('Dialog.dll', Dialog),
+            app('WebAppRunner.dll', WebAppRunner),
+          ]),
           directory('Program Files', [
-            app('My Computer', MyComputer),
             app('Camera.exe', Camera),
             app('Notepad.exe', Notepad),
-            app('Web App Runner.exe', WebAppRunner),
           ]),
           directory('User', [
             directory('Desktop', [
-              shortcut('My Computer', ['C:', 'Program Files', 'My Computer']),
+              shortcut('My Computer', ['C:', 'Windows', 'Explorer.dll']),
               shortcut('Camera', ['C:', 'Program Files', 'Camera.exe']),
               shortcut('Notepad', ['C:', 'Program Files', 'Notepad.exe']),
-              webapp('Viska', {
+              file('Viska', 'webapp', {
                 icon: 'https://viska.chat/logo-transparent.png',
                 url: 'https://viska.chat/',
                 width: '500px',
                 height: '800px',
               }),
-              webapp('Method Draw', {
+              file('Method Draw', 'webapp', {
                 icon: 'https://editor.method.ac/images/favicon.svg',
                 url: 'https://editor.method.ac/',
                 width: '900px',
                 height: '700px',
               }),
-              webapp('Tower Game', {
+              file('Tower Game', 'webapp', {
                 icon: 'https://www.towergame.app/assets/apple-touch-icon.png',
                 url: 'https://www.towergame.app/',
                 width: '400px',
                 height: '700px',
               }),
-              webapp('Windows 93 (vm)', {
+              file('Windows 93 (vm)', 'webapp', {
                 icon: 'http://v1.windows93.net/favicon.ico',
                 url: 'http://v1.windows93.net/',
                 width: '1000px',
                 height: '800px',
               }),
-              webapp('Snapp!', {
+              file('Snapp!', 'webapp', {
                 icon: 'https://passenger-pwa-cdn.snapp.ir/logos/square-minimal-144.png',
                 url: 'https://app.snapp.taxi/',
                 width: '500px',
                 height: '800px',
               }),
-              file('Creator.txt', {
+              file('Creator.txt', 'text', {
                 value: 'Created by Amir Momenian <nainemom@gmail.com>\nRepo Address: https://github.com/nainemom/win7',
               }),
             ]),
@@ -123,29 +127,42 @@ export default {
       },
     };
   },
-  methods: {
-    requestFullScreen() {
-      const elem = document.documentElement;
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-      } else if (elem.webkitRequestFullscreen) { /* Safari */
-        elem.webkitRequestFullscreen();
-      } else if (elem.msRequestFullscreen) { /* IE11 */
-        elem.msRequestFullscreen();
-      }
-    }
-  },
   created() {
     initFileManager(this.files);
     initWindowManager(this.windowsList);
   },
   mounted() {
-    // this.$nextTick(() => {
-    //   this.requestFullScreen();
-    // });
+    const isFullScreen = !!window.document.fullscreenElement;
+    if (!isFullScreen) {
+      const fullScreenDialog = openFile(file('Fullscreen Request', 'dialog', {
+        type: 'info',
+        content: 'Do you want to run this app in Fullscreen mode?',
+        buttons: ['OK'],
+        onButtonClick: (btn) => {
+          if (btn === 'OK') {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+              elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+              elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+              elem.msRequestFullscreen();
+            }
+            closeWindow(fullScreenDialog.windowProps.id);
+          }
+        },
+      }));
+    }
   },
   errorCaptured(e) {
-    this.bluePage = e.toString();
+    const errorDialog = openFile(file('Error', 'dialog', {
+      type: 'error',
+      content: e.toString(),
+      buttons: ['OK'],
+      onButtonClick: () => {
+        closeWindow(errorDialog.windowProps.id);
+      },
+    }));
     return true;
   },
   style({ className, custom }) {

@@ -15,8 +15,8 @@ export const webapp = (name, data) => Object.freeze({
   data,
 });
 
-export const file = (name, data) => Object.freeze({
-  type: 'file',
+export const file = (name, type, data) => Object.freeze({
+  type,
   name,
   data,
 });
@@ -39,20 +39,14 @@ export const initFileManager = (rootFiles = []) => {
   root = directory('root', rootFiles);
 };
 
-export const resolveFile = (item, data) => {
+export const resolveFile = (item) => {
   let ret;
   if (item.type === 'shortcut') {
     ret = item.resolve();
   } else {
     ret = item;
   }
-  return {
-    ...ret,
-    data: {
-      ...ret.data,
-      ...data,
-    },
-  };
+  return ret;
 };
 
 export const resolvePath = (path, data) => {
@@ -77,7 +71,10 @@ export const resolveFileRunner = (file) => {
   if (file.component) {
     return file;
   }
-  const apps = resolvePath(['C:', 'Program Files']).files;
+  const apps = [
+    ...resolvePath(['C:', 'Windows']).files,
+    ...resolvePath(['C:', 'Program Files']).files
+  ];
   return apps.find((item) => {
     if (item.component.appConfig.canHandle(file)) {
       return true;
@@ -85,9 +82,9 @@ export const resolveFileRunner = (file) => {
   });
 };
 
-export const createFile = (name, _path, data) => {
+export const createFile = (name, type, _path, data) => {
   const resolvedPath = resolvePath(_path);
-  resolvedPath.files.push(file(name, data));
+  resolvedPath.files.push(file(name, type, data));
   reload();
 };
 

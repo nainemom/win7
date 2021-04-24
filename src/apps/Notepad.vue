@@ -13,7 +13,7 @@ export default {
     icon: () => icon,
     fileIcon: () => fileIcon,
     canHandle: (file) => {
-      if (file.type === 'file' && file.name.endsWith('txt')) {
+      if (file.type === 'text') {
         return true;
       }
     },

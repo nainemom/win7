@@ -51,7 +51,7 @@ export default {
       return this.$fs.resolvePath(['C:', 'User', 'Desktop']).files;
     },
     rightContainerFiles() {
-      const myComputerPath = ['C:', 'Program Files', 'My Computer'];
+      const myComputerPath = ['C:', 'Windows', 'Explorer.dll'];
       return [
         this.$fs.resolvePath(['C:', 'User']),
         this.$fs.resolvePath(['C:', 'User', 'Desktop']),
@@ -64,7 +64,7 @@ export default {
         this.$fs.shortcut('Documents', myComputerPath, {
           search: '.txt'
         }),
-        this.$fs.resolvePath(myComputerPath),
+        this.$fs.shortcut('My Computer', myComputerPath),
       ];
     },
   },

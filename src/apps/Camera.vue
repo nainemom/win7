@@ -21,7 +21,7 @@ export default {
     icon: () => icon,
     fileIcon: () => fileIcon,
     canHandle: (file) => {
-      if (file.type === 'file' && file.name.endsWith('jpg')) {
+      if (file.type === 'image') {
         return true;
       }
     },
@@ -57,7 +57,7 @@ export default {
       canvas.width = this.$refs.video.clientWidth;
       canvas.height = this.$refs.video.clientHeight;
       canvas.getContext('2d').drawImage(this.$refs.video, 0, 0, canvas.width, canvas.height);
-      this.$fs.createFile(`Photo ${Date.now()}.jpg`, ['C:', 'User', 'Desktop'], {
+      this.$fs.createFile(`Photo ${Date.now()}.jpg`, 'image', ['C:', 'User', 'Desktop'], {
         value: canvas.toDataURL(),
       });
     },
