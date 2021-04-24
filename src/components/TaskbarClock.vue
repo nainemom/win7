@@ -42,7 +42,8 @@ export default {
   computed: {
     formattedFime() {
       const { time } = this;
-      return `${time.getHours() % 12}:${time.getMinutes().toString().padStart(2, 0)} ${time.getHours() > 12 ? 'PM':'AM'}\n${time.getDate()}/${time.getMonth() + 1}/${time.getFullYear()}`;
+      const hours = (time.getHours() % 12) || 12;
+      return `${hours}:${time.getMinutes().toString().padStart(2, 0)} ${time.getHours() > 12 ? 'PM':'AM'}\n${time.getDate()}/${time.getMonth() + 1}/${time.getFullYear()}`;
     },
     popupPosition() {
       return {
