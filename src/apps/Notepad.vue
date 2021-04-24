@@ -37,6 +37,7 @@ export default {
           width: '100%',
           height: '100%',
           padding: '10px',
+          lineHeight: 1.5,
           '&:focus': {
             border: 'none',
             outline: 'none',

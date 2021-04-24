@@ -74,7 +74,7 @@ export default {
                 height: '800px',
               }),
               file('Creator.txt', {
-                value: 'My Name is Amir!!!',
+                value: 'Created by Amir Momenian <nainemom@gmail.com>\nRepo Address: https://github.com/nainemom/win7',
               }),
             ]),
           ]),
