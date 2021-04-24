@@ -45,7 +45,7 @@ export default {
     }
   },
   beforeUnmount() {
-    if (this.$refs.video.srcObject) {
+    if (this.$refs.video) {
       this.$refs.video.srcObject.getTracks().forEach((track) => {
         track.stop();
       });
