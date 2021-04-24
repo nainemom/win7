@@ -23,7 +23,7 @@ import Notepad from '/src/apps/Notepad.vue';
 import WebAppRunner from '/src/apps/WebAppRunner.vue';
 
 import { initFileManager, directory, app, file, shortcut, webapp, resolveFile, resolveFileRunner, resolvePath, createFile, searchFiles } from '/src/services/fileSystem';
-import { initWindowManager, openWindow, findWindowById, closeWindow, focusWindow, isWindowFocused, maximizeWindow, minimizeWindow } from '/src/services/windowManager';
+import { initWindowManager, openFile, findWindowById, closeWindow, focusWindow, isWindowFocused, maximizeWindow, minimizeWindow } from '/src/services/windowManager';
 import { fitSize } from '/src/styles/common';
 
 export default {
@@ -100,7 +100,7 @@ export default {
     return {
       $wm: {
         windowsList: this.windowsList,
-        openWindow,
+        openFile,
         findWindowById,
         closeWindow,
         focusWindow,
