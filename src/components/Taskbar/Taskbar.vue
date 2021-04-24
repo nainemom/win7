@@ -14,10 +14,10 @@
 <script>
 import { panelSize } from '/src/styles/constants';
 import { rgba } from '/src/styles/utils';
-import TaskbarOrb from '/src/components/TaskbarOrb.vue';
-import TaskbarRunningWindow from '/src/components/TaskbarRunningWindow.vue';
-import TaskbarClock from '/src/components/TaskbarClock.vue';
-import TaskbarShowDesktop from '/src/components/TaskbarShowDesktop.vue';
+import TaskbarOrb from './TaskbarOrb.vue';
+import TaskbarRunningWindow from './TaskbarRunningWindow.vue';
+import TaskbarClock from './TaskbarClock.vue';
+import TaskbarShowDesktop from './TaskbarShowDesktop.vue';
 
 export default {
   inject: ['$wm'],

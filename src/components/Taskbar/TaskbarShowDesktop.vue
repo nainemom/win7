@@ -10,8 +10,8 @@ export default {
   inject: ['$wm'],
   methods: {
     onClick() {
-      const isAllWindowsMinimized = this.$wm.list.every((window) => window.runtimeProps.minimized);
-      this.$wm.list.forEach((window) => {
+      const isAllWindowsMinimized = this.$wm.windowsList.every((window) => window.runtimeProps.minimized);
+      this.$wm.windowsList.forEach((window) => {
         if (isAllWindowsMinimized || !window.runtimeProps.minimized) {
           this.$wm.minimizeWindow(window.windowProps.id);
         }

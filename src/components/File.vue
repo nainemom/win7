@@ -9,7 +9,12 @@
 import { rgba } from '/src/styles/utils';
 
 export default {
-  props: ['file', 'onClick'],
+  props: {
+    file: Object,
+    darkText: Boolean,
+    block: Boolean,
+    onClick: Function,
+  },
   inject: ['$wm', '$fs'],
   methods: {
     click() {
@@ -33,21 +38,36 @@ export default {
   style({ className }) {
     return [
       className('desktopIcon', {
-        width: '96px',
         height: 'auto',
         fontSize: '15px',
-        color: rgba(255, 1),
-        textShadow: new Array(2).fill(`0 0 5px ${rgba(0, 0.8)}`).join(','),
+        ...(this.darkText ? {
+          color: `${rgba(0, 1)} !important`,
+        } : {
+          color: rgba(255, 1),
+          textShadow: new Array(2).fill(`0 0 5px ${rgba(0, 0.8)}`).join(','),
+        }),
         display: 'flex',
-        flexDirection: 'column',
+        ...(this.block ? {
+          flexDirection: 'row',
+          width: 'auto',
+          textAlign: 'left',
+        } : {
+          flexDirection: 'column',
+          width: '96px',
+          textAlign: 'center',
+        }),
         alignItems: 'center',
         justifyContent: 'center',
         margin: '15px',
         padding: '2px',
-        textAlign: 'center',
         '& > img': {
-          width: '55px',
-          marginBottom: '14px',
+          ...(this.block ? {
+            height: '34px',
+            marginRight: '14px',
+          } : {
+            width: '55px',
+            marginBottom: '14px',
+          }),
           filter: `drop-shadow(2px 4px 6px ${rgba(0, 0.5)})`,
           borderRadius: '9px',
         },
@@ -56,6 +76,7 @@ export default {
           maxWidth: '100%',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
+          padding: '3px',
         },
       }),
     ];

@@ -15,7 +15,7 @@
 import BluePage from '/src/components/BluePage.vue';
 import Window from '/src/components/Window.vue';
 import Desktop from '/src/components/Desktop.vue';
-import Taskbar from '/src/components/Taskbar.vue';
+import Taskbar from '/src/components/Taskbar/Taskbar.vue';
 
 import MyComputer from '/src/apps/MyComputer.vue';
 import Camera from '/src/apps/Camera.vue';

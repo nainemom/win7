@@ -6,7 +6,7 @@
       <input class="search" :placeholder="searchPlaceholder" v-model="searchString">
     </div>
     <div :class="$style.content">
-      <component v-for="(file, index) in dirFiles" :key="file.name + index" :is="File"  :file="file" @click="click"/>
+      <File v-for="(file, index) in dirFiles" :key="file.name + index" :file="file" dark-text @click="click"/>
     </div>
   </div>
 </template>
@@ -40,6 +40,9 @@ export default {
   },
   inject: ['$fs'],
   props: ['path'],
+  components: {
+    File,
+  },
   data() {
     return {
       localPath: this.path || [],
@@ -47,9 +50,6 @@ export default {
     };
   },
   computed: {
-    File() {
-      return File;
-    },
     pathBar() {
       return this.localPath.join('\\') || 'My Computer';
     },
@@ -58,7 +58,7 @@ export default {
     },
     dirFiles() {
       if (this.searchString) {
-        return this.$fs.searchFiles(this.searchString, this.localPath, false);// this.$fs.resolvePath(this.localPath).files.filter((file) => file.name.toLowerCase().includes(this.searchString.toLowerCase()));
+        return this.$fs.searchFiles(this.searchString, this.localPath, true);
       }
       return this.$fs.resolvePath(this.localPath).files;
     },
@@ -130,10 +130,6 @@ export default {
         flexDirection: 'row',
         flexWrap: 'wrap',
         alignItems: 'flex-start',
-        '& > *': {
-          color: `${rgba(0, 1)} !important`,
-          textShadow: 'none !important',
-        }
       }),
     ];
   },

@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.notepad">
-    <textarea :value="value" />
+    <textarea ref="textarea" :value="value" />
   </div>
 </template>
 
@@ -23,7 +23,9 @@ export default {
     }),
   },
   props: ['value'],
-   markRaw: true,
+  mounted() {
+    this.$refs.textarea.focus();
+  },
   style({ className }){
     return [
       className('notepad', {

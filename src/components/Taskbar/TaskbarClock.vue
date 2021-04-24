@@ -14,8 +14,8 @@
 import { rgba } from '/src/styles/utils';
 import { panelSize } from '/src/styles/constants';
 import Popup from '/src/components/Popup.vue';
-import ClockWidget from '/src/components/ClockWidget.vue';
-import CalendarWidget from '/src/components/CalendarWidget.vue';
+import ClockWidget from './ClockWidget.vue';
+import CalendarWidget from './CalendarWidget.vue';
 
 export default {
   components: {
