@@ -44,6 +44,13 @@ export default {
       });
     }
   },
+  beforeUnmount() {
+    if (this.$refs.video.srcObject) {
+      this.$refs.video.srcObject.getTracks().forEach((track) => {
+        track.stop();
+      });
+    }
+  },
   methods: {
     takePhoto() {
       const canvas = document.createElement("canvas");
