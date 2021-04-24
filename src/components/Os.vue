@@ -137,7 +137,7 @@ export default {
       const fullScreenDialog = openFile(file('Fullscreen Request', 'dialog', {
         type: 'info',
         content: 'Do you want to run this app in Fullscreen mode?',
-        buttons: ['OK'],
+        buttons: ['Cancel', 'OK'],
         onButtonClick: (btn) => {
           if (btn === 'OK') {
             const elem = document.documentElement;
@@ -148,8 +148,8 @@ export default {
             } else if (elem.msRequestFullscreen) {
               elem.msRequestFullscreen();
             }
-            closeWindow(fullScreenDialog.windowProps.id);
           }
+          closeWindow(fullScreenDialog.windowProps.id);
         },
       }));
     }
