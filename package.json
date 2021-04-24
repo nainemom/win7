@@ -1,8 +1,8 @@
 {
-  "name": "winvista",
+  "name": "win7",
   "version": "1.0.0",
-  "description": "Windows Vista preview with Vue",
-  "author": "Nainemom &lt;nainemom@gmail.com&gt;",
+  "description": "Windows 7 preview with Vue",
+  "author": "Nainemom <nainemom@gmail.com>",
   "private": true,
   "scripts": {
     "dev": "vite",
