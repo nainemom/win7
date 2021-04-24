@@ -20,6 +20,8 @@ export default {
   inheritAttrs: false,
   props: {
     visible: Boolean,
+    autoClose: Boolean,
+    dark: Boolean,
   },
   watch: {
     visible: {
@@ -35,10 +37,8 @@ export default {
   },
   methods: {
     closeIf(event) {
-      if (!this.$refs.popup.contains(event.target)) {
+      if (this.autoClose || !this.$refs.popup.contains(event.target)) {
         this.$emit('update:visible', false);
-        event.stopPropagation();
-        event.preventDefault();
       }
     },
     bindEvents() {
@@ -66,11 +66,19 @@ export default {
           ${rgba(140, baseAlpha)} 43%,
           ${rgba(170, baseAlpha)} 100%
         )`,
-        boxShadow: `
-          0 0 0 1px ${rgba(255, 0.9)},
-          0 0 8px 3px ${rgba(10, 0.6)}
-        `,
-        backdropFilter: 'blur(8px) brightness(0.9)',
+        ...(this.dark ? {
+          backdropFilter: 'blur(8px) brightness(0.6)',
+          boxShadow: `
+            0 0 0 1px ${rgba(180, 0.9)},
+            0 0 8px 3px ${rgba(10, 0.6)}
+          `,
+        } : {
+          backdropFilter: 'blur(8px) brightness(0.9)',
+          boxShadow: `
+            0 0 0 1px ${rgba(255, 0.9)},
+            0 0 8px 3px ${rgba(10, 0.6)}
+          `,
+        }),
         borderRadius: '8px',
         overflow: 'hidden',
         fontSize: '15px',

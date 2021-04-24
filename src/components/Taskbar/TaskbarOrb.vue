@@ -1,14 +1,16 @@
 <template>
   <div :class="$style.orb" @click.capture="showPopup" />
-  <Popup :class="$style.popupStyle" v-model:visible="popup">
+  <Popup :class="$style.popupStyle" v-model:visible="popup" auto-close dark>
     <div :class="$style.popup">
       <div class="left-container">
         <div class="files">
-          <File v-for="(file, index) in leftContainerFiles" :key="file.name + index" :file="file" block dark-text />
+          <File v-for="(file, index) in leftContainerFiles" :key="file.name + index" :file="file" block dark-text single-click />
         </div>
         <input ref="searchInput" class="search" placeholder="Search programs and files" v-model="searchString">
       </div>
-      <div class="right-container"></div>
+      <div class="right-container">
+        <File v-for="(file, index) in rightContainerFiles" :key="file.name + index" :file="file" block no-icon shadow single-click />
+      </div>
     </div>
   </Popup>
 </template>
@@ -47,6 +49,23 @@ export default {
         return this.$fs.searchFiles(this.searchString, [], true);
       }
       return this.$fs.resolvePath(['C:', 'User', 'Desktop']).files;
+    },
+    rightContainerFiles() {
+      const myComputerPath = ['C:', 'Program Files', 'My Computer'];
+      return [
+        this.$fs.resolvePath(['C:', 'User']),
+        this.$fs.resolvePath(['C:', 'User', 'Desktop']),
+        this.$fs.shortcut('Pictures', myComputerPath, {
+          search: '.jpg'
+        }),
+        this.$fs.shortcut('Musics', myComputerPath, {
+          search: '.mp3'
+        }),
+        this.$fs.shortcut('Documents', myComputerPath, {
+          search: '.txt'
+        }),
+        this.$fs.resolvePath(myComputerPath),
+      ];
     },
   },
   methods: {
@@ -89,7 +108,7 @@ export default {
           },
         },
         '& > .right-container': {
-
+          flexGrow: 1,
         },
       }),
       className('popupStyle', {

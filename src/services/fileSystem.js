@@ -27,10 +27,10 @@ export const directory = (name, files = []) => ({
   files,
 });
 
-export const shortcut = (name, path) => Object.freeze({
+export const shortcut = (name, path, data) => Object.freeze({
   type: 'shortcut',
   name,
-  resolve: () => resolvePath(path),
+  resolve: () => resolvePath(path, data),
 });
 
 export let root = directory('root', []);
@@ -39,24 +39,38 @@ export const initFileManager = (rootFiles = []) => {
   root = directory('root', rootFiles);
 };
 
-export const resolveFile = (item) => {
+export const resolveFile = (item, data) => {
+  let ret;
   if (item.type === 'shortcut') {
-    return item.resolve();
+    ret = item.resolve();
+  } else {
+    ret = item;
   }
-  return item;
-}
+  return {
+    ...ret,
+    data: {
+      ...ret.data,
+      ...data,
+    },
+  };
+};
 
-export const resolvePath = (...path) => {
-  const pathList = path.flat();
-  const length = pathList.length;
+export const resolvePath = (path, data) => {
   let target = root;
-  for (let i = 0; i < length; i++) {
-    target = target.files.find((dir) => dir.name === pathList[i]);
+  for (let i = 0; i < path.length; i++) {
+    target = target.files.find((dir) => dir.name === path[i]);
     if (target.type === 'shortcut') {
       target = target.resolve();
     }
   }
-  return target;
+  return {
+    ...target,
+    data: {
+      ...target.data,
+      path,
+      ...data,
+    },
+  };
 };
 
 export const resolveFileRunner = (file) => {

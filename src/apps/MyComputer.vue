@@ -6,7 +6,7 @@
       <input class="search" :placeholder="searchPlaceholder" v-model="searchString">
     </div>
     <div :class="$style.content">
-      <File v-for="(file, index) in dirFiles" :key="file.name + index" :file="file" dark-text @click="click"/>
+      <File v-for="(file, index) in dirFiles" :key="file.name + index" :file="file" dark-text @click="click" />
     </div>
   </div>
 </template>
@@ -39,14 +39,21 @@ export default {
     }),
   },
   inject: ['$fs'],
-  props: ['path'],
+  props: {
+    path: Array,
+    search: String,
+  },
   components: {
     File,
   },
   data() {
+    let localPath = this.path || [];
+    if (localPath.join('\\') === 'C:\\Program Files\\My Computer') {
+      localPath = [];
+    }
     return {
-      localPath: this.path || [],
-      searchString: '',
+      localPath,
+      searchString: (this.search || ''),
     };
   },
   computed: {

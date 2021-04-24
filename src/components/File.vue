@@ -1,6 +1,6 @@
 <template>
-  <div :class="$style.desktopIcon" @dblclick="click">
-    <img :src="icon" />
+  <div :class="$style.desktopIcon" @dblclick.capture="click" @click.capture="click" >
+    <img v-if="!noIcon" :src="icon" />
     <div> {{ file.name }} </div>
   </div>
 </template>
@@ -12,16 +12,20 @@ export default {
   props: {
     file: Object,
     darkText: Boolean,
+    noIcon: Boolean,
+    shadow: Boolean,
     block: Boolean,
+    singleClick: Boolean,
     onClick: Function,
   },
   inject: ['$wm', '$fs'],
   methods: {
-    click() {
+    click(e) {
+      if (e.type === 'click' && !this.singleClick) return;
       if (this.onClick && this.onClick(this.resolvedFile) === true) {
         return;
       }
-      this.$wm.openWindow(this.resolvedFile);
+      this.$wm.openWindow(this.resolvedFile, this.file.data);
     },
   },
   computed: {
@@ -44,22 +48,24 @@ export default {
           color: `${rgba(0, 1)} !important`,
         } : {
           color: rgba(255, 1),
-          textShadow: new Array(2).fill(`0 0 5px ${rgba(0, 0.8)}`).join(','),
+        }),
+        ...(this.shadow && {
+          textShadow: new Array(2).fill(`0 0 3px ${rgba(0, 0.8)}`).join(','),
         }),
         display: 'flex',
         ...(this.block ? {
           flexDirection: 'row',
-          width: 'auto',
+          flexGrow: 1,
           textAlign: 'left',
         } : {
           flexDirection: 'column',
-          width: '96px',
+          width: '120px',
           textAlign: 'center',
         }),
         alignItems: 'center',
         justifyContent: 'center',
-        margin: '15px',
-        padding: '2px',
+        padding: '15px',
+        // padding: '2px',
         '& > img': {
           ...(this.block ? {
             height: '34px',

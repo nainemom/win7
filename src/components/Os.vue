@@ -110,6 +110,11 @@ export default {
       },
       $fs: {
         files: this.files,
+        directory,
+        app,
+        file,
+        shortcut,
+        webapp,
         resolveFile,
         resolveFileRunner,
         resolvePath,
