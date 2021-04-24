@@ -1,7 +1,7 @@
 <template>
   <div :class="$style.taskbarClock" @click.capture="showPopup">
     {{ formattedFime }}
-    <Popup v-model:visible="popup" :position="popupPosition">
+    <Popup :class="$style.popupStyle" v-model:visible="popup">
       <div :class="$style.popup">
         <CalendarWidget />
         <ClockWidget />
@@ -45,15 +45,13 @@ export default {
       const hours = (time.getHours() % 12) || 12;
       return `${hours}:${time.getMinutes().toString().padStart(2, 0)} ${time.getHours() > 12 ? 'PM':'AM'}\n${time.getDate()}/${time.getMonth() + 1}/${time.getFullYear()}`;
     },
-    popupPosition() {
-      return {
-        right: '15px',
-        bottom: `${parseInt(panelSize) + 15}px`,
-      }
-    },
   },
   style({ className }) {
     return [
+      className('popupStyle', {
+        right: '15px',
+        bottom: `${parseInt(panelSize) + 15}px`,
+      }),
       className('taskbarClock', {
         width: 'auto',
         whiteSpace: 'pre',

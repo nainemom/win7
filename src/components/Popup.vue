@@ -2,6 +2,7 @@
   <Teleport to="body">
     <div
       :class="$style.staticWindow"
+      v-bind="$attrs"
       ref="popup"
       v-show="visible">
       <div :class="$style.content">
@@ -16,9 +17,9 @@ import { rgba } from '/src/styles/utils';
 
 export default {
   emits: ['update:visible'],
+  inheritAttrs: false,
   props: {
     visible: Boolean,
-    position: Object,
   },
   watch: {
     visible: {
@@ -74,7 +75,6 @@ export default {
         overflow: 'hidden',
         fontSize: '15px',
         zIndex: 99999,
-        ...this.position,
       }),
       className('content', {
         flexGrow: 1,
