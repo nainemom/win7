@@ -124,11 +124,25 @@ export default {
     };
   },
   methods: {
-
+    requestFullScreen() {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) { /* Safari */
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { /* IE11 */
+        elem.msRequestFullscreen();
+      }
+    }
   },
   created() {
     initFileManager(this.files);
     initWindowManager(this.windowsList);
+  },
+  mounted() {
+    // this.$nextTick(() => {
+    //   this.requestFullScreen();
+    // });
   },
   errorCaptured(e) {
     this.bluePage = e.toString();
