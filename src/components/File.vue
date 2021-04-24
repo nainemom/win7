@@ -25,7 +25,7 @@ export default {
       if (this.onClick && this.onClick(this.resolvedFile) === true) {
         return;
       }
-      this.$wm.openWindow(this.resolvedFile, this.file.data);
+      this.$wm.openWindow(this.resolvedFile);
     },
   },
   computed: {

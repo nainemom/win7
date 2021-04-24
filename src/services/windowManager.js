@@ -8,7 +8,7 @@ export const initWindowManager = (_list = [], _latestZIndex = 0) => {
   latestWindowZIndex = _latestZIndex;
 };
 
-export const openWindow = (_file, data = {}) => {
+export const openWindow = (_file) => {
   const file = resolveFile(_file);
   const runner = resolveFileRunner(_file);
   const windowConfig = runner.component.appConfig.windowConfig(file) || {};
@@ -30,7 +30,6 @@ export const openWindow = (_file, data = {}) => {
       runner,
       data: {
         ...file.data,
-        ...data
       },
     }),
     runtimeProps: {
