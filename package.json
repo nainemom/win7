@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "deploy": "npm run build -- --base=/win7 && node build/deploy.js"
+    "deploy": "npm run build -- --base=/win7/ && node build/deploy.js"
   },
   "dependencies": {
     "vue": "^3.0.5",
