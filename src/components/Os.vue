@@ -7,12 +7,10 @@
       :key="win.windowProps.id"
       v-bind="win"
     />
-    <BluePage v-model:value="bluePage" />
   </div>
 </template>
 
 <script>
-import BluePage from '/src/components/BluePage.vue';
 import Window from '/src/components/Window.vue';
 import Desktop from '/src/components/Desktop.vue';
 import Taskbar from '/src/components/Taskbar/Taskbar.vue';
@@ -91,12 +89,10 @@ export default {
           ]),
         ]),
       ],
-      bluePage: false,
     };
   },
   components: {
     Window,
-    BluePage,
     Desktop,
     Taskbar,
   },
