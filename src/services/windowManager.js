@@ -30,6 +30,7 @@ export const openFile = (_file) => {
       runner,
       data: {
         ...file.data,
+        path: [...file.path, file.name],
       },
     }),
     runtimeProps: {

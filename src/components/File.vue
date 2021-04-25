@@ -1,5 +1,5 @@
 <template>
-  <div :class="$style.desktopIcon" @dblclick.capture="click" @click.capture="click" >
+  <div :class="$style.desktopIcon" @dblclick.capture="click" @click.capture="click" @contextmenu="openContextMenu">
     <img v-if="!noIcon" :src="icon" />
     <div> {{ file.name }} </div>
   </div>
@@ -21,11 +21,24 @@ export default {
   inject: ['$wm', '$fs'],
   methods: {
     click(e) {
-      if (e.type === 'click' && !this.singleClick) return;
+      if (e && e.type === 'click' && !this.singleClick) return;
       if (this.onClick && this.onClick(this.resolvedFile) === true) {
         return;
       }
       this.$wm.openFile(this.file);
+    },
+    openContextMenu(event) {
+      this.$wm.openContextMenu(event, [
+        'Open',
+        '',
+        'Delete',
+      ], (item) => {
+        if (item === 'Open') {
+          this.click(null);
+        } else if (item === 'Delete') {
+          this.$fs.deleteFile([...this.file.path, this.file.name]);
+        }
+      });
     },
   },
   computed: {

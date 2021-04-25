@@ -1,5 +1,5 @@
 <template>
-  <div :class="$style.desktop">
+  <div :class="$style.desktop" @contextmenu="openContextMenu">
     <File v-for="(file, index) in desktopFiles" :key="file.name + index" :file="file" shadow />
   </div>
 </template>
@@ -14,10 +14,22 @@ export default {
   components: {
     File,
   },
-  inject: ['$fs'],
+  inject: ['$fs', '$wm'],
   computed: {
     desktopFiles() {
       return this.$fs.resolvePath(['C:', 'User', 'Desktop']).files;
+    },
+  },
+  methods: {
+    openContextMenu(event) {
+      this.$wm.openContextMenu(event, [
+        'Refresh',
+        'Create New Folder'
+      ], (item) => {
+        if (item === 'Create New Folder') {
+          this.$fs.createFolder(['C:', 'User', 'Desktop']);
+        }
+      });
     },
   },
   style({ className }) {

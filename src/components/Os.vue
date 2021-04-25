@@ -1,5 +1,5 @@
 <template>
-  <div :class="$style.os">
+  <div :class="$style.os" @contextmenu.prevent>
     <Desktop />
     <Taskbar />
     <Window
@@ -7,6 +7,7 @@
       :key="win.windowProps.id"
       v-bind="win"
     />
+    <ContextMenu ref="contextMenu" />
   </div>
 </template>
 
@@ -15,13 +16,15 @@ import Window from '/src/components/Window.vue';
 import Desktop from '/src/components/Desktop.vue';
 import Taskbar from '/src/components/Taskbar/Taskbar.vue';
 
+import ContextMenu from '/src/components/ContextMenu.vue';
+
 import Explorer from '/src/apps/Explorer.vue';
 import Dialog from '/src/apps/Dialog.vue';
 import Camera from '/src/apps/Camera.vue';
 import Notepad from '/src/apps/Notepad.vue';
 import WebAppRunner from '/src/apps/WebAppRunner.vue';
 
-import { initFileManager, directory, app, file, shortcut, webapp, resolveFile, resolveFileRunner, resolvePath, createFile, searchFiles } from '/src/services/fileSystem';
+import { initFileManager, directory, app, file, shortcut, resolveFile, resolveFileRunner, resolvePath, createFile, createFolder, deleteFile, searchFiles } from '/src/services/fileSystem';
 import { initWindowManager, openFile, findWindowById, closeWindow, focusWindow, isWindowFocused, maximizeWindow, minimizeWindow } from '/src/services/windowManager';
 import { fitSize } from '/src/styles/common';
 
@@ -95,6 +98,7 @@ export default {
     Window,
     Desktop,
     Taskbar,
+    ContextMenu,
   },
   provide() {
     return {
@@ -107,6 +111,7 @@ export default {
         isWindowFocused,
         maximizeWindow,
         minimizeWindow,
+        openContextMenu: this.openContextMenu,
       },
       $fs: {
         files: this.files,
@@ -114,14 +119,20 @@ export default {
         app,
         file,
         shortcut,
-        webapp,
         resolveFile,
         resolveFileRunner,
         resolvePath,
         createFile,
+        createFolder,
+        deleteFile,
         searchFiles,
       },
     };
+  },
+  methods: {
+    openContextMenu(...args) {
+      this.$refs.contextMenu.open(...args);
+    },
   },
   created() {
     initFileManager(this.files);

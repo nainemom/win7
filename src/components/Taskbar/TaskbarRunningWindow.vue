@@ -1,6 +1,6 @@
 
 <template>
-  <div :class="[focused && 'focused', runtimeProps, $style.taskbarRunningWindow]" @click="click">
+  <div :class="[focused && 'focused', runtimeProps, $style.taskbarRunningWindow]" @click="click" @contextmenu="openContextMenu">
     <img :src="windowProps.icon" /> {{ windowProps.title }}
   </div>
 </template>
@@ -26,6 +26,21 @@ export default {
       } else {
         this.$wm.focusWindow(this.windowProps.id);
       }
+    },
+    openContextMenu(event) {
+      this.$wm.openContextMenu(event, [
+        ...(this.windowProps.maximizable ? ['Maximize'] : []),
+        'Minimize',
+        'Close',
+      ], (item) => {
+        if (item === 'Maximize') {
+          this.$wm.maximizeWindow(this.windowProps.id);
+        } else if (item === 'Minimize') {
+          this.$wm.minimizeWindow(this.windowProps.id);
+        } else if (item === 'Close') {
+          this.$wm.closeWindow(this.windowProps.id);
+        }
+      });
     },
   },
   style({ className }) {

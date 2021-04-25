@@ -2,41 +2,50 @@
 // import Camera from '/src/apps/Camera.vue';
 // import Notepad from '/src/apps/Notepad.vue';
 // import WebAppRunner from '/src/apps/WebAppRunner.vue';
+import { markRaw } from 'vue';
 
-export const app = (name, component) => Object.freeze({
+export const app = (name, component, _path = []) => ({
   type: 'app',
   name,
-  component,
+  component: markRaw(component),
+  path: _path,
 });
 
-export const webapp = (name, data) => Object.freeze({
-  type: 'webapp',
-  name,
-  data,
-});
 
-export const file = (name, type, data) => Object.freeze({
+export const file = (name, type, data, _path = []) => ({
   type,
   name,
-  data,
+  data: markRaw(data),
+  path: _path,
 });
 
-export const directory = (name, files = []) => ({
+export const directory = (name, files = [], _path = []) => ({
   type: 'directory',
   name,
   files,
+  path: _path,
 });
 
-export const shortcut = (name, path, data) => Object.freeze({
+export const shortcut = (name, path, data, _path = []) => ({
   type: 'shortcut',
   name,
   resolve: () => resolvePath(path, data),
+  path: _path,
 });
 
 export let root = directory('root', []);
 
-export const initFileManager = (rootFiles = []) => {
-  root = directory('root', rootFiles);
+export const initFileManager = (rootFiles = [], _path = []) => {
+  rootFiles.forEach(file => {
+    file.path = _path;
+    if (file.type === 'directory') {
+      file.files = initFileManager(file.files, [..._path, file.name])
+    }
+  });
+  if (_path.length === 0) {
+    root = directory('root', rootFiles);
+  }
+  return rootFiles;
 };
 
 export const resolveFile = (item) => {
@@ -84,7 +93,26 @@ export const resolveFileRunner = (file) => {
 
 export const createFile = (name, type, _path, data) => {
   const resolvedPath = resolvePath(_path);
-  resolvedPath.files.push(file(name, type, data));
+  resolvedPath.files.push(file(name, type, data, _path));
+  reload();
+};
+
+export const createFolder = (_path) => {
+  const resolvedPath = resolvePath(_path);
+  const _folders = resolvedPath.files.filter(_file => _file.type === 'directory').map(_dir => _dir.name);
+  const name = (i) => `New Folder${i > 1 ? ` (${i})` : ''}`;
+  let i = 1;
+  while (_folders.includes(name(i))) {
+    i++;
+  };
+  resolvedPath.files.push(directory(name(i), [], _path));
+  reload();
+};
+
+export const deleteFile = (_path) => {
+  const parentPath = resolvePath(_path.slice(0, _path.length - 1));
+  const fileIndex = parentPath.files.findIndex((item) => item.name === _path[_path.length - 1]);
+  parentPath.files.splice(fileIndex, 1);
   reload();
 };
 

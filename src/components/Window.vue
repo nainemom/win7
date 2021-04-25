@@ -2,6 +2,7 @@
   <div
     :class="[$style.window, runtimeProps, focused && 'focused']"
     :style="{ zIndex: runtimeProps.zIndex }"
+    @contextmenu="openContextMenu"
     @click.capture="focus">
     <div :class="$style.titlebar">
       <div class="title" ref="title">
@@ -109,6 +110,15 @@ export default {
         ret[key] = this.$el[`offset${key[0].toUpperCase()}${key.slice(1)}`] + (numeric ? 0 : 'px');
       });
       return ret;
+    },
+    openContextMenu(event) {
+      this.$wm.openContextMenu(event, [
+        ...(this.windowProps.maximizable ? ['Maximize'] : []),
+        'Minimize',
+        'Close',
+      ], (item) => {
+        this[item.toLowerCase()]();
+      });
     },
   },
   style({ className }) {

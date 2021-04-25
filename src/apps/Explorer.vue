@@ -1,5 +1,5 @@
 <template>
-  <div :class="$style.myComputer" class="no-border">
+  <div :class="$style.myComputer" class="no-border" @contextmenu="openContextMenu">
     <div :class="$style.pathBar">
       <span class="back" :class="localPath.length === 0 ? 'disabled' : ''" @click="back" />
       <div class="path">{{ pathBar }}</div>
@@ -38,7 +38,7 @@ export default {
       height: '500px',
     }),
   },
-  inject: ['$fs'],
+  inject: ['$fs', '$wm'],
   props: {
     path: Array,
     search: String,
@@ -83,6 +83,15 @@ export default {
       if (this.localPath.length) {
         this.localPath.splice(this.localPath.length - 1);
       }
+    },
+    openContextMenu(event) {
+      this.$wm.openContextMenu(event, [
+        'Create New Folder',
+      ], (item) => {
+        if (item === 'Create New Folder') {
+          this.$fs.createFolder(this.localPath);
+        }
+      });
     },
   },
   style({ className }){

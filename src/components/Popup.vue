@@ -42,9 +42,7 @@ export default {
       }
     },
     bindEvents() {
-      setTimeout(() => {
-        window.addEventListener('click', this.closeIf, true);
-      }, 200);
+      window.addEventListener('click', this.closeIf, true);
     },
     unbindEvents() {
       window.removeEventListener('click', this.closeIf, true);
