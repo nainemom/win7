@@ -26,7 +26,7 @@ export default {
     },
     openContextMenu(event) {
       this.$os.openContextMenu(event, [
-        ...(this.window.maximizable ? [this.window.maximized ? 'Unmaximize' : 'Maximize'] : []),
+        ...(this.window.maximizable && !this.window.minimized ? [this.window.maximized ? 'Unmaximize' : 'Maximize'] : []),
         ...(this.window.minimizable ? [this.window.minimized ? 'Restore' : 'Minimize'] : []),
         ...(this.window.closable ? ['Close'] : []),
       ], (item) => {
