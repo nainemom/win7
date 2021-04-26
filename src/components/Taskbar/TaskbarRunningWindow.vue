@@ -26,13 +26,13 @@ export default {
     },
     openContextMenu(event) {
       this.$os.openContextMenu(event, [
-        ...(this.window.maximizable ? [this.maximized ? 'Unmaximize' : 'Maximize'] : []),
-        ...(this.window.minimizable ? [this.minimized ? 'Restore' : 'Minimize'] : []),
+        ...(this.window.maximizable ? [this.window.maximized ? 'Unmaximize' : 'Maximize'] : []),
+        ...(this.window.minimizable ? [this.window.minimized ? 'Restore' : 'Minimize'] : []),
         ...(this.window.closable ? ['Close'] : []),
       ], (item) => {
-        if (item === 'Maximize') {
+        if (['Maximize', 'Unmaximize'].includes(item)) {
           this.$wm.maximizeWindow(this.window.id);
-        } else if (item === 'Minimize') {
+        } else if (['Minimize', 'Restore'].includes(item)) {
           this.$wm.minimizeWindow(this.window.id);
         } else if (item === 'Close') {
           this.$wm.closeWindow(this.window.id);
