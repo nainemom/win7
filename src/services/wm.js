@@ -70,6 +70,9 @@ export const minimizeWindow = (id, _newValue) => {
 
 export const maximizeWindow = (id, _newValue) => {
   const theWin = findWindowById(id);
+  if (theWin.minimized) {
+    minimizeWindow(id, false);
+  }
   const newValue = typeof _newValue !== 'boolean' ? !theWin.maximized : _newValue;
   theWin.zIndex = ++latestZIndex;
   theWin.maximized = newValue;
