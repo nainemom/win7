@@ -1,7 +1,7 @@
 <template>
   <div :class="$style.filesContainer" @contextmenu.capture="openContextMenu">
     <File v-for="file in dirFiles" :ref="addFileToRefs" :key="file.path" :file="file" v-bind="fileProps" />
-    <div v-if="selection" ref="selection" :class="$style.selection" :style="selectionStyle" />
+    <div v-if="selecting" ref="selection" :class="$style.selection" />
   </div>
 </template>
 
@@ -51,7 +51,7 @@ export default {
   data() {
     return {
       mover: null,
-      selection: null,
+      selecting: false,
       fileRefs: [],
     }
   },
@@ -119,7 +119,7 @@ export default {
           if (item === 'Open') {
             selectedFiles.forEach((file) => file.click(null));
           } else if (item === 'Delete') {
-            selectedFiles.forEach((file) => this.$fs.deleteFileByPath(file.path));
+            selectedFiles.forEach((file) => this.$fs.deleteFileByPath(file.file.path));
             ;
           }
         });
@@ -127,18 +127,19 @@ export default {
     },
     selectStart(pos) {
       const elRect = offsetTo(this.$el, document.body);
-      this.selection = {
+      window.rectangeSelection = {
         left: pos.x - elRect.left,
         top: pos.y - elRect.top,
         width: 0,
         height: 0,
       };
       this.$el.style.overflow = 'hidden';
+      this.selecting = true;
     },
     whileSelect(_pos, pos) {
-      if (!this.selection) return;
+      if (!window.rectangeSelection) return;
       const selection = fixSelectionPosition({
-        ...this.selection,
+        ...window.rectangeSelection,
         width: pos.x,
         height: pos.y,
       });
@@ -147,11 +148,9 @@ export default {
       });
     },
     selectEnd(_pos, pos) {
-      if (pos.x === pos.y === 0 || this.selction) {
-        return;
-      }
+      if (pos.x === pos.y === 0 || !window.rectangeSelection) return;
       const selectionPos = fixSelectionPosition({
-        ...this.selection,
+        ...window.rectangeSelection,
         width: pos.x,
         height: pos.y,
       });
@@ -170,7 +169,7 @@ export default {
         };
         file.selected = inRange(filePos, selectionPos);
       });
-      this.selection = null;
+      this.selecting = false;
       this.$el.style.overflow = null;
     },
     unselectAll() {
