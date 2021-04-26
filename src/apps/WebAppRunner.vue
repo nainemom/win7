@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.webAppRunner" class="no-border">
-    <iframe :src="url" />
+    <iframe :src="file.data.url" />
   </div>
 </template>
 
@@ -9,23 +9,13 @@ import icon from '/src/assets/icons/html.png';
 import { rgba } from '/src/styles/utils';
 
 export default {
-  appConfig: {
-    icon: () => icon,
-    fileIcon: (file) => {
-      return file.data.icon || icon;
-    },
-    canHandle: (file) => {
-      if (file.type === 'webapp') {
-        return true;
-      }
-    },
-    windowConfig: (file) => ({
-      width: file.data.width || '600px',
-      height: file.data.height || '500px',
-    }),
-  },
-  inject: ['$fs'],
-  props: ['url'],
+  canHandle: (file) => file.type === 'webapp',
+  windowProperties: (file) => ({
+    icon: file && file.data.icon ? file.data.icon : icon,
+    width: file && file.data.width ? file.data.width : 600,
+    height: file && file.data.height ? file.data.height : 500,
+  }),
+  props: ['file'],
   style({ className }){
     return [
       className('webAppRunner', {

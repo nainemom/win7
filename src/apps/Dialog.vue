@@ -4,10 +4,10 @@
       <div class="icon">
         <img :src="icon" />
       </div>
-      <div class="content"> {{ content }} </div>
+      <div class="content"> {{ file.data.content }} </div>
     </div>
     <div class="buttons">
-      <button v-for="button in buttons" :key="button" @click="emitButtonClick(button)"> {{ button }} </button>
+      <button v-for="button in file.data.buttons" :key="button" @click="emitButtonClick(button)"> {{ button }} </button>
     </div>
   </div>
 </template>
@@ -25,36 +25,26 @@ const typeToIconMap = {
 }
 
 export default {
-  appConfig: {
-    icon: () => ErrorIcon,
-    fileIcon: (file) => {
-      return typeToIconMap[file.data.type] || ErrorIcon;
-    },
-    canHandle: (file) => {
-      if (file.type === 'dialog') {
-        return true;
-      }
-    },
-    windowConfig: (file) => ({
-      width: file.data.width || '500px',
-      height: file.data.height || '200px',
-    }),
-  },
+  canHandle: (file) => file.type === 'dialog',
+  windowProperties: (file) => ({
+    icon: file && file.data.type ? typeToIconMap[file.data.type] : WarningIcon,
+    width: 580,
+    height: 200,
+    maximizable: false,
+    title: file && file.data.title ? file.data.title : 'Dialog',
+  }),
   inject: ['$fs'],
-  props: {
-    type: String,
-    buttons: Array,
-    content: String,
-    onButtonClick: Function,
-  },
+  props: ['file'],
   computed: {
     icon() {
-      return typeToIconMap[this.type] || ErrorIcon;
+      return this.file ? typeToIconMap[this.file.data.type] : WarningIcon;
     },
   },
   methods: {
     emitButtonClick(button) {
-      this.$emit('buttonClick', button);
+      if (this.file && typeof this.file.data.onButtonClick === 'function') {
+        this.file.data.onButtonClick(button);
+      }
     }
   },
   style({ className }){

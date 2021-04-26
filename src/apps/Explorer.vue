@@ -1,13 +1,13 @@
 <template>
-  <div :class="$style.myComputer" class="no-border" @contextmenu="openContextMenu">
+  <div :class="$style.myComputer" class="no-border">
     <div :class="$style.pathBar">
-      <span class="back" :class="localPath.length === 0 ? 'disabled' : ''" @click="back" />
+      <span class="back" :class="path.length === 0 ? 'disabled' : ''" @click="back" />
       <div class="path">{{ pathBar }}</div>
-      <input class="search" :placeholder="searchPlaceholder" v-model="searchString">
+      <input class="search" :placeholder="searchPlaceholder" v-model="search">
     </div>
-    <div :class="$style.content">
-      <File v-for="(file, index) in dirFiles" :key="file.name + index" :file="file" dark-text @click="click" />
-    </div>
+    <FilesContainer :class="$style.content" v-bind="filesContainerProps" :file-props="{ darkText: true, onClick: click }" />
+      <!-- <File v-for="file in dirFiles" :key="file.path" :file="file" dark-text @click="click" /> -->
+    <!-- </div> -->
   </div>
 </template>
 
@@ -15,83 +15,64 @@
 import icon from '/src/assets/icons/my-computer.png';
 import folderIcon from '/src/assets/icons/folder.png';
 import driveIcon from '/src/assets/icons/drive.png';
-import File from '/src/components/File.vue';
 import { rgba } from '/src/styles/utils';
 import goPrevious from '/src/assets/icons/go-previous.svg';
+import FilesContainer from '/src/components/FilesContainer.vue';
+
 
 export default {
-  appConfig: {
-    icon: () => icon,
-    fileIcon: (file) => {
-      if (file.name.endsWith(':')) {
-        return driveIcon;
-      }
-      return folderIcon;
-    },
-    canHandle: (file) => {
-      if (file.type === 'directory') {
-        return true;
-      }
-    },
-    windowConfig: () => ({
-      width: '600px',
-      height: '500px',
-    }),
-  },
-  inject: ['$fs', '$wm'],
-  props: {
-    path: Array,
-    search: String,
-  },
+  canHandle: (file) => file.type === 'directory',
+  windowProperties: (file) => ({
+    icon: !file ? icon : (file.path.endsWith(':') ? driveIcon : folderIcon),
+    width: 600,
+    height: 500,
+    title: !file ? 'Computer' : file.path,
+  }),
+  inject: ['$fs', '$wm', '$os'],
+  props: ['file'],
   components: {
-    File,
+    FilesContainer,
   },
   data() {
-    let localPath = this.path || [];
-    if (localPath.join('\\') === 'C:\\Windows\\Explorer.dll') {
-      localPath = [];
-    }
+    const hasFile = this.file && this.file.path;
     return {
-      localPath,
-      searchString: (this.search || ''),
+      path: hasFile ? this.file.path : '',
+      search: hasFile ? this.file.data.search : '',
     };
   },
   computed: {
     pathBar() {
-      return this.localPath.join('\\') || 'My Computer';
+      return this.path.split('/').join('\\') || 'Computer';
     },
     searchPlaceholder() {
-      return `Search ${this.localPath.length ? this.localPath[this.localPath.length - 1] : 'My Computer'}`;
+      return `Search in ${this.$fs.getPathName(this.path) || 'Computer'}`;
     },
-    dirFiles() {
-      if (this.searchString) {
-        return this.$fs.searchFiles(this.searchString, this.localPath, true);
+    filesContainerProps() {
+      if (this.search) {
+        return {
+          files: this.$fs.searchFiles(this.path, (file) => this.$fs.getPathName(file.path).includes(this.search), true),
+        };
       }
-      return this.$fs.resolvePath(this.localPath).files;
+      return {
+        path: this.path,
+      };
     },
   },
   methods: {
     click(file) {
-      const resolvedFile = this.$fs.resolveFile(file);
-      while (resolvedFile.type === 'directory') {
-        this.localPath.push(resolvedFile.name);
+      const theFile = this.$fs.resolveFileSource(file);
+      if (theFile.type === 'directory') {
+        this.path = theFile.path;
         return true;
       }
       return false;
     },
     back() {
-      if (this.localPath.length) {
-        this.localPath.splice(this.localPath.length - 1);
+      if (this.path.includes('/')) {
+        this.path = this.path.substr(0, this.path.lastIndexOf('/'));
+      } else {
+        this.path = '';
       }
-    },
-    openContextMenu(event) {
-      this.$wm.openContextMenu(event, [
-        'Create New Folder',
-      ], (item) => {
-        if (item === 'Create New Folder') {
-          this.$fs.createFolder(this.localPath);
-        }
-      });
     },
   },
   style({ className }){
@@ -142,12 +123,7 @@ export default {
       className('content', {
         background: rgba(255, 1),
         flexGrow: 1,
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        alignItems: 'flex-start',
-        justifyContent: 'flex-start',
-        alignContent: 'flex-start',
+        position: 'relative',
       }),
     ];
   },

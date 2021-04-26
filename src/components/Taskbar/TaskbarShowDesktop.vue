@@ -5,16 +5,17 @@
 <script>
 import { panelSize } from '/src/styles/constants';
 import { rgba } from '/src/styles/utils';
+import { inject } from '/src/utils/vue';
+
 
 export default {
-  inject: ['$wm'],
+  ...inject('$wm'),
   methods: {
     onClick() {
-      const isAllWindowsMinimized = this.$wm.windowsList.every((window) => window.runtimeProps.minimized);
-      this.$wm.windowsList.forEach((window) => {
-        if (isAllWindowsMinimized || !window.runtimeProps.minimized) {
-          this.$wm.minimizeWindow(window.windowProps.id);
-        }
+      const windowsList = this.$wm.getWindows();
+      const isAllWindowsMinimized = windowsList.every((win) => win.minimized);
+      windowsList.forEach((win) => {
+        this.$wm.minimizeWindow(win.id, !isAllWindowsMinimized);
       });
     },
   },

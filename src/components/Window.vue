@@ -1,33 +1,34 @@
 <template>
   <div
-    :class="[$style.window, runtimeProps, focused && 'focused']"
-    :style="{ zIndex: runtimeProps.zIndex }"
-    @contextmenu="openContextMenu"
+    :class="[$style.window, focused && 'focused', window.maximized && 'maximized', window.minimized && 'minimized']"
+    :style="{ zIndex: window.zIndex }"
     @click.capture="focus">
     <div :class="$style.titlebar">
       <div class="title" ref="title">
-        <img :src="windowProps.icon" />
-        {{windowProps.title}}
+        <img :src="window.icon" />
+        {{window.title}}
       </div>
       <div class="buttons" :class="focused && 'focused'">
-        <div class="minimize" @click="minimize">
+        <div class="minimize" v-if="window.minimizable" @click="minimize">
           <img :src="icons.minimize" />
         </div>
-        <div class="maximize" v-show="windowProps.maximizable" @click="maximize">
-          <img v-if="runtimeProps.maximized" :src="icons.unmaximize" />
+        <div class="maximize" v-if="window.maximizable" @click="maximize">
+          <img v-if="window.maximized" :src="icons.unmaximize" />
           <img v-else :src="icons.maximize" />
         </div>
-        <div class="close" @click="close">
+        <div class="close" v-if="window.closable" @click="close">
           <img :src="icons.close" />
         </div>
       </div>
     </div>
-    <component :class="$style.content" ref="content" :is="componentProps.runner.component" v-bind="componentProps.data" />
+    <!-- <div :class="$style.content"> {{ window }} </div> -->
+    <component :class="$style.content" ref="content" :is="window.fsData.runner.data.component" :file="window.fsData.file" />
   </div>
 </template>
 
 <script>
-import { rgba } from '/src/styles/utils';
+import { inject, props } from '/src/utils/vue';
+import { rgba, px } from '/src/styles/utils';
 import { panelSize } from '/src/styles/constants';
 import Swipe from '/src/utils/Swipe';
 import MaximizeIcon from '/src/assets/window/maximize.png';
@@ -36,8 +37,10 @@ import MinimizeIcon from '/src/assets/window/minimize.png';
 import CloseIcon from '/src/assets/window/close.png';
 
 export default {
-  inject: ['$wm'],
-  props: ['runtimeProps', 'componentProps', 'windowProps'],
+  ...props({
+    window: props.obj(null),
+  }),
+  ...inject('$wm'),
   data() {
     return {
       mover: null,
@@ -54,35 +57,35 @@ export default {
       };
     },
     focused() {
-      return this.$wm.isWindowFocused(this.windowProps.id);
+      return this.$wm.isWindowFocused(this.window.id);
     },
   },
   mounted() {
     this.setPosition({
-      height: this.windowProps.height,
-      width: this.windowProps.width,
-      left: this.windowProps.left,
-      top: this.windowProps.top,
+      height: this.window.height,
+      width: this.window.width,
+      left: this.window.left,
+      top: this.window.top,
     });
-    this.mover = Swipe(this.$refs.title);
-    this.mover.before(this.moveStart);
-    this.mover.while(this.whileMove);
-    this.mover.on();
+    if (this.window.movable) {
+      this.mover = Swipe(this.$refs.title);
+      this.mover.before(this.moveStart);
+      this.mover.while(this.whileMove);
+      this.mover.on();
+    }
   },
   beforeUnmount() {
-    this.mover.off();
+    this.mover && this.mover.off();
   },
   methods: {
     close() {
-      this.$wm.closeWindow(this.windowProps.id);
+      this.$wm.closeWindow(this.window.id);
     },
     focus() {
-      this.$wm.focusWindow(this.windowProps.id);
+      this.$wm.focusWindow(this.window.id);
     },
     moveStart() {
-      if (this.runtimeProps.maximized) {
-        this.maximize();
-      }
+      this.window.maximized = false;
       this.focus();
       this.moveStartPosition = this.getPosition(true);
     },
@@ -93,32 +96,23 @@ export default {
       });
     },
     minimize() {
-      this.$wm.minimizeWindow(this.windowProps.id);
+      this.$wm.minimizeWindow(this.window.id);
     },
     maximize() {
-      this.$wm.maximizeWindow(this.windowProps.id);
+      this.$wm.maximizeWindow(this.window.id);
     },
     setPosition(position) {
       Object.keys(position).forEach((key) => {
-        this.$el.style[key] = position[key] + (typeof position[key] !== 'string' ? 'px' : '');
+        this.$el.style[key] = px(position[key]);
       });
     },
-    getPosition(numeric = false) {
+    getPosition() {
       const keys = ['top', 'left', 'width', 'height'];
       const ret = {};
       keys.forEach((key) => {
-        ret[key] = this.$el[`offset${key[0].toUpperCase()}${key.slice(1)}`] + (numeric ? 0 : 'px');
+        ret[key] = this.$el[`offset${key[0].toUpperCase()}${key.slice(1)}`];
       });
       return ret;
-    },
-    openContextMenu(event) {
-      this.$wm.openContextMenu(event, [
-        ...(this.windowProps.maximizable ? ['Maximize'] : []),
-        'Minimize',
-        'Close',
-      ], (item) => {
-        this[item.toLowerCase()]();
-      });
     },
   },
   style({ className }) {
@@ -214,7 +208,7 @@ export default {
             '& > img': {
               height: '12px',
               marginTop: '2px',
-              filter: `drop-shadow(0 0 2px ${rgba(0, 0.9)})`,
+              filter: `drop-shadow(0 0 1px ${rgba(0, 1)})`,
             },
 
             '&:not(:last-child)': {

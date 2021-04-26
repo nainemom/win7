@@ -1,11 +1,11 @@
 <template>
   <div :class="$style.camera">
-    <template v-if="!value">
+    <template v-if="!file">
       <video ref="video" muted autoplay playsinline />
       <span class="button" @click="takePhoto">Take Photo</span>
     </template>
     <template v-else>
-      <img :src="value" />
+      <img :src="file.data.value" />
     </template>
   </div>
 </template>
@@ -14,26 +14,20 @@
 import icon from '/src/assets/icons/camera.ico';
 import fileIcon from '/src/assets/icons/jpg.png';
 import { rgba } from '/src/styles/utils';
-
+import { getPathName } from '/src/services/fs';
 
 export default {
-  appConfig: {
-    icon: () => icon,
-    fileIcon: () => fileIcon,
-    canHandle: (file) => {
-      if (file.type === 'image') {
-        return true;
-      }
-    },
-    windowConfig: () => ({
-      width: '600px',
-      height: '500px',
-    }),
-  },
+  canHandle: (file) => file.type === 'image',
+  windowProperties: (file) => ({
+    icon: file ? fileIcon : icon,
+    width: 600,
+    height: 500,
+    title: file ? getPathName(file.path) : 'Camera',
+  }),
   inject: ['$fs'],
-  props: ['value'],
+  props: ['file'],
   mounted() {
-    if (!this.value) {
+    if (!this.file) {
       navigator.mediaDevices.getUserMedia({
         audio: false,
         video: {
@@ -57,9 +51,14 @@ export default {
       canvas.width = this.$refs.video.clientWidth;
       canvas.height = this.$refs.video.clientHeight;
       canvas.getContext('2d').drawImage(this.$refs.video, 0, 0, canvas.width, canvas.height);
-      this.$fs.createFile(`Photo ${Date.now()}.jpg`, 'image', ['C:', 'User', 'Desktop'], {
+      const fileName = `Photo ${Date.now()}.jpg`;
+      const filePath = `C:/User/Pictures/${fileName}`;
+      this.$fs.createNewFile(this.$fs.fileObject(filePath, 'image', {
         value: canvas.toDataURL(),
-      });
+      }));
+      this.$fs.createNewFile(this.$fs.fileObject(`C:/User/Desktop/${fileName}`, 'shortcut', {
+        src: filePath,
+      }));
     },
   },
   style({ className }){

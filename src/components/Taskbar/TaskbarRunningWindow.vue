@@ -1,44 +1,41 @@
 
 <template>
-  <div :class="[focused && 'focused', runtimeProps, $style.taskbarRunningWindow]" @click="click" @contextmenu="openContextMenu">
-    <img :src="windowProps.icon" /> {{ windowProps.title }}
+  <div :class="[focused && 'focused', $style.taskbarRunningWindow]" @click="click" @contextmenu="openContextMenu">
+    <img :src="window.icon" /> {{ window.title }}
   </div>
 </template>
 
 <script>
+import { inject, props } from '/src/utils/vue';
 import { rgba } from '/src/styles/utils';
 
 export default {
   emits: ['close', 'minimize'],
-  inject: ['$wm'],
-  props: ['runtimeProps', 'windowProps', 'componentProps'],
+  ...inject('$wm', '$os'),
+  ...props({
+    window: props.obj()
+  }),
   computed: {
     focused() {
-      return this.$wm.isWindowFocused(this.windowProps.id);
+      return this.$wm.isWindowFocused(this.window.id);
     },
   },
   methods: {
     click() {
-      if (this.runtimeProps.minimized) {
-        this.$wm.minimizeWindow(this.windowProps.id, false);
-      } else if (this.focused) {
-        this.$wm.minimizeWindow(this.windowProps.id, true);
-      } else {
-        this.$wm.focusWindow(this.windowProps.id);
-      }
+      this.$wm.minimizeWindow(this.window.id, this.focused);
     },
     openContextMenu(event) {
-      this.$wm.openContextMenu(event, [
-        ...(this.windowProps.maximizable ? ['Maximize'] : []),
-        'Minimize',
-        'Close',
+      this.$os.openContextMenu(event, [
+        ...(this.window.maximizable ? [this.maximized ? 'Unmaximize' : 'Maximize'] : []),
+        ...(this.window.minimizable ? [this.minimized ? 'Restore' : 'Minimize'] : []),
+        ...(this.window.closable ? ['Close'] : []),
       ], (item) => {
         if (item === 'Maximize') {
-          this.$wm.maximizeWindow(this.windowProps.id);
+          this.$wm.maximizeWindow(this.window.id);
         } else if (item === 'Minimize') {
-          this.$wm.minimizeWindow(this.windowProps.id);
+          this.$wm.minimizeWindow(this.window.id);
         } else if (item === 'Close') {
-          this.$wm.closeWindow(this.windowProps.id);
+          this.$wm.closeWindow(this.window.id);
         }
       });
     },

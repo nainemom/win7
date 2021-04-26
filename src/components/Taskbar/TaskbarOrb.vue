@@ -4,18 +4,20 @@
     <div :class="$style.popup">
       <div class="left-container">
         <div class="files">
-          <File v-for="(file, index) in leftContainerFiles" :key="file.name + index" :file="file" block dark-text single-click />
+          <File v-for="file in leftContainerFiles" :key="file.path" :file="file" block dark-text single-click />
         </div>
         <input ref="searchInput" class="search" placeholder="Search programs and files" v-model="searchString">
       </div>
       <div class="right-container">
-        <File v-for="(file, index) in rightContainerFiles" :key="file.name + index" :file="file" block no-icon shadow single-click />
+        <File v-for="file in rightContainerFiles" :key="file.path" :file="file" block no-icon shadow single-click />
       </div>
     </div>
   </Popup>
 </template>
 
 <script>
+import { inject } from '/src/utils/vue';
+
 import { panelSize } from '/src/styles/constants';
 import Popup from '/src/components/Popup.vue';
 import File from '/src/components/File.vue';
@@ -23,7 +25,7 @@ import OrbNormal from '/src/assets/orb/normal.png';
 import { rgba } from '/src/styles/utils';
 
 export default {
-  inject: ['$fs'],
+  ...inject('$fs'),
   components: {
     Popup,
     File,
@@ -46,25 +48,18 @@ export default {
   computed: {
     leftContainerFiles() {
       if (this.searchString) {
-        return this.$fs.searchFiles(this.searchString, [], true);
+        return this.$fs.searchFiles('', (theFile) => theFile.path.includes(this.searchString), true);
       }
-      return this.$fs.resolvePath(['C:', 'User', 'Desktop']).files;
+      return this.$fs.getDirectoryFiles('C:/Program Files');
     },
     rightContainerFiles() {
       const myComputerPath = ['C:', 'Windows', 'Explorer.dll'];
       return [
-        this.$fs.resolvePath(['C:', 'User']),
-        this.$fs.resolvePath(['C:', 'User', 'Desktop']),
-        this.$fs.shortcut('Pictures', myComputerPath, {
-          search: '.jpg'
-        }),
-        this.$fs.shortcut('Musics', myComputerPath, {
-          search: '.mp3'
-        }),
-        this.$fs.shortcut('Documents', myComputerPath, {
-          search: '.txt'
-        }),
-        this.$fs.shortcut('My Computer', myComputerPath),
+        this.$fs.fileObject('User', 'shortcut', { src: 'C:/User'}),
+        this.$fs.fileObject('Desktop', 'shortcut', { src: 'C:/User/Desktop'}),
+        this.$fs.fileObject('Pictures', 'shortcut', { src: 'C:/User/Pictures'}),
+        this.$fs.fileObject('Documents', 'shortcut', { src: 'C:/User/Documents'}),
+        this.$fs.fileObject('Computer', 'shortcut', { src: 'C:/Windows/Explorer.dll'}),
       ];
     },
   },

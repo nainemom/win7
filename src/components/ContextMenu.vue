@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <ul v-show="visible" :class="$style.contextMenu" :style="{ top: position.top, left: position.left }">
+    <ul v-show="visible" :class="$style.contextMenu" :style="{ top: position.top, left: position.left }" @mouseup.stop @touchend.stop>
       <li
         v-for="(item, i) in items"
         :key="item + i"
@@ -15,6 +15,7 @@
 <script>
 import { contextMenuWidth, contextMenuItemHeight } from '/src/styles/constants';
 import { rgba } from '/src/styles/utils';
+import { addEventListener, removeEventListener } from '/src/utils/eventListener';
 
 
 export default {
@@ -66,14 +67,14 @@ export default {
       this.onItemClick = () => {};
       this.visible = false;
     },
-    close() {
+    close(e) {
       this.visible = false;
     },
     bindEvents() {
-      window.addEventListener('click', this.close, true);
+      addEventListener(window, ['mouseup', 'touchend'], this.close);
     },
     unbindEvents() {
-      window.removeEventListener('click', this.close, true);
+      removeEventListener(window, ['mouseup', 'touchend'], this.close);
     },
   },
   beforeUnmount() {

@@ -2,7 +2,7 @@
   <div :class="$style.taskbar">
     <TaskbarOrb />
     <div :class="$style.windowsList">
-      <TaskbarRunningWindow v-for="window in $wm.windowsList" :key="window.id" v-bind="window"/>
+      <TaskbarRunningWindow v-for="window in windowsList" :key="window.id" :window="window"/>
     </div>
     <div :class="$style.try">
       <TaskbarClock />
@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import { inject } from '/src/utils/vue';
+
 import { panelSize } from '/src/styles/constants';
 import { rgba } from '/src/styles/utils';
 import TaskbarOrb from './TaskbarOrb.vue';
@@ -20,12 +22,17 @@ import TaskbarClock from './TaskbarClock.vue';
 import TaskbarShowDesktop from './TaskbarShowDesktop.vue';
 
 export default {
-  inject: ['$wm'],
+  ...inject('$wm'),
   components: {
     TaskbarOrb,
     TaskbarRunningWindow,
     TaskbarClock,
     TaskbarShowDesktop,
+  },
+  computed: {
+    windowsList() {
+      return this.$wm.getWindows();
+    },
   },
   style({ className }) {
     return [

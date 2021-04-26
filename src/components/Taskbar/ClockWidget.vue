@@ -11,7 +11,7 @@
     },
     mounted() {
       this.drawClock()
-      setInterval(this.drawClock, 1000)
+      this.clockTimer = setInterval(this.drawClock, 1000)
     },
     methods: {
       drawClock(){

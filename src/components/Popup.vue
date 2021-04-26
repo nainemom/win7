@@ -4,7 +4,9 @@
       :class="$style.staticWindow"
       v-bind="$attrs"
       ref="popup"
-      v-show="visible">
+      @mouseup.stop="closeIf"
+      @touchend.stop="closeIf"
+      v-if="visible">
       <div :class="$style.content">
         <slot />
       </div>
@@ -14,20 +16,24 @@
 
 <script>
 import { rgba } from '/src/styles/utils';
+import { props } from '/src/utils/vue';
+import { addEventListener, removeEventListener } from '/src/utils/eventListener';
 
 export default {
   emits: ['update:visible'],
   inheritAttrs: false,
-  props: {
-    visible: Boolean,
-    autoClose: Boolean,
-    dark: Boolean,
-  },
+  ...props({
+    visible: props.bool(false),
+    autoClose: props.bool(false),
+    dark: props.bool(false),
+  }),
   watch: {
     visible: {
       handler(visible) {
         if (visible) {
-          this.bindEvents();
+          setTimeout(() => {
+            this.bindEvents();
+          })
         } else {
           this.unbindEvents();
         }
@@ -38,14 +44,16 @@ export default {
   methods: {
     closeIf(event) {
       if (this.autoClose || !this.$refs.popup.contains(event.target)) {
-        this.$emit('update:visible', false);
+        setTimeout(() => {
+          this.$emit('update:visible', false);
+        })
       }
     },
     bindEvents() {
-      window.addEventListener('click', this.closeIf, true);
+      addEventListener(window, ['mouseup', 'touchend'], this.closeIf);
     },
     unbindEvents() {
-      window.removeEventListener('click', this.closeIf, true);
+      removeEventListener(window, ['mouseup', 'touchend'], this.closeIf);
     },
   },
   beforeUnmount() {
@@ -65,10 +73,10 @@ export default {
           ${rgba(170, baseAlpha)} 100%
         )`,
         ...(this.dark ? {
-          backdropFilter: 'blur(8px) brightness(0.6)',
+          backdropFilter: 'blur(8px) brightness(0.5)',
           boxShadow: `
-            0 0 0 1px ${rgba(180, 0.9)},
-            0 0 8px 3px ${rgba(10, 0.6)}
+            0 0 0 1px ${rgba(180, 0.5)},
+            0 0 8px 3px ${rgba(10, 0.3)}
           `,
         } : {
           backdropFilter: 'blur(8px) brightness(0.9)',

@@ -1,5 +1,5 @@
 const captureOptions = {
-  passive: false,
+  passive: true,
   capture: false,
 };
 
@@ -59,6 +59,7 @@ export default function Swipe(bindingElement = null) {
   let startPos = null;
 
   function onTouchStart(event) {
+    if (event.type === 'mousedown' && event.button !== 0) return;
     startPos = getTouchPos(event);
     for (let index = beforeSwipeCallbacks.length - 1; index > -1; index -= 1) {
       beforeSwipeCallbacks[index](startPos);

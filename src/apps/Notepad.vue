@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.notepad">
-    <textarea ref="textarea" :value="value" />
+    <textarea ref="textarea" :value="file ? file.data.value : ''" />
   </div>
 </template>
 
@@ -9,20 +9,13 @@ import icon from '/src/assets/icons/notepad.png';
 import fileIcon from '/src/assets/icons/txt.png';
 
 export default {
-  appConfig: {
-    icon: () => icon,
-    fileIcon: () => fileIcon,
-    canHandle: (file) => {
-      if (file.type === 'text') {
-        return true;
-      }
-    },
-    windowConfig: () => ({
-      width: '600px',
-      height: '500px',
-    }),
-  },
-  props: ['value'],
+  canHandle: (file) => file.type === 'text',
+  windowProperties: (file) => ({
+    icon: file ? fileIcon : icon,
+    width: 600,
+    height: 500,
+  }),
+  props: ['file'],
   mounted() {
     this.$refs.textarea.focus();
   },
