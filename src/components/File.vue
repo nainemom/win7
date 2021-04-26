@@ -1,5 +1,5 @@
 <template>
-  <div :class="[$style.desktopIcon, selected && 'selected']" @dblclick="click" @click="click" @mousedown.capture="select" @touchstart.capture="select">
+  <div :class="[$style.desktopIcon, selected && 'selected']" @dblclick="click" @click="click" @mousedown.capture="selectIf" @touchstart.capture="selectIf">
     <div class="icons" v-if="!noIcon">
       <img class="icon" :src="icon" />
       <img v-if="shortcutIcon" class="shortcut" :src="shortcutIcon" />
@@ -34,6 +34,11 @@ export default {
       if (this.$filesContainer) {
         this.$filesContainer.unselectAll();
         this.selected = true;
+      }
+    },
+    selectIf() {
+      if (this.$filesContainer && this.$filesContainer.getSelectedFiles().length === 0) {
+        this.select();
       }
     },
     click(e) {

@@ -69,6 +69,7 @@ export default {
     },
     close(e) {
       this.visible = false;
+      this.unbindEvents();
     },
     bindEvents() {
       addEventListener(window, ['mouseup', 'touchend'], this.close);

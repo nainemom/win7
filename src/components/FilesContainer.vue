@@ -88,8 +88,11 @@ export default {
     this.mover && this.mover.off();
   },
   methods: {
+    getSelectedFiles() {
+      return this.fileRefs.filter((file) => file.selected);
+    },
     openContextMenu(e) {
-      const selectedFiles = this.fileRefs.filter((file) => file.selected);
+      const selectedFiles = this.getSelectedFiles();
       if (selectedFiles.length === 0) {
         this.$os.openContextMenu(e, [
           'Refresh',
