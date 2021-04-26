@@ -106,7 +106,6 @@ export const deleteFileByPath = (path) => {
       files.list.splice(i, 1);
     }
   };
-  console.log('dete');
 };
 
 export const searchFiles = (basePath, matcher, recursive = true) =>
