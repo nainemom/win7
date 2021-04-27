@@ -105,6 +105,9 @@ export const resolveFileRunner = (_thefile) => {
 };
 
 export const deleteFileByPath = (path) => {
+  if (getPathDir(path) === '') {
+    throw new Error(`Cannot delete root directory files!`);
+  }
   for(let i = files.list.length - 1; i >= 0; i--) {
     if (isPathsRelated(path, files.list[i].path)) {
       files.list.splice(i, 1);
