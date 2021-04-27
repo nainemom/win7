@@ -6,13 +6,11 @@
 </template>
 
 <script>
-import { each } from '/src/utils/utils';
 import { rgba, px } from '/src/styles/utils';
 import { props, provideAs, inject } from '/src/utils/vue';
 import { offsetTo } from '/src/utils/utils';
 import swipe from '/src/utils/swipe';
 import File from '/src/components/File.vue';
-import Swipe from '/src/utils/Swipe';
 
 const fixSelectionPosition = (selection) => {
     if (!selection) {
