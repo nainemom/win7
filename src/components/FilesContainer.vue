@@ -51,6 +51,7 @@ export default {
       mover: null,
       selecting: false,
       fileRefs: [],
+      selectionRectangle: null,
     }
   },
   computed: {
@@ -115,7 +116,7 @@ export default {
     },
     selectStart(pos) {
       const elRect = offsetTo(this.$el, document.body);
-      window.rectangeSelection = {
+      this.selectionRectangle = {
         left: pos.left - elRect.left,
         top: pos.top - elRect.top,
         width: 0,
@@ -125,9 +126,9 @@ export default {
       this.selecting = true;
     },
     whileSelect(pos) {
-      // if (!window.rectangeSelection) return;
+      // if (!this.selectionRectangle) return;
       const selection = fixSelectionPosition({
-        ...window.rectangeSelection,
+        ...this.selectionRectangle,
         width: pos.left,
         height: pos.top,
       });
@@ -137,12 +138,12 @@ export default {
     },
     selectEnd(pos) {
       this.$el.style.overflow = null;
-      if (!window.rectangeSelection) {
+      if (!this.selectionRectangle) {
         this.selecting = false;
         return;
       }
       const selectionPos = fixSelectionPosition({
-        ...window.rectangeSelection,
+        ...this.selectionRectangle,
         width: pos.left,
         height: pos.top,
       });
