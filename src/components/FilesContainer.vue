@@ -35,7 +35,7 @@ const fixSelectionPosition = (selection) => {
 }
 
 export default {
-  ...inject('$os', '$fs'),
+  ...inject('$wm', '$os', '$fs'),
   components: {
     File,
   },
@@ -82,8 +82,10 @@ export default {
     },
     openContextMenu(e) {
       const selectedFiles = this.getSelectedFiles();
+      const isOnFile = selectedFiles.some((selectedFile) => selectedFile.$el.contains(e.target));
       let contextMenuItems = [];
-      if (selectedFiles.length === 0) {
+      if (!isOnFile) {
+        this.unselectAll();
         contextMenuItems = [
           ...contextMenuItems,
           'Refresh',
@@ -99,15 +101,15 @@ export default {
           'Cut',
           'Copy',
         ];
-      }
-      if (selectedFiles.length === 1) {
-        contextMenuItems = [
-          ...contextMenuItems,
-          'Rename',
-        ];
+        if (selectedFiles.length === 1) {
+          contextMenuItems = [
+            ...contextMenuItems,
+            'Rename',
+          ];
+        }
       }
 
-      this.$os.openContextMenu(e, contextMenuItems, (item) => {
+      this.$wm.openContextMenu(e, contextMenuItems, (item) => {
         if (item === 'Open') {
           selectedFiles.forEach((file) => file.click(null));
         } else if (item === 'Delete') {

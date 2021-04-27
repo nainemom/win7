@@ -31,7 +31,7 @@ export default {
   },
   computed: {
     windowsList() {
-      return this.$wm.getWindows();
+      return this.$wm.windows.list;
     },
   },
   style({ className }) {

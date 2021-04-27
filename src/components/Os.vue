@@ -7,7 +7,7 @@
       :key="win.id"
       :window="win"
     />
-    <ContextMenu ref="contextMenu" />
+    <ContextMenu v-bind="contextMenu" />
   </div>
 </template>
 
@@ -52,7 +52,10 @@ export default {
   },
   computed: {
     windowsList() {
-      return $wm.getWindows();
+      return $wm.windows.list;
+    },
+    contextMenu() {
+      return $wm.contextMenu;
     },
   },
   methods: {

@@ -12,7 +12,7 @@ export default {
   ...inject('$wm'),
   methods: {
     onClick() {
-      const windowsList = this.$wm.getWindows();
+      const windowsList = this.$wm.windows.list;
       const isAllWindowsMinimized = windowsList.every((win) => win.minimized);
       windowsList.forEach((win) => {
         this.$wm.minimizeWindow(win.id, !isAllWindowsMinimized);

@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <ul v-show="visible" :class="$style.contextMenu" :style="{ top: position.top, left: position.left }" @pointerup.stop>
+    <ul v-if="visible" :class="$style.contextMenu" :style="position" @pointerup.stop>
       <li
         v-for="(item, i) in items"
         :key="item + i"
@@ -13,65 +13,82 @@
 </template>
 
 <script>
+import { inject, props } from '/src/utils/vue';
+import { each } from '/src/utils/utils';
 import { contextMenuWidth, contextMenuItemHeight } from '/src/styles/constants';
-import { rgba } from '/src/styles/utils';
+import { rgba, px } from '/src/styles/utils';
 import { addEventListener, removeEventListener } from '/src/utils/eventListener';
 
 
 export default {
+  // emits: ['click'],
+  ...props({
+    visible: props.bool(false),
+    event: props.any(null),
+    items: props.arr([]),
+    onClick: props.func(() => {}),
+  }),
+  ...inject(['$wm']),
   data() {
     return {
-      visible: false,
-      onItemClick: () => {},
-      items: [],
-      position: {
-        top: 0,
-        left: 0,
-      },
+      position: null,
     };
   },
+  watch: {
+    visible: {
+      handler(visible) {
+        console.log(visible);
+        if (visible) {
+          this.open();
+        } else {
+          this.close();
+        }
+      },
+      immidiate: true,
+    }
+  },
   methods: {
-    open(event, items, onItemClick) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.items = items;
-      this.onItemClick = onItemClick;
-
-      const width = parseInt(contextMenuWidth);
-      const itemHeight = parseInt(contextMenuItemHeight);
-      const height = items.length * itemHeight;
-
-      const offset = {
-        left: event.clientX,
-        top: event.clientY,
+    open() {
+      const { event } = this;
+      let position = {
+        width: parseInt(contextMenuWidth),
+        height: parseInt(contextMenuItemHeight) * this.items.length,
       };
-
-      if (offset.left + width > window.innerWidth) {
-        offset.left = window.innerWidth - width;
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        position = {
+          ...position,
+          left: event.clientX,
+          top: event.clientY,
+        };
+        if (position.left + position.width > window.innerWidth) {
+          position.left = window.innerWidth - position.width;
+        }
+        if (position.top + position.height > window.innerHeight) {
+          position.top = window.innerHeight - position.height;
+        }
       }
-      if (offset.top + height > window.innerHeight) {
-        offset.top = window.innerHeight - height;
-      }
-      this.position.top = `${offset.top}px`;
-      this.position.left = `${offset.left}px`;
-
-      // setup position
-      this.visible = true;
+      console.log(event, position);
+      this.position = {};
+      each(position, (key, value) => {
+        this.position[key] = px(value);
+      });
       this.bindEvents();
     },
     emitItemClick(item) {
       if (item === '') return;
-      this.onItemClick(item);
-      this.items = [];
-      this.onItemClick = () => {};
-      this.visible = false;
+      this.$emit('click', item);
+      this.close();
     },
-    close(e) {
-      this.visible = false;
+    close() {
       this.unbindEvents();
+      this.$wm.closeContextMenu();
     },
     bindEvents() {
-      addEventListener(window, 'pointerup', this.close);
+      setTimeout(() => {
+        addEventListener(window, 'pointerup', this.close);
+      }, 200);
     },
     unbindEvents() {
       removeEventListener(window, 'pointerup', this.close);
@@ -88,7 +105,7 @@ export default {
         width: contextMenuWidth,
         height: 'auto',
         background: rgba(230, 1),
-        borderRadius: '3px',
+        borderRadius: '2px',
         overflow: 'hidden',
         fontSize: '13px',
         boxShadow: `0 3px 6px 1px ${rgba(0, 0.3)}`,

@@ -1,13 +1,35 @@
-import { markRaw, reactive } from 'vue';
+import { markRaw, reactive, ref } from 'vue';
 import UnknownIcon from '/src/assets/icons/unknown.png';
 import { resolveFileSource, resolveFileRunner, getFileWindowProperties, getPathName } from '/src/services/fs';
+
+
+export let contextMenu = reactive({
+  visible: false,
+  items: [],
+  event: null,
+  onClick: null,
+});
+
+export const openContextMenu = (event, items, handler) => {
+  contextMenu.event = event;
+  contextMenu.onClick = handler;
+  setTimeout(() => {
+    contextMenu.visible = true;
+    contextMenu.items = items;
+  });
+};
+
+export const closeContextMenu = () => {
+  contextMenu.visible = false;
+  contextMenu.onClick = null;
+  contextMenu.items = [];
+};
 
 export const windows = reactive({
   list: [],
 });
 
 let latestZIndex = 0;
-
 
 export const calculateFileWindowProperties = (_theFile) => {
   const theFile = resolveFileSource(_theFile);
@@ -94,7 +116,6 @@ export const isWindowFocused = (id) => {
   return false;
 };
 
-export const getWindows = () => windows.list;
 
 
 // calculateWindowProperties, openFile, findWindowById, closeWindow, focusWindow, isWindowFocused, getWindows

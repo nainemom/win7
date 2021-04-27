@@ -11,7 +11,7 @@ import { rgba } from '/src/styles/utils';
 
 export default {
   emits: ['close', 'minimize'],
-  ...inject('$wm', '$os'),
+  ...inject('$wm'),
   ...props({
     window: props.obj()
   }),
@@ -25,7 +25,7 @@ export default {
       this.$wm.minimizeWindow(this.window.id, this.focused);
     },
     openContextMenu(event) {
-      this.$os.openContextMenu(event, [
+      this.$wm.openContextMenu(event, [
         ...(this.window.maximizable && !this.window.minimized ? [this.window.maximized ? 'Unmaximize' : 'Maximize'] : []),
         ...(this.window.minimizable ? [this.window.minimized ? 'Restore' : 'Minimize'] : []),
         ...(this.window.closable ? ['Close'] : []),
