@@ -149,11 +149,13 @@ export default {
         width: 0,
         height: 0,
       };
-      // this.$el.style.overflow = 'hidden';
-      this.selecting = true;
     },
     whileSelect(pos) {
-      // if (!this.selectionRectangle) return;
+      if (!this.selecting) {
+        this.selecting = true;
+        return;
+      }
+      this.$el.style.overflow = 'hidden';
       const selection = fixSelectionPosition({
         ...this.selectionRectangle,
         width: pos.left,
@@ -165,10 +167,6 @@ export default {
     },
     selectEnd(pos) {
       this.$el.style.overflow = null;
-      if (!this.selectionRectangle) {
-        this.selecting = false;
-        return;
-      }
       const selectionPos = fixSelectionPosition({
         ...this.selectionRectangle,
         width: pos.left,

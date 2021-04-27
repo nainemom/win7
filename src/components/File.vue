@@ -1,5 +1,5 @@
 <template>
-  <div :class="[$style.desktopIcon, selected && 'selected', isCutting && 'cutting']" @dblclick="click" @click="click" @pointerdown="selectIf">
+  <div :class="[$style.desktopIcon, selected && 'selected', isCutting && 'cutting', renaming && 'renaming']" @dblclick="click" @click="click" @pointerdown="selectIf">
     <div class="icons" v-if="!noIcon">
       <img class="icon" :src="icon" />
       <img v-if="shortcutIcon" class="shortcut" :src="shortcutIcon" />
@@ -105,11 +105,9 @@ export default {
         ...(this.block ? {
           flexDirection: 'row',
           flexGrow: 1,
-          textAlign: 'left',
         } : {
           flexDirection: 'column',
           width: '120px',
-          textAlign: 'center',
         }),
         alignItems: 'center',
         justifyContent: 'center',
@@ -145,7 +143,11 @@ export default {
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           padding: '3px',
-          textAlign: 'center',
+          ...(this.block ? {
+            textAlign: 'left',
+          } : {
+            textAlign: 'center',
+          }),
           border: 'none',
           background: 'transparent',
           ...(this.darkText ? {
@@ -157,6 +159,11 @@ export default {
             textShadow: new Array(2).fill(`0 0 3px ${rgba(0, 0.8)}`).join(','),
           }),
         },
+        '&.renaming > .name': {
+          overflow: 'visible',
+          width: 'auto',
+          maxWidth: 'auto',
+        }
       }),
     ];
   },
