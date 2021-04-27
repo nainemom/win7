@@ -37,7 +37,6 @@ export default {
   watch: {
     visible: {
       handler(visible) {
-        console.log(visible);
         if (visible) {
           this.open();
         } else {
@@ -69,7 +68,6 @@ export default {
           position.top = window.innerHeight - position.height;
         }
       }
-      console.log(event, position);
       this.position = {};
       each(position, (key, value) => {
         this.position[key] = px(value);
