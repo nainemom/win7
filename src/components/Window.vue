@@ -200,11 +200,11 @@ export default {
         '& > .buttons': {
           display: 'flex',
           flexDirection: 'row',
-          height: '19px',
+          height: '18px',
           alignSelf: 'flex-start',
           boxShadow: `
-            0 0 0 1px ${rgba(255, 0.4)},
-            0 0 2px 2px ${rgba(70, 0.5)}
+            inset 0 0 1px 1px ${rgba(255, 0.4)},
+            0 0 0 2px ${rgba(0, 0.2)}
           `,
           borderTop: 'none',
           borderBottomLeftRadius: '5px',
@@ -218,16 +218,21 @@ export default {
             color: '#fff',
             width: '26px',
             background: `linear-gradient(180deg,
-              ${rgba(250, 0.4)} 0%,
-              ${rgba(250, 0.4)} 30%,
-              ${rgba(160, 0.3)} 70%,
-              ${rgba(200, 0.3)} 90%,
-              ${rgba(230, 0.3)} 100%
+              ${rgba(200, 0.5)} 0%,
+              ${rgba(200, 0.5)} 40%,
+              ${rgba(110, 0.4)} 60%,
+              ${rgba(150, 0.4)} 90%,
+              ${rgba(180, 0.4)} 100%
             )`,
+            backdropFilter: 'grayscale(1)',
             '& > img': {
-              height: '12px',
+              height: '13px',
               marginTop: '2px',
-              filter: `drop-shadow(0 0 1px ${rgba(0, 1)})`,
+              filter: `drop-shadow(0 0 2px ${rgba(0, 1)})`,
+            },
+            '&.maximize > img': {
+              height: '11px',
+              marginTop: '3px',
             },
 
             '&:not(:last-child)': {
@@ -246,9 +251,9 @@ export default {
           '&.focused > .close': {
             background: `linear-gradient(180deg,
               rgba(255, 107, 63, 0.8) 0%,
-              rgba(255, 104, 79, 0.7) 43%,
-              rgba(175, 61, 44, 0.9) 64%,
-              rgba(204, 33, 33, 0.7) 90%,
+              rgba(255, 104, 79, 0.7) 40%,
+              rgba(175, 61, 44, 0.9) 55%,
+              rgba(204, 33, 33, 0.7) 80%,
               rgba(255, 125, 125, 0.9) 100%
             )`,
           },
