@@ -63,16 +63,15 @@ export default {
         fontSize: '14px',
         fontWeight: 'bold',
         color: rgba(255, 1),
-        textShadow: new Array(4).fill(`0 0 1px ${rgba(0, 1)}`).join(','),
+        textShadow: new Array(2).fill(`0 0 1px ${rgba(0, 1)}`).join(','),
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'clip',
         width: '200px',
         textAlign: 'left',
         '& > img': {
-          width: '20px',
+          width: '24px',
           marginRight: '5px',
-          verticalAlign: 'middle',
         },
         '&:hover': {
           background: `linear-gradient(150deg,
@@ -85,11 +84,11 @@ export default {
         },
         '&.focused': {
           background: `linear-gradient(150deg,
-            ${rgba(20, 0.4)} 0%,
-            ${rgba(20, 0.4)} 15%,
-            ${rgba(40, 0.1)} 30%,
-            ${rgba(40, 0.2)} 80%,
-            ${rgba(20, 0.4)} 100%
+            ${rgba(50, 0.4)} 0%,
+            ${rgba(50, 0.4)} 15%,
+            ${rgba(50, 0.1)} 30%,
+            ${rgba(50, 0.2)} 80%,
+            ${rgba(50, 0.4)} 100%
           )`,
         },
         '&.minimized': {
