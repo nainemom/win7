@@ -44,6 +44,12 @@ export default {
       $os: this,
     };
   },
+  data() {
+    return {
+      copyingFiles: [],
+      cuttingFiles: [],
+    }
+  },
   computed: {
     windowsList() {
       return $wm.getWindows();

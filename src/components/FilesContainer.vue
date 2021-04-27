@@ -82,37 +82,64 @@ export default {
     },
     openContextMenu(e) {
       const selectedFiles = this.getSelectedFiles();
+      let contextMenuItems = [];
       if (selectedFiles.length === 0) {
-        this.$os.openContextMenu(e, [
+        contextMenuItems = [
+          ...contextMenuItems,
           'Refresh',
-          '',
           ...(this.staticPath ? ['Create New Folder'] : []),
-        ], (item) => {
-          if (item === 'Refresh') {
-            this.$el.classList.add('refreshing');
-            this.$nextTick(() => {
-              setTimeout(() => {
-                this.$el.classList.remove('refreshing');
-              }, 100);
-            });
-          } else if (item === 'Create New Folder') {
-            this.$fs.createNewFolder(this.path);
-          };
-        });
+          ...(this.staticPath && (this.$os.copyingFiles.length || this.$os.cuttingFiles.length) ? ['Paste'] : []),
+        ];
+
       } else {
-        this.$os.openContextMenu(e, [
+        contextMenuItems = [
+          ...contextMenuItems,
           'Open',
-          '',
           'Delete',
-        ], (item) => {
-          if (item === 'Open') {
-            selectedFiles.forEach((file) => file.click(null));
-          } else if (item === 'Delete') {
-            selectedFiles.forEach((file) => this.$fs.deleteFileByPath(file.file.path));
-            ;
-          }
-        });
+          'Cut',
+          'Copy',
+        ];
       }
+      if (selectedFiles.length === 1) {
+        contextMenuItems = [
+          ...contextMenuItems,
+          'Rename',
+        ];
+      }
+
+      this.$os.openContextMenu(e, contextMenuItems, (item) => {
+        if (item === 'Open') {
+          selectedFiles.forEach((file) => file.click(null));
+        } else if (item === 'Delete') {
+          selectedFiles.forEach((file) => this.$fs.deleteFileByPath(file.file.path));
+        } else if (item === 'Refresh') {
+          this.$el.classList.add('refreshing');
+          this.$nextTick(() => {
+            setTimeout(() => {
+              this.$el.classList.remove('refreshing');
+            }, 100);
+          });
+        } else if (item === 'Create New Folder') {
+          this.$fs.createNewFolder(this.path);
+        } else if (item === 'Rename') {
+          selectedFiles.forEach((file) => file.startRename());
+        } else if (item === 'Cut') {
+          this.$os.cuttingFiles = selectedFiles.map((file) => file.file.path);
+          this.$os.copyingFiles = [];
+        } else if (item === 'Copy') {
+          this.$os.copyingFiles = selectedFiles.map((file) => file.file.path);
+          this.$os.cuttingFiles = [];
+        } else if (item === 'Paste') {
+          this.$os.copyingFiles.forEach((copyingFilePath) => {
+            this.$fs.copyFileByPath(copyingFilePath, `${this.path}/${this.$fs.getPathName(copyingFilePath)}`);
+          });
+          this.$os.cuttingFiles.forEach((cuttingFilePath) => {
+            this.$fs.moveFileByPath(cuttingFilePath, `${this.path}/${this.$fs.getPathName(cuttingFilePath)}`);
+          });
+          this.$os.copyingFiles = [];
+          this.$os.cuttingFiles = [];
+        }
+      });
     },
     selectStart(pos) {
       const elRect = offsetTo(this.$el, document.body);

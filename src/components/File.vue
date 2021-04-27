@@ -1,10 +1,11 @@
 <template>
-  <div :class="[$style.desktopIcon, selected && 'selected']" @dblclick="click" @click="click" @pointerdown="selectIf">
+  <div :class="[$style.desktopIcon, selected && 'selected', isCutting && 'cutting']" @dblclick="click" @click="click" @pointerdown="selectIf">
     <div class="icons" v-if="!noIcon">
       <img class="icon" :src="icon" />
       <img v-if="shortcutIcon" class="shortcut" :src="shortcutIcon" />
     </div>
-    <div class="name"> {{ name }} </div>
+    <div class="name" v-if="!renaming"> {{ name }} </div>
+    <input class="name" v-if="renaming" ref="renameInput" v-model="renaming" @keypress.enter="renameDone" @blur="renameDone(false)"/>
   </div>
 </template>
 
@@ -27,6 +28,7 @@ export default {
   data() {
     return {
       selected: false,
+      renaming: false,
     };
   },
   methods: {
@@ -49,6 +51,18 @@ export default {
       }
       this.$wm.openFile(this.file);
     },
+    startRename() {
+      this.renaming = this.name;
+      this.$nextTick(() => {
+        this.$refs.renameInput.select();
+      });
+    },
+    renameDone(isOk) {
+      if (isOk) {
+        this.$fs.moveFileByPath(this.file.path, `${this.$fs.getPathDir(this.file.path)}/${this.renaming}`);
+      }
+      this.renaming = false;
+    }
   },
   computed: {
     icon() {
@@ -59,6 +73,12 @@ export default {
     },
     name() {
       return this.$fs.getPathName(this.file.path);
+    },
+    isCutting() {
+      return this.$os.cuttingFiles.includes(this.file.path);
+    },
+    isCopying() {
+      return this.$os.copyingFiles.includes(this.file.path);
     }
   },
   style({ className }) {
@@ -67,6 +87,9 @@ export default {
         height: 'auto',
         fontSize: '15px',
         border: 'solid 1px transparent',
+        '&.cutting': {
+          opacity: 0.8,
+        },
         '&.selected': {
           background: rgba([26, 86, 148], 0.4),
           border: `solid 1px ${rgba([26, 86, 148], 0.6)}`,
@@ -78,14 +101,6 @@ export default {
             ${rgba(200, 0.15)} 100%
           )`,
         },
-        ...(this.darkText ? {
-          color: `${rgba(0, 1)} !important`,
-        } : {
-          color: rgba(255, 1),
-        }),
-        ...(this.shadow && {
-          textShadow: new Array(2).fill(`0 0 3px ${rgba(0, 0.8)}`).join(','),
-        }),
         display: 'flex',
         ...(this.block ? {
           flexDirection: 'row',
@@ -130,6 +145,17 @@ export default {
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           padding: '3px',
+          textAlign: 'center',
+          border: 'none',
+          background: 'transparent',
+          ...(this.darkText ? {
+            color: `${rgba(0, 1)} !important`,
+          } : {
+            color: rgba(255, 1),
+          }),
+          ...(this.shadow && {
+            textShadow: new Array(2).fill(`0 0 3px ${rgba(0, 0.8)}`).join(','),
+          }),
         },
       }),
     ];
