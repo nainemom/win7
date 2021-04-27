@@ -148,7 +148,7 @@ export default {
           ${rgba(170, baseAlpha)} 100%
         )`,
         boxShadow: `
-          0 0 0 1px ${rgba(255, 0.9)},
+          0 0 0 1px ${rgba(255, 0.7)},
           0 0 8px 3px ${rgba(10, 0.6)}
         `,
         backdropFilter: 'blur(7px) brightness(1.1)',
@@ -172,7 +172,7 @@ export default {
           display: 'none',
         },
         '&:not(.focused)': {
-          opacity: 0.83,
+          opacity: 0.9,
           backdropFilter: 'blur(4px)',
           boxShadow: `
             0 0 0 1px ${rgba(255, 0.9)},
@@ -200,13 +200,15 @@ export default {
         '& > .buttons': {
           display: 'flex',
           flexDirection: 'row',
-          height: '18px',
+          height: '19px',
           alignSelf: 'flex-start',
-          border: `solid 1px ${rgba(0, 0.6)}`,
+          boxShadow: `
+            0 0 0 1px ${rgba(255, 0.4)},
+            0 0 2px 2px ${rgba(70, 0.5)}
+          `,
           borderTop: 'none',
           borderBottomLeftRadius: '5px',
           borderBottomRightRadius: '5px',
-          backdropFilter: 'hue-rotate(16deg)',
           overflow: 'hidden',
           '& > *': {
             textAlign: 'center',
