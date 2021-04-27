@@ -160,7 +160,6 @@ export default {
           top: el.offsetTop,
         };
         file.selected = inRange(filePos, selectionPos);
-        // console.log(file.file.path, inRange(filePos, selectionPos));
       });
       this.selecting = false;
     },

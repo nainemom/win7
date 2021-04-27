@@ -52,8 +52,6 @@ export default {
       if (offset.top + height > window.innerHeight) {
         offset.top = window.innerHeight - height;
       }
-      console.log(event);
-
       this.position.top = `${offset.top}px`;
       this.position.left = `${offset.left}px`;
 
