@@ -25,8 +25,8 @@ export const calculateFileWindowProperties = (_theFile) => {
     minimized: getOr(windowProperties.maximized, false),
     width,
     height,
-    left: (window.innerWidth / 2) - (width / 2),
-    top: (window.innerHeight / 2) - (height / 2),
+    left: (window.innerWidth / 2) - (width / 2) + (Math.random() * 20) - 10,
+    top: (window.innerHeight / 2) - (height / 2) + (Math.random() * 20) - 10,
     icon: getOr(windowProperties.icon, UnknownIcon),
     zIndex: ++latestZIndex,
   };
