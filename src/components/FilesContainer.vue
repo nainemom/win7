@@ -35,7 +35,7 @@ const fixSelectionPosition = (selection) => {
 }
 
 export default {
-  ...inject('$wm', '$os', '$fs'),
+  ...inject('$wm', '$fs'),
   components: {
     File,
   },
@@ -90,7 +90,7 @@ export default {
           ...contextMenuItems,
           'Refresh',
           ...(this.staticPath ? ['Create New Folder'] : []),
-          ...(this.staticPath && (this.$os.copyingFiles.length || this.$os.cuttingFiles.length) ? ['Paste'] : []),
+          ...(this.staticPath && (this.$wm.markedFiles.copyList.length || this.$wm.markedFiles.cutList.length) ? ['Paste'] : []),
         ];
 
       } else {
@@ -126,20 +126,17 @@ export default {
         } else if (item === 'Rename') {
           selectedFiles.forEach((file) => file.startRename());
         } else if (item === 'Cut') {
-          this.$os.cuttingFiles = selectedFiles.map((file) => file.file.path);
-          this.$os.copyingFiles = [];
+          selectedFiles.forEach((file) => this.$wm.markFileForCut(file.file));
         } else if (item === 'Copy') {
-          this.$os.copyingFiles = selectedFiles.map((file) => file.file.path);
-          this.$os.cuttingFiles = [];
+          selectedFiles.forEach((file) => this.$wm.markFileForCopy(file.file));
         } else if (item === 'Paste') {
-          this.$os.copyingFiles.forEach((copyingFilePath) => {
+          this.$wm.markedFiles.copyList.forEach((copyingFilePath) => {
             this.$fs.copyFileByPath(copyingFilePath, `${this.path}/${this.$fs.getPathName(copyingFilePath)}`);
           });
-          this.$os.cuttingFiles.forEach((cuttingFilePath) => {
+          this.$wm.markedFiles.cutList.forEach((cuttingFilePath) => {
             this.$fs.moveFileByPath(cuttingFilePath, `${this.path}/${this.$fs.getPathName(cuttingFilePath)}`);
           });
-          this.$os.copyingFiles = [];
-          this.$os.cuttingFiles = [];
+          this.$wm.unmarkFiles();
         }
       });
     },

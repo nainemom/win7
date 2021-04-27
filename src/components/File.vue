@@ -24,7 +24,7 @@ export default {
     singleClick: props.bool(),
     onClick: props.func(null),
   }),
-  ...inject('$wm', '$fs', '$os', '$filesContainer'),
+  ...inject('$wm', '$fs', '$filesContainer'),
   data() {
     return {
       selected: false,
@@ -75,10 +75,10 @@ export default {
       return this.$fs.getPathName(this.file.path);
     },
     isCutting() {
-      return this.$os.cuttingFiles.includes(this.file.path);
+      return this.$wm.markedFiles.cutList.includes(this.file.path);
     },
     isCopying() {
-      return this.$os.copyingFiles.includes(this.file.path);
+      return this.$wm.markedFiles.copyList.includes(this.file.path);
     }
   },
   style({ className }) {

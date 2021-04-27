@@ -3,7 +3,27 @@ import UnknownIcon from '/src/assets/icons/unknown.png';
 import { resolveFileSource, resolveFileRunner, getFileWindowProperties, getPathName } from '/src/services/fs';
 
 
-export let contextMenu = reactive({
+export const markedFiles = reactive({
+  cutList: [],
+  copyList: [],
+});
+
+export const unmarkFiles = () => {
+  markedFiles.cutList = [];
+  markedFiles.copyList = [];
+};
+
+export const markFileForCopy = (theFile) => {
+  markedFiles.copyList.push(theFile.path);
+  markedFiles.cutList = [];
+};
+
+export const markFileForCut = (theFile) => {
+  markedFiles.cutList.push(theFile.path);
+  markedFiles.copyList = [];
+};
+
+export const contextMenu = reactive({
   visible: false,
   items: [],
   event: null,
