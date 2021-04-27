@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import icon from '/src/assets/icons/camera.ico';
+import icon from '/src/assets/icons/camera.png';
 import fileIcon from '/src/assets/icons/jpg.png';
 import { rgba } from '/src/styles/utils';
 import { getPathName } from '/src/services/fs';

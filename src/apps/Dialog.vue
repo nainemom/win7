@@ -16,12 +16,14 @@
 import ErrorIcon from '/src/assets/icons/error.png';
 import InfoIcon from '/src/assets/icons/info.png';
 import WarningIcon from '/src/assets/icons/warning.png';
+import QuestionIcon from '/src/assets/icons/question.png';
 import { rgba } from '/src/styles/utils';
 
 const typeToIconMap = {
   error: ErrorIcon,
   info: InfoIcon,
   warning: WarningIcon,
+  question: QuestionIcon,
 }
 
 export default {
@@ -59,7 +61,7 @@ export default {
           flexDirection: 'row',
           '& > .icon': {
             '&, & > img': {
-              width: '48px',
+              width: '64px',
             },
             padding: '10px',
             marginRight: '3px',

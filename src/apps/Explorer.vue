@@ -16,7 +16,7 @@ import icon from '/src/assets/icons/my-computer.png';
 import folderIcon from '/src/assets/icons/folder.png';
 import driveIcon from '/src/assets/icons/drive.png';
 import { rgba } from '/src/styles/utils';
-import goPrevious from '/src/assets/icons/go-previous.svg';
+import backIcon from '/src/assets/icons/back.png';
 import FilesContainer from '/src/components/FilesContainer.vue';
 
 
@@ -33,7 +33,7 @@ export default {
   components: {
     FilesContainer,
   },
-  data() {
+  data() {backIcon
     const hasFile = this.file && this.file.path;
     return {
       path: hasFile ? this.file.path : '',
@@ -84,14 +84,16 @@ export default {
       className('pathBar', {
         display: 'flex',
         flexDirection: 'row',
+        alignItems: 'center',
         flexWrap: 'nowrap',
         marginBottom: '6px',
         '& > .back': {
-          backgroundImage: `url("${goPrevious}")`,
-          width: '30px',
-          height: '30px',
+          backgroundImage: `url("${backIcon}")`,
+          width: '32px',
+          height: '32px',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
+          backgroundSize: 'contain',
           cursor: 'pointer',
           marginRight: '5px',
           transition: 'filter 0.1s',
