@@ -28,9 +28,10 @@
 
 <script>
 import { inject, props } from '/src/utils/vue';
+import { each } from '/src/utils/utils';
 import { rgba, px } from '/src/styles/utils';
 import { panelSize } from '/src/styles/constants';
-import Swipe from '/src/utils/Swipe';
+import swipe from '/src/utils/swipe';
 import MaximizeIcon from '/src/assets/window/maximize.png';
 import UnmaximizeIcon from '/src/assets/window/unmaximize.png';
 import MinimizeIcon from '/src/assets/window/minimize.png';
@@ -68,14 +69,16 @@ export default {
       top: this.window.top,
     });
     if (this.window.movable) {
-      this.mover = Swipe(this.$refs.title);
-      this.mover.before(this.moveStart);
-      this.mover.while(this.whileMove);
-      this.mover.on();
+      this.mover = swipe(
+        this.$refs.title,
+        this.moveStart,
+        this.whileMove,
+        this.moveEnd,
+      );
     }
   },
   beforeUnmount() {
-    this.mover && this.mover.off();
+    this.mover && this.mover.stop();
   },
   methods: {
     close() {
@@ -85,14 +88,28 @@ export default {
       this.$wm.focusWindow(this.window.id);
     },
     moveStart() {
-      this.window.maximized = false;
-      this.focus();
-      this.moveStartPosition = this.getPosition(true);
+      if (this.window.maximized) {
+        this.maximize();
+      }
+      if (!this.focused) {
+        this.focus();
+      }
+      this.moveStartPosition = this.getPosition();
+      return true;
     },
-    whileMove(_touchPos, { x, y }) {
+    whileMove({ left, top }) {
       this.setPosition({
-        left: x + this.moveStartPosition.left,
-        top: y + this.moveStartPosition.top,
+        left: left + this.moveStartPosition.left,
+        top: top + this.moveStartPosition.top,
+      });
+    },
+    moveEnd({ left, top }) {
+      this.setPosition({
+        left: left + this.moveStartPosition.left,
+        top: top + this.moveStartPosition.top,
+      });
+      each(this.getPosition(), (key, value) => {
+        this.window[key] = value;
       });
     },
     minimize() {
@@ -102,8 +119,8 @@ export default {
       this.$wm.maximizeWindow(this.window.id);
     },
     setPosition(position) {
-      Object.keys(position).forEach((key) => {
-        this.$el.style[key] = px(position[key]);
+      each(position, (key, value) => {
+        this.$el.style[key] = px(value);
       });
     },
     getPosition() {

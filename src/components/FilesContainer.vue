@@ -1,16 +1,16 @@
 <template>
-  <div :class="$style.filesContainer" @contextmenu.capture="openContextMenu">
+  <div :class="$style.filesContainer" @contextmenu="openContextMenu">
     <File v-for="file in dirFiles" :ref="addFileToRefs" :key="file.path" :file="file" v-bind="fileProps" />
     <div v-if="selecting" ref="selection" :class="$style.selection" />
   </div>
 </template>
 
 <script>
+import { each } from '/src/utils/utils';
 import { rgba, px } from '/src/styles/utils';
 import { props, provideAs, inject } from '/src/utils/vue';
 import { offsetTo } from '/src/utils/utils';
-
-
+import swipe from '/src/utils/swipe';
 import File from '/src/components/File.vue';
 import Swipe from '/src/utils/Swipe';
 
@@ -65,27 +65,17 @@ export default {
       }
       return this.files;
     },
-    selectionCalculated() {
-      const { selection } = this;
-      return fixSelectionPosition(selection);
-    },
-    selectionStyle() {
-      const ret = {};
-      Object.keys(this.selectionCalculated || {}).forEach((key) => {
-        ret[key] = px(this.selectionCalculated[key]);
-      });
-      return ret;
-    },
   },
   mounted() {
-    this.mover = Swipe(this.$el);
-    this.mover.before(this.selectStart);
-    this.mover.while(this.whileSelect);
-    this.mover.after(this.selectEnd);
-    this.mover.on();
+    this.mover = swipe(
+      this.$el,
+      this.selectStart,
+      this.whileSelect,
+      this.selectEnd,
+    );
   },
   beforeUnmount() {
-    this.mover && this.mover.off();
+    this.mover && this.mover.stop();
   },
   methods: {
     getSelectedFiles() {
@@ -128,31 +118,35 @@ export default {
     selectStart(pos) {
       const elRect = offsetTo(this.$el, document.body);
       window.rectangeSelection = {
-        left: pos.x - elRect.left,
-        top: pos.y - elRect.top,
+        left: pos.left - elRect.left,
+        top: pos.top - elRect.top,
         width: 0,
         height: 0,
       };
-      this.$el.style.overflow = 'hidden';
+      // this.$el.style.overflow = 'hidden';
       this.selecting = true;
     },
-    whileSelect(_pos, pos) {
-      if (!window.rectangeSelection) return;
+    whileSelect(pos) {
+      // if (!window.rectangeSelection) return;
       const selection = fixSelectionPosition({
         ...window.rectangeSelection,
-        width: pos.x,
-        height: pos.y,
+        width: pos.left,
+        height: pos.top,
       });
       Object.keys(selection|| {}).forEach((key) => {
         this.$refs.selection.style[key] = px(selection[key]);
       });
     },
-    selectEnd(_pos, pos) {
-      if (pos.x === pos.y === 0 || !window.rectangeSelection) return;
+    selectEnd(pos) {
+      this.$el.style.overflow = null;
+      if (!window.rectangeSelection) {
+        this.selecting = false;
+        return;
+      }
       const selectionPos = fixSelectionPosition({
         ...window.rectangeSelection,
-        width: pos.x,
-        height: pos.y,
+        width: pos.left,
+        height: pos.top,
       });
 
       const inRange = (fp, sp) => (
@@ -168,9 +162,9 @@ export default {
           top: el.offsetTop,
         };
         file.selected = inRange(filePos, selectionPos);
+        // console.log(file.file.path, inRange(filePos, selectionPos));
       });
       this.selecting = false;
-      this.$el.style.overflow = null;
     },
     unselectAll() {
       this.fileRefs.forEach((file) => {

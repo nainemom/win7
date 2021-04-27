@@ -147,14 +147,17 @@ export default {
       className('os', {
         position: 'fixed',
         ...fitSize,
-        '& *, & *:after': {
-          bixSizing: 'content-box',
-        },
       }),
       custom('html, body', {
         fontFamily: 'sans-serif',
       }),
+      custom('*, *:after, &:before', {
+        bixSizing: 'content-box',
+        touchAction: 'none !important',
+      }),
       custom('*', {
+        touchAction: 'none !important',
+        // pointerEvents: 'none',
         userSelect: 'none',
         fontFamily: 'inherit',
         padding: 0,
@@ -171,7 +174,6 @@ export default {
         font: 'unset',
         '-webkitOverflowScrolling': 'touch',
         '-webkitTapHighlightColor': 'rgba(0, 0, 0, 0)',
-        touchAction: 'pan-y',
         boxSizing: 'border-box',
         '&::-moz-focus-inner': {
           border: 0,

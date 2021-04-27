@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <ul v-show="visible" :class="$style.contextMenu" :style="{ top: position.top, left: position.left }" @mouseup.stop @touchend.stop>
+    <ul v-show="visible" :class="$style.contextMenu" :style="{ top: position.top, left: position.left }" @pointerup.stop>
       <li
         v-for="(item, i) in items"
         :key="item + i"
@@ -52,6 +52,7 @@ export default {
       if (offset.top + height > window.innerHeight) {
         offset.top = window.innerHeight - height;
       }
+      console.log(event);
 
       this.position.top = `${offset.top}px`;
       this.position.left = `${offset.left}px`;
@@ -72,10 +73,10 @@ export default {
       this.unbindEvents();
     },
     bindEvents() {
-      addEventListener(window, ['mouseup', 'touchend'], this.close);
+      addEventListener(window, 'pointerup', this.close);
     },
     unbindEvents() {
-      removeEventListener(window, ['mouseup', 'touchend'], this.close);
+      removeEventListener(window, 'pointerup', this.close);
     },
   },
   beforeUnmount() {
@@ -84,7 +85,7 @@ export default {
   style({ className }) {
     return [
       className('contextMenu', {
-        position: 'fixed',
+        position: 'absolute',
         zIndex: 999999,
         width: contextMenuWidth,
         height: 'auto',

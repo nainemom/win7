@@ -4,8 +4,7 @@
       :class="$style.staticWindow"
       v-bind="$attrs"
       ref="popup"
-      @mouseup.stop="closeIf"
-      @touchend.stop="closeIf"
+      @pointerup.stop="closeIf"
       v-if="visible">
       <div :class="$style.content">
         <slot />
@@ -50,10 +49,10 @@ export default {
       }
     },
     bindEvents() {
-      addEventListener(window, ['mouseup', 'touchend'], this.closeIf);
+      addEventListener(window, 'pointerup', this.closeIf);
     },
     unbindEvents() {
-      removeEventListener(window, ['mouseup', 'touchend'], this.closeIf);
+      removeEventListener(window, 'pointerup', this.closeIf);
     },
   },
   beforeUnmount() {

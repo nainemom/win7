@@ -1,5 +1,5 @@
 <template>
-  <div :class="[$style.desktopIcon, selected && 'selected']" @dblclick="click" @click="click" @mousedown="selectIf" @touchstart="selectIf">
+  <div :class="[$style.desktopIcon, selected && 'selected']" @dblclick="click" @click="click" @pointerdown="selectIf">
     <div class="icons" v-if="!noIcon">
       <img class="icon" :src="icon" />
       <img v-if="shortcutIcon" class="shortcut" :src="shortcutIcon" />
