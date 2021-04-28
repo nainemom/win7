@@ -90,7 +90,6 @@ export default {
         height: 'auto',
         fontSize: '15px',
         border: 'solid 1px transparent',
-        zIndex: 200,
         '&.cutting': {
           opacity: 0.8,
         },
