@@ -97,12 +97,7 @@ export default {
       return false;
     },
     onDrop(data) {
-      data.forEach((filePath) => {
-        const dst =  `${this.path}/${this.$fs.getPathName(filePath)}`;
-        if (filePath !== dst) {
-          this.$fs.moveFileByPath(filePath, dst);
-        }
-      });
+      this.copyOrMoveFilesHere('move', data);
     },
     getSelectedFiles() {
       return this.fileRefs.filter((file) => file.selected);
@@ -161,13 +156,12 @@ export default {
         } else if (item === 'Copy') {
           selectedFiles.forEach((file) => this.$wm.markFileForCopy(file.file));
         } else if (item === 'Paste') {
-          this.$wm.markedFiles.copyList.forEach((copyingFilePath) => {
-            this.$fs.copyFileByPath(copyingFilePath, `${this.path}/${this.$fs.getPathName(copyingFilePath)}`);
+          Promise.all([
+            this.copyOrMoveFilesHere('copy', this.$wm.markedFiles.copyList),
+            this.copyOrMoveFilesHere('move', this.$wm.markedFiles.cutList),
+          ]).then(() => {
+            this.$wm.unmarkFiles();
           });
-          this.$wm.markedFiles.cutList.forEach((cuttingFilePath) => {
-            this.$fs.moveFileByPath(cuttingFilePath, `${this.path}/${this.$fs.getPathName(cuttingFilePath)}`);
-          });
-          this.$wm.unmarkFiles();
         }
       });
     },
@@ -220,6 +214,29 @@ export default {
       this.fileRefs.forEach((file) => {
         file.selected = false;
       });
+    },
+    async copyOrMoveFilesHere(action='copy', listOfFiles) {
+      for (let i = 0; i < listOfFiles.length; i++) {
+        const filePath = listOfFiles[i];
+        const dst =  `${this.path}/${this.$fs.getPathName(filePath)}`;
+        if (filePath !== dst) {
+          if (this.$fs.isPathExists(dst)) {
+            const userAnswer = await this.$wm.openDialog({
+              type: 'warning',
+              title: 'File Already Exists',
+              content: `The '${dst}' is already exists. Do you want to override?`,
+              buttons: ['Cancel All', 'No', 'Yes'],
+              autoClose: true,
+            });
+            if (userAnswer === 'No') {
+              continue;
+            } else if (userAnswer === 'Cancel All') {
+              break;
+            }
+          }
+          this.$fs[`${action}FileByPath`](filePath, dst, true);
+        }
+      }
     },
     addFileToRefs(el) {
       el && this.fileRefs.push(el);
