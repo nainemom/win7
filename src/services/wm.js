@@ -51,21 +51,16 @@ export const windows = reactive({
 
 let latestZIndex = 20;
 
-export const openDialog = (dialogObj) => {
-  return openFile(fileObject('', 'dialog', {
-    type: 'error',
-    content: '---',
-    buttons: ['OK'],
-    title: 'Dialog',
-    defaultInput: '',
-    autoClose: true,
-    ...dialogObj,
-  })).id;
-};
-
-export const closeDialog = (dialogId) => {
-  return closeWindow(dialogId);
-};
+export const openDialog = (dialogObj) => new Promise((resolve) => openFile(fileObject('', 'dialog', {
+  type: 'error',
+  content: '---',
+  buttons: ['OK'],
+  title: 'Dialog',
+  defaultInput: '',
+  autoClose: true,
+  ...dialogObj,
+  onClick: (btn) => resolve(btn),
+})));
 
 export const calculateFileWindowProperties = (_theFile) => {
   const theFile = resolveFileSource(_theFile);

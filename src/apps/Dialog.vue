@@ -53,7 +53,7 @@ export default {
         this.dialogData.onClick(button);
       }
       if (this.dialogData.autoClose) {
-        this.$wm.closeDialog(this.wmId);
+        this.$wm.closeWindow(this.wmId);
       }
     }
   },
