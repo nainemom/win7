@@ -124,13 +124,12 @@ export default {
         content: 'Do you want to run this app in Fullscreen mode?',
         buttons: ['Cancel', 'OK'],
         autoClose: true,
-        onClick: (btn) => {
-          if (btn === 'OK') {
-            const elem = document.documentElement;
-            const method = elem.requestFullscreen || elem.webkitRequestFullscreen || elem.msRequestFullscreen;
-            method && method.call(elem);
-          }
-        },
+      }).then((btn) => {
+        if (btn === 'OK') {
+          const elem = document.documentElement;
+          const method = elem.requestFullscreen || elem.webkitRequestFullscreen || elem.msRequestFullscreen;
+          method && method.call(elem);
+        }
       });
     }
   },
