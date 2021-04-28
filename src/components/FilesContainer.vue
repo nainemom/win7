@@ -115,7 +115,7 @@ export default {
         contextMenuItems = [
           ...contextMenuItems,
           'Refresh',
-          ...(this.staticPath ? ['Create New Folder'] : []),
+          ...(this.staticPath ? ['Create New Folder', 'Create New Text File'] : []),
           ...(this.staticPath && (this.$wm.markedFiles.copyList.length || this.$wm.markedFiles.cutList.length) ? ['Paste'] : []),
         ];
 
@@ -149,6 +149,9 @@ export default {
           });
         } else if (item === 'Create New Folder') {
           this.$fs.createNewFolder(this.path);
+        } else if (item === 'Create New Text File') {
+          const dst =  `${this.path}/Text File ${Date.now()}.txt`;
+          this.$fs.createNewFile(this.$fs.fileObject(dst, 'text'));
         } else if (item === 'Rename') {
           selectedFiles.forEach((file) => file.startRename());
         } else if (item === 'Cut') {
