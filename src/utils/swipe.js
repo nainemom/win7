@@ -52,6 +52,10 @@ export default (bindingElement = null, startHandler, whileHandler, finishHandler
   addEventListener(bindingElement, 'pointerdown', startHandlerParent, captureOptions);
 
   return {
+    cancelMove: () => {
+      removeEventListener(document.body, 'pointermove', whileHandlerParent, moveCaptureOptions);
+      removeEventListener(document.body, 'pointerup', finishHandlerParent, moveCaptureOptions);
+    },
     stop: () => {
       removeEventListener(bindingElement, 'pointerdown', startHandlerParent, captureOptions);
       removeEventListener(document.body, 'pointermove', whileHandlerParent, moveCaptureOptions);

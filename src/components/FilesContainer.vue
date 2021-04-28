@@ -10,6 +10,7 @@ import { rgba, px } from '/src/styles/utils';
 import { props, provideAs, inject } from '/src/utils/vue';
 import { offsetTo } from '/src/utils/utils';
 import swipe from '/src/utils/swipe';
+import { drag, drop } from '/src/utils/dragndrop';
 import File from '/src/components/File.vue';
 
 const fixSelectionPosition = (selection) => {
@@ -49,6 +50,8 @@ export default {
   data() {
     return {
       mover: null,
+      dragger: null,
+      dropper: null,
       selecting: false,
       fileRefs: [],
       selectionRectangle: null,
@@ -72,17 +75,45 @@ export default {
       this.whileSelect,
       this.selectEnd,
     );
+    this.droper = drop(this.$el, this.onDrop);
+    this.dragger = drag(this.$el, this.onDrag);
   },
   beforeUnmount() {
     this.mover && this.mover.stop();
+    this.droper && this.droper.stop();
+    this.dragger && this.dragger.stop();
   },
   methods: {
+    onDrag(e) {
+      const isOnFile = this.isEventOnFile(e);
+      if (isOnFile) {
+        this.mover && this.mover.cancelMove();
+        this.$nextTick(() => {
+          this.selecting = false;
+          this.$el.style.overflow = null;
+        });
+        return this.getSelectedFiles().map((file) => file.file.path);
+      }
+      return false;
+    },
+    onDrop(data) {
+      data.forEach((filePath) => {
+        const dst =  `${this.path}/${this.$fs.getPathName(filePath)}`;
+        if (filePath !== dst) {
+          this.$fs.moveFileByPath(filePath, dst);
+        }
+      });
+    },
     getSelectedFiles() {
       return this.fileRefs.filter((file) => file.selected);
     },
+    isEventOnFile(e) {
+      const selectedFiles = this.getSelectedFiles();
+      return selectedFiles.some((file) => file.$el.contains(e.target));
+    },
     openContextMenu(e) {
       const selectedFiles = this.getSelectedFiles();
-      const isOnFile = selectedFiles.some((selectedFile) => selectedFile.$el.contains(e.target));
+      const isOnFile = this.isEventOnFile(e);
       let contextMenuItems = [];
       if (!isOnFile) {
         this.unselectAll();
@@ -148,12 +179,9 @@ export default {
         width: 0,
         height: 0,
       };
+      this.selecting = true;
     },
     whileSelect(pos) {
-      if (!this.selecting) {
-        this.selecting = true;
-        return;
-      }
       this.$el.style.overflow = 'hidden';
       const selection = fixSelectionPosition({
         ...this.selectionRectangle,

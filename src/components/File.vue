@@ -1,8 +1,8 @@
 <template>
-  <div :class="[$style.desktopIcon, selected && 'selected', isCutting && 'cutting', renaming && 'renaming']" @dblclick="click" @click="click" @pointerdown="selectIf">
+  <div :class="[$style.desktopIcon, selected && 'selected', isCutting && 'cutting', renaming && 'renaming']" @dblclick="click" @click="click" @pointerdown="selectIf" draggable="true">
     <div class="icons" v-if="!noIcon">
-      <img class="icon" :src="icon" />
-      <img v-if="shortcutIcon" class="shortcut" :src="shortcutIcon" />
+      <img class="icon" :src="icon" draggable="false" />
+      <img v-if="shortcutIcon" class="shortcut" :src="shortcutIcon" draggable="false" />
     </div>
     <div class="name" v-if="!renaming"> {{ name }} </div>
     <input class="name" v-if="renaming" ref="renameInput" v-model="renaming" @keypress.enter="renameDone" @blur="renameDone(false)"/>
@@ -39,8 +39,11 @@ export default {
       }
     },
     selectIf() {
-      if (this.$filesContainer && this.$filesContainer.getSelectedFiles().length === 0) {
-        this.select();
+      if (this.$filesContainer) {
+        const selectedFiles = this.$filesContainer.getSelectedFiles();
+        if (selectedFiles.length === 0 || selectedFiles.findIndex(file => file.file.path === this.file.path) === -1) {
+          this.select();
+        }
       }
     },
     click(e) {
@@ -87,6 +90,7 @@ export default {
         height: 'auto',
         fontSize: '15px',
         border: 'solid 1px transparent',
+        zIndex: 200,
         '&.cutting': {
           opacity: 0.8,
         },
