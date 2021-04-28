@@ -7,7 +7,7 @@
       <div class="content"> {{ file.data.content }} </div>
     </div>
     <div class="buttons">
-      <button v-for="button in file.data.buttons" :key="button" @click="emitButtonClick(button)"> {{ button }} </button>
+      <button v-for="button in file.data.buttons" :key="button" @click="emitClick(button)"> {{ button }} </button>
     </div>
   </div>
 </template>
@@ -35,17 +35,25 @@ export default {
     maximizable: false,
     title: file && file.data.title ? file.data.title : 'Dialog',
   }),
-  inject: ['$fs'],
-  props: ['file'],
+  inject: ['$fs', '$wm'],
+  props: ['file', 'wmId'],
   computed: {
+    dialogData() {
+      return {
+        ...(this.file  && this.file.data)
+      };
+    },
     icon() {
-      return this.file ? typeToIconMap[this.file.data.type] : WarningIcon;
+      return typeToIconMap[this.dialogData.type];
     },
   },
   methods: {
-    emitButtonClick(button) {
-      if (this.file && typeof this.file.data.onButtonClick === 'function') {
-        this.file.data.onButtonClick(button);
+    emitClick(button) {
+      if (typeof this.dialogData.onClick === 'function') {
+        this.dialogData.onClick(button);
+      }
+      if (this.dialogData.autoClose) {
+        this.$wm.closeDialog(this.wmId);
       }
     }
   },

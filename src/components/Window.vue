@@ -22,7 +22,7 @@
       </div>
     </div>
     <!-- <div :class="$style.content"> {{ window }} </div> -->
-    <component :class="$style.content" ref="content" :is="window.fsData.runner.data.component" :file="window.fsData.file" />
+    <component :class="$style.content" ref="content" :is="window.fsData.runner.data.component" :file="window.fsData.file" :wm-id="window.id" />
   </div>
 </template>
 

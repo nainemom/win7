@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
 import UnknownIcon from '/src/assets/icons/unknown.png';
-import { resolveFileSource, resolveFileRunner, getFileWindowProperties, getPathName } from '/src/services/fs';
+import { resolveFileSource, resolveFileRunner, getFileWindowProperties, getPathName, fileObject } from '/src/services/fs';
 
 
 export const markedFiles = reactive({
@@ -51,6 +51,22 @@ export const windows = reactive({
 
 let latestZIndex = 20;
 
+export const openDialog = (dialogObj) => {
+  return openFile(fileObject('', 'dialog', {
+    type: 'error',
+    content: '---',
+    buttons: ['OK'],
+    title: 'Dialog',
+    defaultInput: '',
+    autoClose: true,
+    ...dialogObj,
+  })).id;
+};
+
+export const closeDialog = (dialogId) => {
+  return closeWindow(dialogId);
+};
+
 export const calculateFileWindowProperties = (_theFile) => {
   const theFile = resolveFileSource(_theFile);
   const windowProperties = getFileWindowProperties(theFile) || {};
@@ -78,9 +94,9 @@ export const openFile = (_theFile) => {
   const theFile = resolveFileSource(_theFile);
   const runner = resolveFileRunner(theFile);
   const windowProperties = calculateFileWindowProperties(theFile);
-
+  const id = `w-${Date.now()}-${Math.random()}`;
   const win = {
-    id: `w-${Date.now()}-${Math.random()}`,
+    id,
     ...windowProperties,
     fsData: Object.freeze({
       runner: runner,

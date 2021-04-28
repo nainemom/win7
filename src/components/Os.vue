@@ -118,37 +118,30 @@ export default {
   mounted() {
     const isFullScreen = !!window.document.fullscreenElement;
     if (!isFullScreen) {
-      const fullScreenDialog = $wm.openFile($fs.fileObject('', 'dialog', {
+      $wm.openDialog({
         type: 'info',
         title: 'Fullscreen Request',
         content: 'Do you want to run this app in Fullscreen mode?',
         buttons: ['Cancel', 'OK'],
-        onButtonClick: (btn) => {
+        autoClose: true,
+        onClick: (btn) => {
           if (btn === 'OK') {
             const elem = document.documentElement;
-            if (elem.requestFullscreen) {
-              elem.requestFullscreen();
-            } else if (elem.webkitRequestFullscreen) {
-              elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) {
-              elem.msRequestFullscreen();
-            }
+            const method = elem.requestFullscreen || elem.webkitRequestFullscreen || elem.msRequestFullscreen;
+            method && method.call(elem);
           }
-          $wm.closeWindow(fullScreenDialog.id);
         },
-      }));
+      });
     }
   },
   errorCaptured(e) {
-    const errorDialog = $wm.openFile($fs.fileObject('', 'dialog', {
+    $wm.openDialog({
       type: 'error',
       content: e.toString(),
       buttons: ['OK'],
       title: 'Unhandled Error',
-      onButtonClick: () => {
-        $wm.closeWindow(errorDialog.id);
-      },
-    }));
+      autoClose: true,
+    });
     return true;
   },
   style({ className, custom }) {
