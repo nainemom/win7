@@ -1,4 +1,4 @@
-import { markRaw, reactive, ref } from 'vue';
+import { reactive } from 'vue';
 import UnknownIcon from '/src/assets/icons/unknown.png';
 import { resolveFileSource, resolveFileRunner, getFileWindowProperties, getPathName } from '/src/services/fs';
 
@@ -49,7 +49,7 @@ export const windows = reactive({
   list: [],
 });
 
-let latestZIndex = 0;
+let latestZIndex = 20;
 
 export const calculateFileWindowProperties = (_theFile) => {
   const theFile = resolveFileSource(_theFile);
