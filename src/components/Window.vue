@@ -2,6 +2,7 @@
   <div
     :class="[$style.window, focused && 'focused', window.maximized && 'maximized', window.minimized && 'minimized']"
     :style="{ zIndex: window.zIndex }"
+    v-show="!window.hidden"
     @click.capture="focus">
     <div :class="$style.titlebar">
       <div class="title" ref="title">
@@ -39,7 +40,7 @@ import CloseIcon from '/src/assets/window/close.png';
 
 export default {
   ...props({
-    window: props.obj(null),
+    window: props.obj(),
   }),
   ...inject('$wm'),
   data() {

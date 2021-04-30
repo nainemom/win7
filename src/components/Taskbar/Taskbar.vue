@@ -31,7 +31,7 @@ export default {
   },
   computed: {
     windowsList() {
-      return this.$wm.windows.list;
+      return this.$wm.windows.list.filter((win) => !win.hidden);
     },
   },
   style({ className }) {

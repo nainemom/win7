@@ -17,6 +17,9 @@ import ErrorIcon from '/src/assets/icons/error.png';
 import InfoIcon from '/src/assets/icons/info.png';
 import WarningIcon from '/src/assets/icons/warning.png';
 import QuestionIcon from '/src/assets/icons/question.png';
+import ErrorSound from '/src/assets/sounds/error.wav';
+import DingSound from '/src/assets/sounds/ding.wav';
+
 import { rgba } from '/src/styles/utils';
 
 const typeToIconMap = {
@@ -25,6 +28,14 @@ const typeToIconMap = {
   warning: WarningIcon,
   question: QuestionIcon,
 }
+
+const typeToSoundMap = {
+  error: ErrorSound,
+  info: DingSound,
+  warning: DingSound,
+  question: DingSound,
+}
+
 
 export default {
   canHandle: (file) => file.type === 'dialog',
@@ -35,7 +46,7 @@ export default {
     maximizable: false,
     title: file && file.data.title ? file.data.title : 'Dialog',
   }),
-  inject: ['$fs', '$wm'],
+  inject: ['$fs', '$wm', '$snd'],
   props: ['file', 'wmId'],
   computed: {
     dialogData() {
@@ -45,6 +56,9 @@ export default {
     },
     icon() {
       return typeToIconMap[this.dialogData.type];
+    },
+    sound() {
+      return typeToSoundMap[this.dialogData.type];
     },
   },
   methods: {
@@ -56,6 +70,9 @@ export default {
         this.$wm.closeWindow(this.wmId);
       }
     }
+  },
+  mounted() {
+    this.$snd.playSound(this.sound);
   },
   style({ className }){
     return [

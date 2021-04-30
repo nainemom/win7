@@ -68,6 +68,7 @@ export const calculateFileWindowProperties = (_theFile) => {
   const getOr = (value, defaultvalue) => typeof value === 'undefined' ? defaultvalue : value;
   const width = getOr(windowProperties.width, 400);
   const height = getOr(windowProperties.height, 400);
+  const hidden = getOr(windowProperties.hidden, false);
   return {
     title: windowProperties.title || getPathName(theFile.path) || 'Window',
     maximizable: getOr(windowProperties.maximizable, true),
@@ -76,12 +77,13 @@ export const calculateFileWindowProperties = (_theFile) => {
     movable: true,
     maximized: getOr(windowProperties.maximized, false),
     minimized: getOr(windowProperties.maximized, false),
+    hidden,
     width,
     height,
     left: (window.innerWidth / 2) - (width / 2) + (Math.random() * 20) - 10,
     top: (window.innerHeight / 2) - (height / 2) + (Math.random() * 20) - 10,
     icon: getOr(windowProperties.icon, UnknownIcon),
-    zIndex: ++latestZIndex,
+    zIndex: hidden ? -1 : ++latestZIndex,
   };
 };
 

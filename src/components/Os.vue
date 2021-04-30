@@ -21,12 +21,16 @@ import ContextMenu from '/src/components/ContextMenu.vue';
 import Explorer from '/src/apps/Explorer.vue';
 import Dialog from '/src/apps/Dialog.vue';
 import WebAppRunner from '/src/apps/WebAppRunner.vue';
+import SoundPlayer from '/src/apps/SoundPlayer.vue';
 
 import Camera from '/src/apps/Camera.vue';
 import Notepad from '/src/apps/Notepad.vue';
 
+import StartupSound from '/src/assets/sounds/startup.wav';
+
 import * as $fs from '/src/services/fs';
 import * as $wm from '/src/services/wm';
+import * as $snd from '/src/services/snd';
 
 import { fitSize } from '/src/styles/common';
 
@@ -41,6 +45,7 @@ export default {
     return {
       $wm,
       $fs,
+      $snd,
       $os: this,
     };
   },
@@ -68,6 +73,7 @@ export default {
       $fs.fileObject('C:/Windows/Explorer.dll', 'app', { component: Explorer }),
       $fs.fileObject('C:/Windows/Dialog.dll', 'app', { component: Dialog }),
       $fs.fileObject('C:/Windows/WebAppRunner.dll', 'app', { component: WebAppRunner }),
+      $fs.fileObject('C:/Windows/SoundPlayer.dll', 'app', { component: SoundPlayer }),
 
       $fs.fileObject('C:/Program Files/Camera.exe', 'app', { component: Camera }),
       $fs.fileObject('C:/Program Files/Notepad.exe', 'app', { component: Notepad }),
@@ -130,6 +136,7 @@ export default {
           const method = elem.requestFullscreen || elem.webkitRequestFullscreen || elem.msRequestFullscreen;
           method && method.call(elem);
         }
+        $snd.playSound(StartupSound);
       });
     }
   },
@@ -141,7 +148,7 @@ export default {
       title: 'Unhandled Error',
       autoClose: true,
     });
-    return true;
+    return false;
   },
   style({ className, custom }) {
     return [
