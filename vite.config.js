@@ -1,12 +1,12 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import image from './build/plugins/image.js';
+import datauri from './build/plugins/datauri.js';
 
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
-    image(),
+    datauri(),
   ],
 })

@@ -1,5 +1,5 @@
 import datauri from 'datauri';
-const fileRegex = /\.(png|ico|jpg|svg)$/;
+const fileRegex = /\.(png|ico|jpg|svg|wav)$/;
 
 
 export default () => ({
