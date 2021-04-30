@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import NavigateSound from '/src/assets/sounds/navigate.wav';
 import icon from '/src/assets/icons/my-computer.png';
 import folderIcon from '/src/assets/icons/folder.png';
 import driveIcon from '/src/assets/icons/drive.png';
@@ -28,7 +29,7 @@ export default {
     height: 500,
     title: !file ? 'Computer' : file.path,
   }),
-  inject: ['$fs', '$wm', '$os'],
+  inject: ['$fs', '$wm', '$snd'],
   props: ['file'],
   components: {
     FilesContainer,
@@ -62,12 +63,14 @@ export default {
     click(file) {
       const theFile = this.$fs.resolveFileSource(file);
       if (theFile.type === 'directory') {
+        this.$snd.playSound(NavigateSound);
         this.path = theFile.path;
         return true;
       }
       return false;
     },
     back() {
+      this.$snd.playSound(NavigateSound);
       if (this.path.includes('/')) {
         this.path = this.path.substr(0, this.path.lastIndexOf('/'));
       } else {
