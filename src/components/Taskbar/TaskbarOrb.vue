@@ -53,14 +53,7 @@ export default {
       return this.$fs.getDirectoryFiles('C:/Program Files');
     },
     rightContainerFiles() {
-      const myComputerPath = ['C:', 'Windows', 'Explorer.dll'];
-      return [
-        this.$fs.fileObject('User', 'shortcut', { src: 'C:/User'}),
-        this.$fs.fileObject('Desktop', 'shortcut', { src: 'C:/User/Desktop'}),
-        this.$fs.fileObject('Pictures', 'shortcut', { src: 'C:/User/Pictures'}),
-        this.$fs.fileObject('Documents', 'shortcut', { src: 'C:/User/Documents'}),
-        this.$fs.fileObject('Computer', 'shortcut', { src: 'C:/Windows/Explorer.dll'}),
-      ];
+      return this.$fs.getDirectoryFiles('C:/User/Start Menu');;
     },
   },
   methods: {

@@ -11,6 +11,7 @@
 </template>
 
 <script>
+import NotifSound from '/src/assets/sounds/notif.wav';
 import icon from '/src/assets/icons/camera.png';
 import fileIcon from '/src/assets/icons/jpg.png';
 import { rgba } from '/src/styles/utils';
@@ -24,7 +25,7 @@ export default {
     height: 500,
     title: file ? getPathName(file.path) : 'Camera',
   }),
-  inject: ['$fs'],
+  inject: ['$fs', '$snd'],
   props: ['file'],
   mounted() {
     if (!this.file) {
@@ -53,6 +54,7 @@ export default {
       canvas.getContext('2d').drawImage(this.$refs.video, 0, 0, canvas.width, canvas.height);
       const fileName = `Photo ${Date.now()}.jpg`;
       const filePath = `C:/User/Pictures/${fileName}`;
+      this.$snd.playSound(NotifSound);
       this.$fs.createNewFile(this.$fs.fileObject(filePath, 'image', {
         value: canvas.toDataURL(),
       }));

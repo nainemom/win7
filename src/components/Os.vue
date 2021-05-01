@@ -18,20 +18,11 @@ import Taskbar from '/src/components/Taskbar/Taskbar.vue';
 
 import ContextMenu from '/src/components/ContextMenu.vue';
 
-import Explorer from '/src/apps/Explorer.vue';
-import Dialog from '/src/apps/Dialog.vue';
-import WebAppRunner from '/src/apps/WebAppRunner.vue';
-import SoundPlayer from '/src/apps/SoundPlayer.vue';
-
-import Camera from '/src/apps/Camera.vue';
-import Notepad from '/src/apps/Notepad.vue';
-
 import StartupSound from '/src/assets/sounds/startup.wav';
 
 import * as $fs from '/src/services/fs';
 import * as $wm from '/src/services/wm';
 import * as $snd from '/src/services/snd';
-
 import { fitSize } from '/src/styles/common';
 
 export default {
@@ -67,59 +58,6 @@ export default {
     openContextMenu(...args) {
       this.$refs.contextMenu.open(...args);
     },
-  },
-  created() {
-    [
-      $fs.fileObject('C:/Windows/Explorer.dll', 'app', { component: Explorer }),
-      $fs.fileObject('C:/Windows/Dialog.dll', 'app', { component: Dialog }),
-      $fs.fileObject('C:/Windows/WebAppRunner.dll', 'app', { component: WebAppRunner }),
-      $fs.fileObject('C:/Windows/SoundPlayer.dll', 'app', { component: SoundPlayer }),
-
-      $fs.fileObject('C:/Program Files/Camera.exe', 'app', { component: Camera }),
-      $fs.fileObject('C:/Program Files/Notepad.exe', 'app', { component: Notepad }),
-      $fs.fileObject('C:/Program Files/Viska.exe', 'webapp', {
-        icon: 'https://viska.chat/logo-transparent.png',
-        url: 'https://viska.chat/',
-        width: 500,
-        height: 800,
-      }),
-      $fs.fileObject('C:/Program Files/Method Draw.exe', 'webapp', {
-        icon: 'https://editor.method.ac/images/favicon.svg',
-        url: 'https://editor.method.ac/',
-        width: 900,
-        height: 700,
-      }),
-      $fs.fileObject('C:/Program Files/Tower Game.exe', 'webapp', {
-        icon: 'https://www.towergame.app/assets/apple-touch-icon.png',
-        url: 'https://www.towergame.app/',
-        width: 400,
-        height: 700,
-      }),
-      $fs.fileObject('C:/Program Files/Windows 93.exe', 'webapp', {
-        icon: 'http://v1.windows93.net/favicon.ico',
-        url: 'http://v1.windows93.net/',
-        width: 1000,
-        height: 800,
-      }),
-      $fs.fileObject('C:/Program Files/Snapp!.exe', 'webapp', {
-        icon: 'https://passenger-pwa-cdn.snapp.ir/logos/square-minimal-144.png',
-        url: 'https://app.snapp.taxi/',
-        width: 500,
-        height: 800,
-      }),
-
-      $fs.fileObject('C:/User/Desktop/Computer', 'shortcut', { src: 'C:/Windows/Explorer.dll' }),
-      $fs.fileObject('C:/User/Desktop/Notepad', 'shortcut', { src: 'C:/Program Files/Notepad.exe' }),
-      $fs.fileObject('C:/User/Desktop/Camera', 'shortcut', { src: 'C:/Program Files/Camera.exe' }),
-      $fs.fileObject('C:/User/Desktop/Viska', 'shortcut', { src: 'C:/Program Files/Viska.exe' }),
-      $fs.fileObject('C:/User/Desktop/Method Draw', 'shortcut', { src: 'C:/Program Files/Method Draw.exe' }),
-      $fs.fileObject('C:/User/Desktop/Tower Game', 'shortcut', { src: 'C:/Program Files/Tower Game.exe' }),
-      $fs.fileObject('C:/User/Desktop/Windows 93', 'shortcut', { src: 'C:/Program Files/Windows 93.exe' }),
-      $fs.fileObject('C:/User/Desktop/Snapp!', 'shortcut', { src: 'C:/Program Files/Snapp!.exe' }),
-      $fs.fileObject('C:/User/Desktop/Creator.txt', 'text', {
-        value: 'Created by Amir Momenian <nainemom@gmail.com>\nRepo Address: https://github.com/nainemom/win7',
-      }),
-    ].forEach((theFile) => $fs.createNewFile(theFile));
   },
   mounted() {
     const isFullScreen = !!window.document.fullscreenElement;
@@ -165,7 +103,6 @@ export default {
       }),
       custom('*', {
         touchAction: 'none !important',
-        // pointerEvents: 'none',
         userSelect: 'none',
         fontFamily: 'inherit',
         padding: 0,

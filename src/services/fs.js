@@ -6,20 +6,8 @@ export const fileObject = (path, type, data = {}) => ({
   data: markRaw(data),
 });
 
-const systemFiles = [
-  fileObject('C:', 'directory'),
-  fileObject('D:', 'directory'),
-  fileObject('C:/Program Files', 'directory'),
-  fileObject('C:/Windows', 'directory'),
-  fileObject('C:/User', 'directory'),
-  fileObject('C:/User/Desktop', 'directory'),
-  fileObject('C:/User/Pictures', 'directory'),
-  fileObject('C:/User/Music', 'directory'),
-  fileObject('C:/User/Documents', 'directory'),
-];
-
 export let files = reactive({
-  list: [...systemFiles],
+  list: [],
 });
 
 export const parsePath = (path) => path.split('/');
@@ -46,7 +34,6 @@ export const getDirectoryFiles = (path, recursive = false) => {
 
     return checks.every((x) => x);
   });
-
 };
 
 
