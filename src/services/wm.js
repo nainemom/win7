@@ -3,6 +3,14 @@ import UnknownIcon from '/src/assets/icons/unknown.png';
 import { resolveFileSource, resolveFileRunner, getFileWindowProperties, getPathName, fileObject } from '/src/services/fs';
 
 
+export const state = reactive({
+  started: false,
+});
+
+export const startWindowManager = () => {
+  state.started = true;
+};
+
 export const markedFiles = reactive({
   cutList: [],
   copyList: [],

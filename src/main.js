@@ -12,3 +12,7 @@ window.$fs = $fs;
 window.$app = createApp(App)
   .use(VueComponentStyle)
   .mount('#app')
+
+setTimeout(() => {
+  document.body.classList.remove('loading');
+});

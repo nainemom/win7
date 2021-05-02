@@ -1,24 +1,26 @@
 <template>
   <div :class="$style.os" @contextmenu.prevent>
-    <Desktop />
-    <Taskbar />
-    <Window
-      v-for="win in windowsList"
-      :key="win.id"
-      :window="win"
-    />
-    <ContextMenu v-bind="contextMenu" />
+    <WelcomePage v-if="!isWmStarted" />
+    <template v-else>
+      <Desktop />
+      <Taskbar />
+      <Window
+        v-for="win in windowsList"
+        :key="win.id"
+        :window="win"
+      />
+      <ContextMenu v-bind="contextMenu" />
+    </template>
   </div>
 </template>
 
 <script>
+import WelcomePage from '/src/components/WelcomePage.vue';
 import Window from '/src/components/Window.vue';
 import Desktop from '/src/components/Desktop.vue';
 import Taskbar from '/src/components/Taskbar/Taskbar.vue';
 
 import ContextMenu from '/src/components/ContextMenu.vue';
-
-import StartupSound from '/src/assets/sounds/startup.wav';
 
 import * as $fs from '/src/services/fs';
 import * as $wm from '/src/services/wm';
@@ -27,6 +29,7 @@ import { fitSize } from '/src/styles/common';
 
 export default {
   components: {
+    WelcomePage,
     Window,
     Desktop,
     Taskbar,
@@ -40,12 +43,6 @@ export default {
       $os: this,
     };
   },
-  data() {
-    return {
-      copyingFiles: [],
-      cuttingFiles: [],
-    }
-  },
   computed: {
     windowsList() {
       return $wm.windows.list;
@@ -53,30 +50,14 @@ export default {
     contextMenu() {
       return $wm.contextMenu;
     },
+    isWmStarted() {
+      return $wm.state.started;
+    },
   },
   methods: {
     openContextMenu(...args) {
       this.$refs.contextMenu.open(...args);
     },
-  },
-  mounted() {
-    const isFullScreen = !!window.document.fullscreenElement;
-    if (!isFullScreen) {
-      $wm.openDialog({
-        type: 'info',
-        title: 'Fullscreen Request',
-        content: 'Do you want to run this app in Fullscreen mode?',
-        buttons: ['Cancel', 'OK'],
-        autoClose: true,
-      }).then((btn) => {
-        if (btn === 'OK') {
-          const elem = document.documentElement;
-          const method = elem.requestFullscreen || elem.webkitRequestFullscreen || elem.msRequestFullscreen;
-          method && method.call(elem);
-        }
-        $snd.playSound(StartupSound);
-      });
-    }
   },
   errorCaptured(e) {
     $wm.openDialog({

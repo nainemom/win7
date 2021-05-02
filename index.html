@@ -5,9 +5,52 @@
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Windows 7</title>
+    <style>
+      html, body {
+        padding: 0;
+        margin: 0;
+      }
+      body #app { display: none; }
+      body #loading {
+        display: flex;
+        background: black;
+        color: white;
+        align-items: center;
+        font-family: monospace;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+        left: 0;
+        top: 0;
+        position: fixed;
+        text-align: center;
+      }
+      body:not(.loading) #app { display: block; }
+      body:not(.loading) #loading { display: none; }
+      .spinner {
+        border: 10px solid transparent;
+        border-top: 10px solid gray;
+        border-radius: 50px;
+        width: 50px;
+        height: 50px;
+        display: block;
+        margin: 0 auto 25px auto;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
   </head>
-  <body>
+  <body class="loading">
     <div id="app"></div>
+    <div id="loading">
+      <div>
+        <div class="spinner"></div> Downloading Assets and Files (~3MB)...
+      </div>
+    </div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
