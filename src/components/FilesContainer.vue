@@ -251,13 +251,13 @@ export default {
     },
     async copyOrMoveFilesHere(action, listOfFiles) {
       const doActionOnSingleFile = (filePath) => new Promise((resolve, reject) => {
-        const dst = `${this.path}/${this.$fs.getPathName(filePath)}`;
-        if (filePath !== dst) {
-          if (this.$fs.isPathExists(dst)) {
+        const newPath = `${this.path}/${this.$fs.getPathName(filePath)}`;
+        if (filePath !== newPath) {
+          if (this.$fs.isPathExists(newPath)) {
             this.$wm.openDialog({
               type: 'warning',
               title: 'File Already Exists',
-              content: `The '${dst}' is already exists. Do you want to override?`,
+              content: `The '${newPath}' is already exists. Do you want to override?`,
               buttons: ['Cancel All', 'No', 'Yes'],
               autoClose: true,
             }).then((userAnswer) => {
@@ -268,10 +268,10 @@ export default {
               }
             });
           }
-          this.$fs[`${action}FileByPath`](filePath, dst, true);
+          this.$fs[`${action}FileByPath`](filePath, newPath, true);
         }
       });
-      asyncEach(listOfFiles, (filePath) => doActionOnSingleFile(filePath));
+      asyncEach(listOfFiles, doActionOnSingleFile);
     },
     addFileToRefs(el) {
       if (el) {
