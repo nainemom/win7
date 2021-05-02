@@ -5,11 +5,54 @@
     <link rel="icon" href="/win7/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Windows 7</title>
-  <script type="module" crossorigin src="/win7/assets/index.f6db9a37.js"></script>
-  <link rel="modulepreload" href="/win7/assets/vendor.94444876.js">
+    <style>
+      html, body {
+        padding: 0;
+        margin: 0;
+      }
+      body #app { display: none; }
+      body #loading {
+        display: flex;
+        background: black;
+        color: white;
+        align-items: center;
+        font-family: monospace;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+        left: 0;
+        top: 0;
+        position: fixed;
+        text-align: center;
+      }
+      body:not(.loading) #app { display: block; }
+      body:not(.loading) #loading { display: none; }
+      .spinner {
+        border: 10px solid transparent;
+        border-top: 10px solid gray;
+        border-radius: 50px;
+        width: 50px;
+        height: 50px;
+        display: block;
+        margin: 0 auto 25px auto;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  <script type="module" crossorigin src="/win7/assets/index.53890d3a.js"></script>
+  <link rel="modulepreload" href="/win7/assets/vendor.928dc07e.js">
 </head>
-  <body>
+  <body class="loading">
     <div id="app"></div>
+    <div id="loading">
+      <div>
+        <div class="spinner"></div> Downloading Assets and Files (~3MB)...
+      </div>
+    </div>
     
   </body>
 </html>
