@@ -1,21 +1,32 @@
 <template>
   <div :class="$style.camera">
     <template v-if="!file">
-      <video ref="video" muted autoplay playsinline />
-      <span class="button" @click="takePhoto">Take Photo</span>
+      <video
+        ref="video"
+        muted
+        autoplay
+        playsinline
+      />
+      <span
+        class="button"
+        @click="takePhoto"
+      >
+        Take Photo
+      </span>
     </template>
     <template v-else>
-      <img :src="file.data.value" />
+      <img :src="file.data.value">
     </template>
   </div>
 </template>
 
 <script>
-import NotifSound from '/src/assets/sounds/notif.wav';
-import icon from '/src/assets/icons/camera.png';
-import fileIcon from '/src/assets/icons/jpg.png';
-import { rgba } from '/src/styles/utils';
-import { getPathName } from '/src/services/fs';
+import NotifSound from '../../../src/assets/sounds/notif.wav';
+import icon from '../../../src/assets/icons/camera.png';
+import fileIcon from '../../../src/assets/icons/jpg.png';
+import { props, inject } from '../../../src/utils/vue';
+import { rgba } from '../../../src/styles/utils';
+import { getPathName } from '../../../src/services/fs';
 
 export default {
   canHandle: (file) => file.type === 'image',
@@ -25,16 +36,18 @@ export default {
     height: 500,
     title: file ? getPathName(file.path) : 'Camera',
   }),
-  inject: ['$fs', '$snd'],
-  props: ['file'],
+  ...inject('$fs', '$snd'),
+  ...props({
+    file: props.obj(null),
+  }),
   mounted() {
     if (!this.file) {
       navigator.mediaDevices.getUserMedia({
         audio: false,
         video: {
-          facingMode: 'user'
-        }
-      }).then(stream => {
+          facingMode: 'user',
+        },
+      }).then((stream) => {
         this.$refs.video.srcObject = stream;
       });
     }
@@ -48,7 +61,7 @@ export default {
   },
   methods: {
     takePhoto() {
-      const canvas = document.createElement("canvas");
+      const canvas = document.createElement('canvas');
       canvas.width = this.$refs.video.clientWidth;
       canvas.height = this.$refs.video.clientHeight;
       canvas.getContext('2d').drawImage(this.$refs.video, 0, 0, canvas.width, canvas.height);
@@ -63,7 +76,7 @@ export default {
       }));
     },
   },
-  style({ className }){
+  style({ className }) {
     return [
       className('camera', {
         position: 'relative',
@@ -92,18 +105,17 @@ export default {
             ${rgba([170, 0, 0], 0.8)} 100%
           )`,
           '&:not(.disabled):hover, &:not(.disabled):focus': {
-            filter: 'brightness(1.2)'
+            filter: 'brightness(1.2)',
           },
           '&:not(.disabled):active': {
-            filter: 'brightness(0.8)'
+            filter: 'brightness(0.8)',
           },
           '&.disabled': {
             filter: 'grayscale(1)',
-          }
+          },
         },
       }),
     ];
   },
-}
+};
 </script>
-

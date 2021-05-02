@@ -1,27 +1,39 @@
 <template>
   <div :class="$style.welcomePage">
-    <button v-if="!isFullScreen" @click="startFullscreen"> Start Fullscreen </button>
-    <button @click="start"> Start Normally </button>
+    <button
+      v-if="!isFullScreen"
+      @click="startFullscreen"
+    >
+      Start Fullscreen
+    </button>
+    <button @click="start">
+      Start Normally
+    </button>
   </div>
 </template>
 
 <script>
-import { inject } from '/src/utils/vue';
-import { rgba } from '/src/styles/utils';
-import LoginWallpaper from '/src/assets/login.png';
-import StartupSound from '/src/assets/sounds/startup.wav';
+import { inject } from '../utils/vue';
+import { rgba } from '../styles/utils';
+import LoginWallpaper from '../assets/login.png';
+import StartupSound from '../assets/sounds/startup.wav';
+
 export default {
   ...inject('$wm', '$snd'),
   computed: {
     isFullScreen() {
       return !!window.document.fullscreenElement;
-    }
+    },
   },
   methods: {
     requestFullscreen() {
       const elem = document.documentElement;
-      const method = elem.requestFullscreen || elem.webkitRequestFullscreen || elem.msRequestFullscreen;
-      method && method.call(elem);
+      const method = elem.requestFullscreen
+        || elem.webkitRequestFullscreen
+        || elem.msRequestFullscreen;
+      if (method) {
+        method.call(elem);
+      }
     },
     start() {
       this.$wm.startWindowManager();
@@ -30,7 +42,7 @@ export default {
     startFullscreen() {
       this.requestFullscreen();
       this.start();
-    }
+    },
   },
   style({ className }) {
     return [
@@ -75,5 +87,5 @@ export default {
       }),
     ];
   },
-}
+};
 </script>

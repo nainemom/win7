@@ -1,19 +1,22 @@
 <template>
   <div :class="$style.desktop">
-    <FilesContainer path="C:/User/Desktop" direction="column" :file-props="{ shadow: true }" />
+    <FilesContainer
+      path="C:/User/Desktop"
+      direction="column"
+      :file-props="{ shadow: true }"
+    />
   </div>
 </template>
 
 <script>
-import { fitSize } from '/src/styles/common';
-import { inject } from '/src/utils/vue';
-import { panelSize } from '/src/styles/constants';
-import WallpaperImage from '/src/assets/wallpaper.jpg';
-import FilesContainer from '/src/components/FilesContainer.vue';
+import { fitSize } from '../styles/common';
+import { inject } from '../utils/vue';
+import { panelSize } from '../styles/constants';
+import WallpaperImage from '../assets/wallpaper.jpg';
+import FilesContainer from './FilesContainer.vue';
 
 export default {
   components: {
-    File,
     FilesContainer,
   },
   ...inject('$fs'),

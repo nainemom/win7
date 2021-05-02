@@ -1,28 +1,55 @@
 <template>
-  <div :class="$style.orb" @click.capture="showPopup" />
-  <Popup :class="$style.popupStyle" v-model:visible="popup" auto-close dark>
+  <div
+    :class="$style.orb"
+    @click.capture="showPopup"
+  />
+  <Popup
+    v-model:visible="popup"
+    :class="$style.popupStyle"
+    auto-close
+    dark
+  >
     <div :class="$style.popup">
       <div class="left-container">
         <div class="files">
-          <File v-for="file in leftContainerFiles" :key="file.path" :file="file" block dark-text single-click />
+          <File
+            v-for="file in leftContainerFiles"
+            :key="file.path"
+            :file="file"
+            block
+            dark-text
+            single-click
+          />
         </div>
-        <input ref="searchInput" class="search" placeholder="Search programs and files" v-model="searchString">
+        <input
+          ref="searchInput"
+          v-model="searchString"
+          class="search"
+          placeholder="Search programs and files"
+        >
       </div>
       <div class="right-container">
-        <File v-for="file in rightContainerFiles" :key="file.path" :file="file" block no-icon shadow single-click />
+        <File
+          v-for="file in rightContainerFiles"
+          :key="file.path"
+          :file="file"
+          block
+          no-icon
+          shadow
+          single-click
+        />
       </div>
     </div>
   </Popup>
 </template>
 
 <script>
-import { inject } from '/src/utils/vue';
-
-import { panelSize } from '/src/styles/constants';
-import Popup from '/src/components/Popup.vue';
-import File from '/src/components/File.vue';
-import OrbNormal from '/src/assets/orb/normal.png';
-import { rgba } from '/src/styles/utils';
+import Popup from '../Popup.vue';
+import File from '../File.vue';
+import { inject } from '../../utils/vue';
+import { panelSize } from '../../styles/constants';
+import OrbNormal from '../../assets/orb/normal.png';
+import { rgba } from '../../styles/utils';
 
 export default {
   ...inject('$fs'),
@@ -36,15 +63,6 @@ export default {
       searchString: '',
     };
   },
-  watch: {
-    popup(popup) {
-      if (popup) {
-        this.$nextTick(() => {
-          this.$refs.searchInput.focus();
-        });
-      }
-    },
-  },
   computed: {
     leftContainerFiles() {
       if (this.searchString) {
@@ -53,7 +71,16 @@ export default {
       return this.$fs.getDirectoryFiles('C:/Program Files');
     },
     rightContainerFiles() {
-      return this.$fs.getDirectoryFiles('C:/User/Start Menu');;
+      return this.$fs.getDirectoryFiles('C:/User/Start Menu');
+    },
+  },
+  watch: {
+    popup(popup) {
+      if (popup) {
+        this.$nextTick(() => {
+          this.$refs.searchInput.focus();
+        });
+      }
     },
   },
   methods: {
@@ -65,7 +92,7 @@ export default {
   style({ className }) {
     const height = '600px';
     const searchInputHeight = '30px';
-    const itemSize = `${(parseInt(panelSize) - 1)}px`;
+    const itemSize = `${(parseInt(panelSize, 10) - 1)}px`;
 
     return [
       className('popup', {
@@ -81,7 +108,7 @@ export default {
           border: `solid 1px ${rgba(0, 0.4)}`,
           '& > .files': {
             flexGrow: 1,
-            maxHeight: `${parseInt(height) - parseInt(searchInputHeight) - 20}px`,
+            maxHeight: `${parseInt(height, 10) - parseInt(searchInputHeight, 10) - 20}px`,
             overflow: 'auto',
           },
           '& > .search': {
@@ -101,7 +128,7 @@ export default {
       }),
       className('popupStyle', {
         left: '0',
-        bottom: `${parseInt(panelSize) + 2}px`,
+        bottom: `${parseInt(panelSize, 10) + 2}px`,
         borderBottomLeftRadius: '0 !important',
         borderBottomRightRadius: '0 !important',
         width: '550px',
@@ -118,13 +145,13 @@ export default {
         filter: 'brightness(1)',
         transition: 'filter 0.1s',
         '&:hover, &:focus': {
-          filter: 'brightness(1.2)'
+          filter: 'brightness(1.2)',
         },
         '&:active': {
-          filter: 'brightness(1)'
+          filter: 'brightness(1)',
         },
       }),
     ];
   },
-}
+};
 </script>

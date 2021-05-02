@@ -1,7 +1,8 @@
 import { reactive } from 'vue';
-import UnknownIcon from '/src/assets/icons/unknown.png';
-import { resolveFileSource, resolveFileRunner, getFileWindowProperties, getPathName, fileObject } from '/src/services/fs';
-
+import UnknownIcon from '../assets/icons/unknown.png';
+import {
+  resolveFileSource, resolveFileRunner, getFileWindowProperties, getPathName, fileObject,
+} from './fs';
 
 export const state = reactive({
   started: false,
@@ -59,24 +60,16 @@ export const windows = reactive({
 
 let latestZIndex = 20;
 
-export const openDialog = (dialogObj) => new Promise((resolve) => openFile(fileObject('', 'dialog', {
-  type: 'error',
-  content: '---',
-  buttons: ['OK'],
-  title: 'Dialog',
-  defaultInput: '',
-  autoClose: true,
-  ...dialogObj,
-  onClick: (btn) => resolve(btn),
-})));
-
 export const calculateFileWindowProperties = (_theFile) => {
   const theFile = resolveFileSource(_theFile);
   const windowProperties = getFileWindowProperties(theFile) || {};
-  const getOr = (value, defaultvalue) => typeof value === 'undefined' ? defaultvalue : value;
+  const getOr = (value, defaultvalue) => (typeof value === 'undefined' ? defaultvalue : value);
   const width = getOr(windowProperties.width, 400);
   const height = getOr(windowProperties.height, 400);
   const hidden = getOr(windowProperties.hidden, false);
+  if (!hidden) {
+    latestZIndex += 1;
+  }
   return {
     title: windowProperties.title || getPathName(theFile.path) || 'Window',
     maximizable: getOr(windowProperties.maximizable, true),
@@ -92,7 +85,7 @@ export const calculateFileWindowProperties = (_theFile) => {
     left: (window.innerWidth / 2) - (width / 2) + (Math.random() * 20) - 10,
     top: (window.innerHeight / 2) - (height / 2) + (Math.random() * 20) - 10,
     icon: getOr(windowProperties.icon, UnknownIcon),
-    zIndex: hidden ? -1 : ++latestZIndex,
+    zIndex: hidden ? -1 : latestZIndex,
   };
 };
 
@@ -105,7 +98,7 @@ export const openFile = (_theFile) => {
     id,
     ...windowProperties,
     fsData: Object.freeze({
-      runner: runner,
+      runner,
       file: runner.path !== theFile.path ? theFile : null,
     }),
   };
@@ -114,9 +107,18 @@ export const openFile = (_theFile) => {
   return win;
 };
 
-export const findWindowById = (id, returnIndex = false) => {
-  return windows.list[returnIndex ? 'findIndex' : 'find']((win) => win.id === id);
-}
+export const openDialog = (dialogObj) => new Promise((resolve) => openFile(fileObject('', 'dialog', {
+  type: 'error',
+  content: '---',
+  buttons: ['OK'],
+  title: 'Dialog',
+  defaultInput: '',
+  autoClose: true,
+  ...dialogObj,
+  onClick: (btn) => resolve(btn),
+})));
+
+export const findWindowById = (id, returnIndex = false) => windows.list[returnIndex ? 'findIndex' : 'find']((win) => win.id === id);
 
 export const closeWindow = (id) => {
   const theWinIndex = findWindowById(id, true);
@@ -128,7 +130,8 @@ export const closeWindow = (id) => {
 export const minimizeWindow = (id, _newValue) => {
   const theWin = findWindowById(id);
   const newValue = typeof _newValue !== 'boolean' ? !theWin.minimized : _newValue;
-  theWin.zIndex = newValue ? -1 : ++latestZIndex;
+  latestZIndex += 1;
+  theWin.zIndex = newValue ? -1 : latestZIndex;
   theWin.minimized = newValue;
 };
 
@@ -138,14 +141,16 @@ export const maximizeWindow = (id, _newValue) => {
     minimizeWindow(id, false);
   }
   const newValue = typeof _newValue !== 'boolean' ? !theWin.maximized : _newValue;
-  theWin.zIndex = ++latestZIndex;
+  latestZIndex += 1;
+  theWin.zIndex = latestZIndex;
   theWin.maximized = newValue;
 };
 
 export const focusWindow = (id) => {
   const theWin = findWindowById(id);
   if (theWin) {
-    theWin.zIndex = ++latestZIndex;
+    latestZIndex += 1;
+    theWin.zIndex = latestZIndex;
   }
 };
 
@@ -157,7 +162,3 @@ export const isWindowFocused = (id) => {
   }
   return false;
 };
-
-
-
-// calculateWindowProperties, openFile, findWindowById, closeWindow, focusWindow, isWindowFocused, getWindows

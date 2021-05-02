@@ -1,7 +1,13 @@
 <template>
-  <div :class="$style.taskbarClock" @click.capture="showPopup">
+  <div
+    :class="$style.taskbarClock"
+    @click.capture="showPopup"
+  >
     {{ formattedFime }}
-    <Popup :class="$style.popupStyle" v-model:visible="popup">
+    <Popup
+      v-model:visible="popup"
+      :class="$style.popupStyle"
+    >
       <div :class="$style.popup">
         <CalendarWidget />
         <ClockWidget />
@@ -11,9 +17,9 @@
 </template>
 
 <script>
-import { rgba } from '/src/styles/utils';
-import { panelSize } from '/src/styles/constants';
-import Popup from '/src/components/Popup.vue';
+import { rgba } from '../../styles/utils';
+import { panelSize } from '../../styles/constants';
+import Popup from '../Popup.vue';
 import ClockWidget from './ClockWidget.vue';
 import CalendarWidget from './CalendarWidget.vue';
 
@@ -29,6 +35,13 @@ export default {
       popup: false,
     };
   },
+  computed: {
+    formattedFime() {
+      const { time } = this;
+      const hours = (time.getHours() % 12) || 12;
+      return `${hours}:${time.getMinutes().toString().padStart(2, 0)} ${time.getHours() > 12 ? 'PM' : 'AM'}\n${time.getDate()}/${time.getMonth() + 1}/${time.getFullYear()}`;
+    },
+  },
   created() {
     setInterval(() => {
       this.time = new Date();
@@ -39,18 +52,11 @@ export default {
       this.popup = true;
     },
   },
-  computed: {
-    formattedFime() {
-      const { time } = this;
-      const hours = (time.getHours() % 12) || 12;
-      return `${hours}:${time.getMinutes().toString().padStart(2, 0)} ${time.getHours() > 12 ? 'PM':'AM'}\n${time.getDate()}/${time.getMonth() + 1}/${time.getFullYear()}`;
-    },
-  },
   style({ className }) {
     return [
       className('popupStyle', {
         right: '15px',
-        bottom: `${parseInt(panelSize) + 15}px`,
+        bottom: `${parseInt(panelSize, 10) + 15}px`,
       }),
       className('taskbarClock', {
         width: 'auto',
@@ -76,10 +82,10 @@ export default {
         '& > *': {
           '&:first-child': {
             marginRight: '15px',
-          }
-        }
+          },
+        },
       }),
     ];
   },
-}
+};
 </script>

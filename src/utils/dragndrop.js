@@ -10,9 +10,9 @@ export const drag = (bindingElement = null, handler) => {
     if (userAnswer === false) {
       return event.preventDefault();
     }
-    event.stopPropagation()
+    event.stopPropagation();
     const data = JSON.stringify(userAnswer);
-    event.dataTransfer.setData('text', data);
+    return event.dataTransfer.setData('text', data);
   };
 
   bindingElement.setAttribute('draggable', true);
@@ -23,7 +23,7 @@ export const drag = (bindingElement = null, handler) => {
       removeEventListener(bindingElement, 'dragstart', handlerParent, captureOptions);
     },
   };
-}
+};
 
 export const drop = (bindingElement = null, handler) => {
   const handlerParent = (event) => {
@@ -32,7 +32,7 @@ export const drop = (bindingElement = null, handler) => {
     if (userData) {
       const data = JSON.parse(userData);
       handler(data);
-    };
+    }
   };
   const allowDrop = (event) => {
     event.preventDefault();
@@ -47,4 +47,4 @@ export const drop = (bindingElement = null, handler) => {
       removeEventListener(bindingElement, 'drop', handlerParent, captureOptions);
     },
   };
-}
+};

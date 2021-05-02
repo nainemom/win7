@@ -1,11 +1,17 @@
 <template>
   <Teleport to="body">
-    <ul v-if="visible" :class="$style.contextMenu" :style="position" @pointerup.stop>
+    <ul
+      v-if="visible"
+      :class="$style.contextMenu"
+      :style="position"
+      @pointerup.stop
+    >
       <li
         v-for="(item, i) in items"
         :key="item + i"
         :class="!item && 'hr'"
-        @click="emitItemClick(item)">
+        @click="emitItemClick(item)"
+      >
         {{ item }}
       </li>
     </ul>
@@ -13,15 +19,14 @@
 </template>
 
 <script>
-import { inject, props } from '/src/utils/vue';
-import { each } from '/src/utils/utils';
-import { contextMenuWidth, contextMenuItemHeight } from '/src/styles/constants';
-import { rgba, px } from '/src/styles/utils';
-import { addEventListener, removeEventListener } from '/src/utils/eventListener';
-
+import { inject, props } from '../utils/vue';
+import { each } from '../utils/utils';
+import { contextMenuWidth, contextMenuItemHeight } from '../styles/constants';
+import { rgba, px } from '../styles/utils';
+import { addEventListener, removeEventListener } from '../utils/eventListener';
 
 export default {
-  // emits: ['click'],
+  emits: ['click'],
   ...props({
     visible: props.bool(false),
     event: props.any(null),
@@ -44,14 +49,17 @@ export default {
         }
       },
       immidiate: true,
-    }
+    },
+  },
+  beforeUnmount() {
+    this.unbindEvents();
   },
   methods: {
     open() {
       const { event } = this;
       let position = {
-        width: parseInt(contextMenuWidth),
-        height: parseInt(contextMenuItemHeight) * this.items.length,
+        width: parseInt(contextMenuWidth, 10),
+        height: parseInt(contextMenuItemHeight, 10) * this.items.length,
       };
       if (event) {
         event.preventDefault();
@@ -92,9 +100,6 @@ export default {
       removeEventListener(window, 'pointerup', this.close);
     },
   },
-  beforeUnmount() {
-    this.unbindEvents();
-  },
   style({ className }) {
     return [
       className('contextMenu', {
@@ -122,9 +127,9 @@ export default {
             color: rgba(255, 1),
             background: '#4082c1',
           },
-        }
+        },
       }),
     ];
   },
-}
+};
 </script>

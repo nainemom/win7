@@ -1,12 +1,14 @@
 <template>
-  <div :class="$style.showDesktop" @click="onClick" />
+  <div
+    :class="$style.showDesktop"
+    @click="onClick"
+  />
 </template>
 
 <script>
-import { panelSize } from '/src/styles/constants';
-import { rgba } from '/src/styles/utils';
-import { inject } from '/src/utils/vue';
-
+import { panelSize } from '../../styles/constants';
+import { rgba } from '../../styles/utils';
+import { inject } from '../../utils/vue';
 
 export default {
   ...inject('$wm'),
@@ -20,7 +22,7 @@ export default {
     },
   },
   style({ className }) {
-    const itemSize = `${(parseInt(panelSize) - 1)}px`;
+    const itemSize = `${(parseInt(panelSize, 10) - 1)}px`;
 
     return [
       className('showDesktop', {
@@ -45,5 +47,5 @@ export default {
       }),
     ];
   },
-}
+};
 </script>

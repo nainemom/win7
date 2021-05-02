@@ -1,19 +1,22 @@
-
 <template>
-  <div :class="[focused && 'focused', $style.taskbarRunningWindow]" @click="click" @contextmenu="openContextMenu">
-    <img :src="window.icon" /> {{ window.title }}
+  <div
+    :class="[focused && 'focused', $style.taskbarRunningWindow]"
+    @click="click"
+    @contextmenu="openContextMenu"
+  >
+    <img :src="window.icon"> {{ window.title }}
   </div>
 </template>
 
 <script>
-import { inject, props } from '/src/utils/vue';
-import { rgba } from '/src/styles/utils';
+import { inject, props } from '../../utils/vue';
+import { rgba } from '../../styles/utils';
 
 export default {
   emits: ['close', 'minimize'],
   ...inject('$wm'),
   ...props({
-    window: props.obj()
+    window: props.obj(),
   }),
   computed: {
     focused() {
@@ -97,5 +100,5 @@ export default {
       }),
     ];
   },
-}
+};
 </script>

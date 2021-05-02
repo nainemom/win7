@@ -22,6 +22,20 @@ const getPosesDiff = (posOne, posTwo) => ({
 export default (bindingElement = null, startHandler, whileHandler, finishHandler) => {
   let startPos = {};
 
+  const whileHandlerParent = (event) => {
+    const currentPos = getPosFromEvent(event);
+    const diff = getPosesDiff(currentPos, startPos);
+    whileHandler(diff, currentPos);
+  };
+
+  const finishHandlerParent = (event) => {
+    const currentPos = getPosFromEvent(event);
+    const diff = getPosesDiff(currentPos, startPos);
+    finishHandler(diff, currentPos);
+    removeEventListener(document.body, 'pointermove', whileHandlerParent, moveCaptureOptions);
+    removeEventListener(document.body, 'pointerup', finishHandlerParent, moveCaptureOptions);
+  };
+
   const startHandlerParent = (event) => {
     if (event.button !== 0) {
       return;
@@ -32,21 +46,6 @@ export default (bindingElement = null, startHandler, whileHandler, finishHandler
       addEventListener(document.body, 'pointermove', whileHandlerParent, moveCaptureOptions);
       addEventListener(document.body, 'pointerup', finishHandlerParent, moveCaptureOptions);
     }
-  };
-
-  const whileHandlerParent = (event) => {
-    const currentPos = getPosFromEvent(event);
-    const diff = getPosesDiff(currentPos, startPos);
-    whileHandler(diff, currentPos);
-  };
-
-
-  const finishHandlerParent = (event) => {
-    const currentPos = getPosFromEvent(event);
-    const diff = getPosesDiff(currentPos, startPos);
-    finishHandler(diff, currentPos);
-    removeEventListener(document.body, 'pointermove', whileHandlerParent, moveCaptureOptions);
-    removeEventListener(document.body, 'pointerup', finishHandlerParent, moveCaptureOptions);
   };
 
   addEventListener(bindingElement, 'pointerdown', startHandlerParent, captureOptions);
@@ -62,4 +61,4 @@ export default (bindingElement = null, startHandler, whileHandler, finishHandler
       removeEventListener(document.body, 'pointerup', finishHandlerParent, moveCaptureOptions);
     },
   };
-}
+};

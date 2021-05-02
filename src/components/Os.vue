@@ -1,5 +1,8 @@
 <template>
-  <div :class="$style.os" @contextmenu.prevent>
+  <div
+    :class="$style.os"
+    @contextmenu.prevent
+  >
     <WelcomePage v-if="!isWmStarted" />
     <template v-else>
       <Desktop />
@@ -15,17 +18,16 @@
 </template>
 
 <script>
-import WelcomePage from '/src/components/WelcomePage.vue';
-import Window from '/src/components/Window.vue';
-import Desktop from '/src/components/Desktop.vue';
-import Taskbar from '/src/components/Taskbar/Taskbar.vue';
+import WelcomePage from './WelcomePage.vue';
+import Window from './Window.vue';
+import Desktop from './Desktop.vue';
+import Taskbar from './Taskbar/Taskbar.vue';
+import ContextMenu from './ContextMenu.vue';
 
-import ContextMenu from '/src/components/ContextMenu.vue';
-
-import * as $fs from '/src/services/fs';
-import * as $wm from '/src/services/wm';
-import * as $snd from '/src/services/snd';
-import { fitSize } from '/src/styles/common';
+import * as $fs from '../services/fs';
+import * as $wm from '../services/wm';
+import * as $snd from '../services/snd';
+import { fitSize } from '../styles/common';
 
 export default {
   components: {
@@ -54,11 +56,6 @@ export default {
       return $wm.state.started;
     },
   },
-  methods: {
-    openContextMenu(...args) {
-      this.$refs.contextMenu.open(...args);
-    },
-  },
   errorCaptured(e) {
     $wm.openDialog({
       type: 'error',
@@ -68,6 +65,11 @@ export default {
       autoClose: true,
     });
     return false;
+  },
+  methods: {
+    openContextMenu(...args) {
+      this.$refs.contextMenu.open(...args);
+    },
   },
   style({ className, custom }) {
     return [

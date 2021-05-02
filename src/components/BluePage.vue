@@ -1,5 +1,8 @@
 <template>
-  <div :class="$style.bluePage" v-show="value" >
+  <div
+    v-show="value"
+    :class="$style.bluePage"
+  >
     <div class="content">
       Problem has been detected and windows has been restart to prevent damage on your computer.
       <br>
@@ -13,10 +16,16 @@
       If this is the first time you've seen this stop error screen, Follow these steps:
       <br>
       <br>
-      Check to make sure any new hardware or software is properly installed. If this is a new installation, ask your hardware or software manufacturer or any windows updates you might need.
+      Check to make sure any new hardware or software is properly installed.
+      If this is a new installation,
+      ask your hardware or software manufacturer or any windows updates you might need.
       <br>
       <br>
-      If problems continue, disable or remove any newly installed hardware or software. Disable BIOS memory options such as caching or shadowing. If you need to use safe mode to remove or disable components, restart sour computer, press F8 to select Advanced startup Options, and then select safe mode.
+      If problems continue,
+      disable or remove any newly installed hardware or software.
+      Disable BIOS memory options such as caching or shadowing.
+      If you need to use safe mode to remove or disable components,
+      restart sour computer, press F8 to select Advanced startup Options, and then select safe mode.
       <br>
       <br>
       <br>
@@ -54,7 +63,7 @@ export default {
           this.$emit('update:value', false);
         }, 5000);
       }
-    }
+    },
   },
   style({ className }) {
     return [
@@ -75,5 +84,5 @@ export default {
       }),
     ];
   },
-}
+};
 </script>

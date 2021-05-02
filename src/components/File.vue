@@ -1,18 +1,53 @@
 <template>
-  <div :class="[$style.desktopIcon, selected && 'selected', isCutting && 'cutting', renaming && 'renaming']" @dblclick="click" @click="click" @pointerdown="selectIf" draggable="true">
-    <div class="icons" v-if="!noIcon">
-      <img class="icon" :src="icon" draggable="false" />
-      <img v-if="shortcutIcon" class="shortcut" :src="shortcutIcon" draggable="false" />
+  <div
+    :class="[
+      $style.desktopIcon,
+      selected && 'selected',
+      isCutting && 'cutting',
+      renaming && 'renaming'
+    ]"
+    draggable="true"
+    @dblclick="click"
+    @click="click"
+    @pointerdown="selectIf"
+  >
+    <div
+      v-if="!noIcon"
+      class="icons"
+    >
+      <img
+        class="icon"
+        :src="icon"
+        draggable="false"
+      >
+      <img
+        v-if="shortcutIcon"
+        class="shortcut"
+        :src="shortcutIcon"
+        draggable="false"
+      >
     </div>
-    <div class="name" v-if="!renaming"> {{ name }} </div>
-    <input class="name" v-if="renaming" ref="renameInput" v-model="renaming" @keypress.enter="renameDone" @blur="renameDone(false)"/>
+    <div
+      v-if="!renaming"
+      class="name"
+    >
+      {{ name }}
+    </div>
+    <input
+      v-if="renaming"
+      ref="renameInput"
+      v-model="renaming"
+      class="name"
+      @keypress.enter="renameDone"
+      @blur="renameDone(false)"
+    >
   </div>
 </template>
 
 <script>
-import { inject, props } from '/src/utils/vue';
-import ShortcutIcon from '/src/assets/icons/shortcut.png';
-import { rgba } from '/src/styles/utils';
+import { inject, props } from '../utils/vue';
+import ShortcutIcon from '../assets/icons/shortcut.png';
+import { rgba } from '../styles/utils';
 
 export default {
   ...props({
@@ -31,8 +66,25 @@ export default {
       renaming: false,
     };
   },
+  computed: {
+    icon() {
+      return this.$wm.calculateFileWindowProperties(this.file).icon;
+    },
+    shortcutIcon() {
+      return this.file.type === 'shortcut' ? ShortcutIcon : '';
+    },
+    name() {
+      return this.$fs.getPathName(this.file.path);
+    },
+    isCutting() {
+      return this.$wm.markedFiles.cutList.includes(this.file.path);
+    },
+    isCopying() {
+      return this.$wm.markedFiles.copyList.includes(this.file.path);
+    },
+  },
   methods: {
-    select(e) {
+    select() {
       if (this.$filesContainer) {
         this.$filesContainer.unselectAll();
         this.selected = true;
@@ -41,7 +93,10 @@ export default {
     selectIf() {
       if (this.$filesContainer) {
         const selectedFiles = this.$filesContainer.getSelectedFiles();
-        if (selectedFiles.length === 0 || selectedFiles.findIndex(file => file.file.path === this.file.path) === -1) {
+        if (
+          selectedFiles.length === 0
+          || selectedFiles.findIndex((file) => file.file.path === this.file.path) === -1
+        ) {
           this.select();
         }
       }
@@ -65,24 +120,7 @@ export default {
         this.$fs.moveFileByPath(this.file.path, `${this.$fs.getPathDir(this.file.path)}/${this.renaming}`);
       }
       this.renaming = false;
-    }
-  },
-  computed: {
-    icon() {
-      return this.$wm.calculateFileWindowProperties(this.file).icon;
     },
-    shortcutIcon() {
-      return this.file.type === 'shortcut' ? ShortcutIcon : '';
-    },
-    name() {
-      return this.$fs.getPathName(this.file.path);
-    },
-    isCutting() {
-      return this.$wm.markedFiles.cutList.includes(this.file.path);
-    },
-    isCopying() {
-      return this.$wm.markedFiles.copyList.includes(this.file.path);
-    }
   },
   style({ className }) {
     return [
@@ -139,9 +177,9 @@ export default {
             bottom: 0,
             height: '36px',
             width: '36px',
-          }
+          },
         },
-        '& > .name':{
+        '& > .name': {
           width: '100%',
           maxWidth: '100%',
           overflow: 'hidden',
@@ -167,7 +205,7 @@ export default {
           overflow: 'visible',
           width: 'auto',
           maxWidth: 'auto',
-        }
+        },
       }),
     ];
   },

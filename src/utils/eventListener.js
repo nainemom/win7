@@ -1,5 +1,5 @@
-const parseEl = el => Array.isArray(el) ? el : [el];
-const parseEvt = evt => Array.isArray(evt) ? evt : evt.split(',');
+const parseEl = (el) => (Array.isArray(el) ? el : [el]);
+const parseEvt = (evt) => (Array.isArray(evt) ? evt : evt.split(','));
 
 export const addEventListener = (el, evt, handler, options = false) => {
   const elList = parseEl(el);
@@ -19,4 +19,4 @@ export const removeEventListener = (el, evt, handler, options = false) => {
       elItem.removeEventListener(evtItem, handler, options);
     });
   });
-}
+};

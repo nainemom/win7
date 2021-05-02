@@ -1,3 +1,4 @@
+/* eslint-disable no-console, import/no-extraneous-dependencies */
 const process = require('process');
 const ghpages = require('gh-pages');
 

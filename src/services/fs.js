@@ -6,7 +6,7 @@ export const fileObject = (path, type, data = {}) => ({
   data: markRaw(data),
 });
 
-export let files = reactive({
+export const files = reactive({
   list: [],
 });
 
@@ -18,24 +18,32 @@ export const getPathName = (path) => {
 };
 export const getPathDir = (path) => {
   const parsedPath = parsePath(path);
-  parsedPath.length && parsedPath.splice(parsedPath.length -1, 1);
+  if (parsedPath.length) {
+    parsedPath.splice(parsedPath.length - 1, 1);
+  }
   return parsedPath.join('/');
 };
 
-export const getDirectoryFiles = (path, recursive = false) => {
-  return files.list.filter((fileItem) => {
-    const dirPath = getPathDir(fileItem.path);
-    const checks = [
-      dirPath === path,
-    ];
-    if (recursive) {
-      checks.push(dirPath.startsWith(`${path}/`))
-    };
+export const getDirectoryFiles = (path, recursive = false) => files.list.filter((fileItem) => {
+  const dirPath = getPathDir(fileItem.path);
+  const checks = [
+    dirPath === path,
+  ];
+  if (recursive) {
+    checks.push(dirPath.startsWith(`${path}/`));
+  }
 
-    return checks.every((x) => x);
-  });
+  return checks.every((x) => x);
+});
+
+export const isPathExists = (path) => {
+  for (let i = files.list.length - 1; i >= 0; i -= 1) {
+    if (files.list[i].path === path) {
+      return true;
+    }
+  }
+  return false;
 };
-
 
 export const createNewFile = (theFile) => {
   if (files.list.find((fileItem) => fileItem.path === theFile.path)) {
@@ -49,14 +57,15 @@ export const createNewFolder = (basePath) => {
   if (!basePath) {
     throw new Error('Cannot Create Folder in Root Dir!');
   }
-  const directoryFiles = getDirectoryFiles(basePath);
   const newName = (i) => `New Folder${i > 1 ? ` (${i})` : ''}`;
-  let name = newName(0);
   let i = 1;
-  while (directoryFiles.find((fileItem) => getPathName(fileItem.path) === name)) {
-    name = newName(i++);
-  };
-  const theFile = fileObject(`${basePath}/${name}`, 'directory');
+  let newFolderPath;
+  do {
+    newFolderPath = `${basePath}/${newName(i)}`;
+    i += 1;
+  } while (isPathExists(newFolderPath));
+
+  const theFile = fileObject(newFolderPath, 'directory');
   return createNewFile(theFile);
 };
 
@@ -71,7 +80,6 @@ export const resolveFileSource = (theFile) => {
   }
   return theFile;
 };
-
 
 export const resolveFileRunner = (_thefile) => {
   const theFile = resolveFileSource(_thefile);
@@ -91,58 +99,49 @@ export const resolveFileRunner = (_thefile) => {
   return runner;
 };
 
+export const isPathsRelated = (pathBase, pathCheck) => pathBase === pathCheck
+  || getPathDir(pathCheck) === pathBase;
+
 export const deleteFileByPath = (path) => {
   if (getPathDir(path) === '') {
-    throw new Error(`Cannot delete root directory files!`);
+    throw new Error('Cannot delete root directory files!');
   }
-  for(let i = files.list.length - 1; i >= 0; i--) {
+  for (let i = files.list.length - 1; i >= 0; i -= 1) {
     if (isPathsRelated(path, files.list[i].path)) {
       files.list.splice(i, 1);
     }
-  };
+  }
 };
-
-export const isPathsRelated = (pathBase, pathCheck) => pathBase === pathCheck || getPathDir(pathCheck) === pathBase;
-
-
-export const isPathExists = (path) => {
-  for(let i = files.list.length - 1; i >= 0; i--) {
-    if (files.list[i].path === path) {
-      return true;
-    }
-  };
-  return false;
-}
 
 export const moveAndCopyCheck = (pathFrom, pathTo) => {
   if (getPathDir(pathFrom) === '' || getPathDir(pathTo) === '') {
-    throw new Error(`Cannot change root directory files!`);
+    throw new Error('Cannot change root directory files!');
   }
-  return true;
-}
-
-export const moveFileByPath = (pathFrom, pathTo, force = false) => {
-  moveAndCopyCheck(pathFrom, pathTo);
-  for(let i = files.list.length - 1; i >= 0; i--) {
-    if (isPathsRelated(pathTo, files.list[i].path)) {
-      deleteFileByPath(pathTo);
-    };
-  };
-  for(let i = files.list.length - 1; i >= 0; i--) {
-    if (isPathsRelated(pathFrom, files.list[i].path)) {
-      files.list[i].path = files.list[i].path.replace(pathFrom, pathTo);
-    };
-  };
   return true;
 };
 
-export const copyFileByPath = (pathFrom, pathTo, force = false) => {
+export const moveFileByPath = (pathFrom, pathTo) => {
   moveAndCopyCheck(pathFrom, pathTo);
-  for(let i = files.list.length - 1; i >= 0; i--) {
+  for (let i = files.list.length - 1; i >= 0; i -= 1) {
     if (isPathsRelated(pathTo, files.list[i].path)) {
       deleteFileByPath(pathTo);
-    };
-  };
+    }
+  }
+  for (let i = files.list.length - 1; i >= 0; i -= 1) {
+    if (isPathsRelated(pathFrom, files.list[i].path)) {
+      files.list[i].path = files.list[i].path.replace(pathFrom, pathTo);
+    }
+  }
+  return true;
+};
+
+export const copyFileByPath = (pathFrom, pathTo) => {
+  moveAndCopyCheck(pathFrom, pathTo);
+  for (let i = files.list.length - 1; i >= 0; i -= 1) {
+    if (isPathsRelated(pathTo, files.list[i].path)) {
+      deleteFileByPath(pathTo);
+    }
+  }
   const theFile = resolveFileByPath(pathFrom);
   const clonedFile = {
     ...theFile,
@@ -155,8 +154,10 @@ export const copyFileByPath = (pathFrom, pathTo, force = false) => {
   return true;
 };
 
-export const searchFiles = (basePath, matcher, recursive = true) =>
-  getDirectoryFiles(basePath, recursive).filter(matcher);
+export const searchFiles = (basePath, matcher, recursive = true) => getDirectoryFiles(
+  basePath,
+  recursive,
+).filter(matcher);
 
 export const getFileWindowProperties = (_theFile) => {
   const theFile = resolveFileSource(_theFile);
@@ -164,22 +165,4 @@ export const getFileWindowProperties = (_theFile) => {
   const isNotApp = theFile.type !== 'app';
   const ret = runner && runner.data && runner.data.component && typeof runner.data.component.windowProperties === 'function' ? runner.data.component.windowProperties(isNotApp && theFile) : {};
   return ret;
-}
-// {
-//   files,
-//   fileObject,
-//   initFs,
-//   parsePath,
-//   getPathName,
-//   createNewFile,
-//   createNewFolder,
-//   resolveTruePath,
-//   installApp,
-//   installSystemApp,
-//   getDirectoryFiles,
-//   resolveFile,
-//   getPathRunner,
-//   deleteFile,
-//   searchFiles,
-//   getFileWindowProperties,
-// }
+};

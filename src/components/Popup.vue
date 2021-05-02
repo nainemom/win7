@@ -1,11 +1,12 @@
 <template>
   <Teleport to="body">
     <div
-      :class="$style.staticWindow"
+      v-if="visible"
       v-bind="$attrs"
       ref="popup"
+      :class="$style.staticWindow"
       @pointerup.stop="closeIf"
-      v-if="visible">
+    >
       <div :class="$style.content">
         <slot />
       </div>
@@ -14,13 +15,13 @@
 </template>
 
 <script>
-import { rgba } from '/src/styles/utils';
-import { props } from '/src/utils/vue';
-import { addEventListener, removeEventListener } from '/src/utils/eventListener';
+import { rgba } from '../styles/utils';
+import { props } from '../utils/vue';
+import { addEventListener, removeEventListener } from '../utils/eventListener';
 
 export default {
-  emits: ['update:visible'],
   inheritAttrs: false,
+  emits: ['update:visible'],
   ...props({
     visible: props.bool(false),
     autoClose: props.bool(false),
@@ -32,20 +33,23 @@ export default {
         if (visible) {
           setTimeout(() => {
             this.bindEvents();
-          })
+          });
         } else {
           this.unbindEvents();
         }
       },
       immidiate: true,
-    }
+    },
+  },
+  beforeUnmount() {
+    this.unbindEvents();
   },
   methods: {
     closeIf(event) {
       if (this.autoClose || !this.$refs.popup.contains(event.target)) {
         setTimeout(() => {
           this.$emit('update:visible', false);
-        })
+        });
       }
     },
     bindEvents() {
@@ -54,9 +58,6 @@ export default {
     unbindEvents() {
       removeEventListener(window, 'pointerup', this.closeIf);
     },
-  },
-  beforeUnmount() {
-    this.unbindEvents();
   },
   style({ className }) {
     const baseAlpha = 0.1;
@@ -100,5 +101,5 @@ export default {
       }),
     ];
   },
-}
+};
 </script>

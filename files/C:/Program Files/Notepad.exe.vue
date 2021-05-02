@@ -4,31 +4,38 @@
       <span @click="save"> Save </span>
       <span @click="exit"> Exit </span>
     </div>
-    <textarea ref="textarea" v-model="value" />
+    <textarea
+      ref="textarea"
+      v-model="value"
+    />
   </div>
 </template>
 
 <script>
-import icon from '/src/assets/icons/notepad.png';
-import fileIcon from '/src/assets/icons/txt.png';
-import { rgba } from '/src/styles/utils';
+import icon from '../../../src/assets/icons/notepad.png';
+import fileIcon from '../../../src/assets/icons/txt.png';
+import { rgba } from '../../../src/styles/utils';
+import { props, inject } from '../../../src/utils/vue';
 
 export default {
-  inject: ['$wm', '$fs'],
+  ...inject('$wm', '$fs'),
   canHandle: (file) => file.type === 'text',
   windowProperties: (file) => ({
     icon: file ? fileIcon : icon,
     width: 600,
     height: 500,
   }),
-  props: ['file', 'wmId'],
-  mounted() {
-    this.$refs.textarea.focus();
-  },
+  ...props({
+    file: props.obj(null),
+    wmId: props.any(),
+  }),
   data() {
     return {
       value: this.file ? this.file.data.value : '',
-    }
+    };
+  },
+  mounted() {
+    this.$refs.textarea.focus();
   },
   methods: {
     exit() {
@@ -55,7 +62,7 @@ export default {
       }
     },
   },
-  style({ className }){
+  style({ className }) {
     return [
       className('notepad', {
         background: '#fff',
@@ -74,7 +81,7 @@ export default {
           },
           '& > *:not(:last-child)': {
             borderRight: `solid 1px ${rgba(0, 0.1)}`,
-          }
+          },
         },
         '& > textarea': {
           border: 'none',
@@ -86,11 +93,10 @@ export default {
           '&:focus': {
             border: 'none',
             outline: 'none',
-          }
-        }
+          },
+        },
       }),
     ];
   },
-}
+};
 </script>
-

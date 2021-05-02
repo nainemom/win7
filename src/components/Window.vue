@@ -1,42 +1,77 @@
 <template>
   <div
-    :class="[$style.window, focused && 'focused', window.maximized && 'maximized', window.minimized && 'minimized', window.resizable && 'resizable']"
-    :style="{ zIndex: window.zIndex }"
     v-show="!window.hidden"
-    @click.capture="focus">
+    :class="[
+      $style.window, focused && 'focused',
+      window.maximized && 'maximized',
+      window.minimized && 'minimized',
+      window.resizable && 'resizable'
+    ]"
+    :style="{ zIndex: window.zIndex }"
+    @click.capture="focus"
+  >
     <div :class="$style.titlebar">
-      <div class="title" ref="title">
-        <img :src="window.icon" />
-        {{window.title}}
+      <div
+        ref="title"
+        class="title"
+      >
+        <img :src="window.icon">
+        {{ window.title }}
       </div>
-      <div class="buttons" :class="focused && 'focused'">
-        <div class="minimize" v-if="window.minimizable" @click="minimize">
-          <img :src="icons.minimize" />
+      <div
+        class="buttons"
+        :class="focused && 'focused'"
+      >
+        <div
+          v-if="window.minimizable"
+          class="minimize"
+          @click="minimize"
+        >
+          <img :src="icons.minimize">
         </div>
-        <div class="maximize" v-if="window.maximizable" @click="maximize">
-          <img v-if="window.maximized" :src="icons.unmaximize" />
-          <img v-else :src="icons.maximize" />
+        <div
+          v-if="window.maximizable"
+          class="maximize"
+          @click="maximize"
+        >
+          <img
+            v-if="window.maximized"
+            :src="icons.unmaximize"
+          >
+          <img
+            v-else
+            :src="icons.maximize"
+          >
         </div>
-        <div class="close" v-if="window.closable" @click="close">
-          <img :src="icons.close" />
+        <div
+          v-if="window.closable"
+          class="close"
+          @click="close"
+        >
+          <img :src="icons.close">
         </div>
       </div>
     </div>
-    <!-- <div :class="$style.content"> {{ window }} </div> -->
-    <component :class="$style.content" ref="content" :is="window.fsData.runner.data.component" :file="window.fsData.file" :wm-id="window.id" />
+    <component
+      :is="window.fsData.runner.data.component"
+      ref="content"
+      :class="$style.content"
+      :file="window.fsData.file"
+      :wm-id="window.id"
+    />
   </div>
 </template>
 
 <script>
-import { inject, props } from '/src/utils/vue';
-import { each } from '/src/utils/utils';
-import { rgba, px } from '/src/styles/utils';
-import { panelSize } from '/src/styles/constants';
-import swipe from '/src/utils/swipe';
-import MaximizeIcon from '/src/assets/window/maximize.png';
-import UnmaximizeIcon from '/src/assets/window/unmaximize.png';
-import MinimizeIcon from '/src/assets/window/minimize.png';
-import CloseIcon from '/src/assets/window/close.png';
+import { inject, props } from '../utils/vue';
+import { each } from '../utils/utils';
+import { rgba, px } from '../styles/utils';
+import { panelSize } from '../styles/constants';
+import swipe from '../utils/swipe';
+import MaximizeIcon from '../assets/window/maximize.png';
+import UnmaximizeIcon from '../assets/window/unmaximize.png';
+import MinimizeIcon from '../assets/window/minimize.png';
+import CloseIcon from '../assets/window/close.png';
 
 export default {
   ...props({
@@ -79,7 +114,9 @@ export default {
     }
   },
   beforeUnmount() {
-    this.mover && this.mover.stop();
+    if (this.mover) {
+      this.mover.stop();
+    }
   },
   methods: {
     close() {
@@ -241,10 +278,10 @@ export default {
               borderRight: `solid 1px ${rgba(0, 0.4)}`,
             },
             '&:hover': {
-              filter: 'brightness(1.3)'
+              filter: 'brightness(1.3)',
             },
             '&:active': {
-              filter: 'brightness(0.9)'
+              filter: 'brightness(0.9)',
             },
           },
           '& > .close': {
@@ -273,5 +310,5 @@ export default {
       }),
     ];
   },
-}
+};
 </script>

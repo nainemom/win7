@@ -1,39 +1,52 @@
 <template>
-  <div :class="$style.filesContainer" @contextmenu="openContextMenu">
-    <File v-for="file in dirFiles" :ref="addFileToRefs" :key="file.path" :file="file" v-bind="fileProps" />
-    <div v-if="selecting" ref="selection" :class="$style.selection" />
+  <div
+    :class="$style.filesContainer"
+    @contextmenu="openContextMenu"
+  >
+    <File
+      v-for="file in dirFiles"
+      :ref="addFileToRefs"
+      :key="file.path"
+      :file="file"
+      v-bind="fileProps"
+    />
+    <div
+      v-if="selecting"
+      ref="selection"
+      :class="$style.selection"
+    />
   </div>
 </template>
 
 <script>
-import { rgba, px } from '/src/styles/utils';
-import { props, provideAs, inject } from '/src/utils/vue';
-import { offsetTo } from '/src/utils/utils';
-import swipe from '/src/utils/swipe';
-import { drag, drop } from '/src/utils/dragndrop';
-import File from '/src/components/File.vue';
+import { rgba, px } from '../styles/utils';
+import { props, provideAs, inject } from '../utils/vue';
+import { offsetTo, asyncEach } from '../utils/utils';
+import swipe from '../utils/swipe';
+import { drag, drop } from '../utils/dragndrop';
+import File from './File.vue';
 
 const fixSelectionPosition = (selection) => {
-    if (!selection) {
-      return null;
-    }
-    const ret = {};
-    if (selection.width < 0) {
-      ret.left = selection.left + selection.width;
-      ret.width = Math.abs(selection.width);
-    } else {
-      ret.left = selection.left;
-      ret.width = selection.width;
-    }
-    if (selection.height < 0) {
-      ret.top = selection.top + selection.height;
-      ret.height = Math.abs(selection.height);
-    } else {
-      ret.top = selection.top;
-      ret.height = selection.height;
-    }
-    return ret;
-}
+  if (!selection) {
+    return null;
+  }
+  const ret = {};
+  if (selection.width < 0) {
+    ret.left = selection.left + selection.width;
+    ret.width = Math.abs(selection.width);
+  } else {
+    ret.left = selection.left;
+    ret.width = selection.width;
+  }
+  if (selection.height < 0) {
+    ret.top = selection.top + selection.height;
+    ret.height = Math.abs(selection.height);
+  } else {
+    ret.top = selection.top;
+    ret.height = selection.height;
+  }
+  return ret;
+};
 
 export default {
   ...inject('$wm', '$fs'),
@@ -55,7 +68,7 @@ export default {
       selecting: false,
       fileRefs: [],
       selectionRectangle: null,
-    }
+    };
   },
   computed: {
     staticPath() {
@@ -79,15 +92,26 @@ export default {
     this.dragger = drag(this.$el, this.onDrag);
   },
   beforeUnmount() {
-    this.mover && this.mover.stop();
-    this.droper && this.droper.stop();
-    this.dragger && this.dragger.stop();
+    if (this.mover) {
+      this.mover.stop();
+    }
+    if (this.droper) {
+      this.droper.stop();
+    }
+    if (this.dragger) {
+      this.dragger.stop();
+    }
+  },
+  beforeUpdate() {
+    this.fileRefs = [];
   },
   methods: {
     onDrag(e) {
       const isOnFile = this.isEventOnFile(e);
       if (isOnFile) {
-        this.mover && this.mover.cancelMove();
+        if (this.mover) {
+          this.mover.cancelMove();
+        }
         this.$nextTick(() => {
           this.selecting = false;
           this.$el.style.overflow = null;
@@ -118,7 +142,6 @@ export default {
           ...(this.staticPath ? ['Create New Folder', 'Create New Text File'] : []),
           ...(this.staticPath && (this.$wm.markedFiles.copyList.length || this.$wm.markedFiles.cutList.length) ? ['Paste'] : []),
         ];
-
       } else {
         contextMenuItems = [
           ...contextMenuItems,
@@ -150,7 +173,7 @@ export default {
         } else if (item === 'Create New Folder') {
           this.$fs.createNewFolder(this.path);
         } else if (item === 'Create New Text File') {
-          const dst =  `${this.path}/Text File ${Date.now()}.txt`;
+          const dst = `${this.path}/Text File ${Date.now()}.txt`;
           this.$fs.createNewFile(this.$fs.fileObject(dst, 'text'));
         } else if (item === 'Rename') {
           selectedFiles.forEach((file) => file.startRename());
@@ -185,7 +208,7 @@ export default {
         width: pos.left,
         height: pos.top,
       });
-      Object.keys(selection|| {}).forEach((key) => {
+      Object.keys(selection || {}).forEach((key) => {
         this.$refs.selection.style[key] = px(selection[key]);
       });
     },
@@ -198,8 +221,14 @@ export default {
       });
 
       const inRange = (fp, sp) => (
-        ((fp.left > sp.left && fp.left+fp.width < sp.left+sp.width) || (fp.left+fp.width > sp.left && fp.left < sp.left+sp.width)) &&
-        ((fp.top > sp.top && fp.top+fp.height < sp.top+sp.height) || (fp.top+fp.height > sp.top && fp.top < sp.top+sp.height))
+        (
+          (fp.left > sp.left && fp.left + fp.width < sp.left + sp.width)
+          || (fp.left + fp.width > sp.left && fp.left < sp.left + sp.width)
+        )
+        && (
+          (fp.top > sp.top && fp.top + fp.height < sp.top + sp.height)
+          || (fp.top + fp.height > sp.top && fp.top < sp.top + sp.height)
+        )
       );
       this.fileRefs.forEach((file) => {
         const el = file.$el;
@@ -209,44 +238,46 @@ export default {
           left: el.offsetLeft,
           top: el.offsetTop,
         };
+        // eslint-disable-next-line no-param-reassign
         file.selected = inRange(filePos, selectionPos);
       });
       this.selecting = false;
     },
     unselectAll() {
       this.fileRefs.forEach((file) => {
+        // eslint-disable-next-line no-param-reassign
         file.selected = false;
       });
     },
-    async copyOrMoveFilesHere(action='copy', listOfFiles) {
-      for (let i = 0; i < listOfFiles.length; i++) {
-        const filePath = listOfFiles[i];
-        const dst =  `${this.path}/${this.$fs.getPathName(filePath)}`;
+    async copyOrMoveFilesHere(action, listOfFiles) {
+      const doActionOnSingleFile = (filePath) => new Promise((resolve, reject) => {
+        const dst = `${this.path}/${this.$fs.getPathName(filePath)}`;
         if (filePath !== dst) {
           if (this.$fs.isPathExists(dst)) {
-            const userAnswer = await this.$wm.openDialog({
+            this.$wm.openDialog({
               type: 'warning',
               title: 'File Already Exists',
               content: `The '${dst}' is already exists. Do you want to override?`,
               buttons: ['Cancel All', 'No', 'Yes'],
               autoClose: true,
+            }).then((userAnswer) => {
+              if (userAnswer === 'No') {
+                resolve();
+              } else if (userAnswer === 'Cancel All') {
+                reject(new Error('canceled'));
+              }
             });
-            if (userAnswer === 'No') {
-              continue;
-            } else if (userAnswer === 'Cancel All') {
-              break;
-            }
           }
           this.$fs[`${action}FileByPath`](filePath, dst, true);
         }
-      }
+      });
+      asyncEach(listOfFiles, (filePath) => doActionOnSingleFile(filePath));
     },
     addFileToRefs(el) {
-      el && this.fileRefs.push(el);
+      if (el) {
+        this.fileRefs.push(el);
+      }
     },
-  },
-  beforeUpdate() {
-    this.fileRefs = []
   },
   style({ className }) {
     return [
@@ -276,5 +307,5 @@ export default {
       }),
     ];
   },
-}
+};
 </script>

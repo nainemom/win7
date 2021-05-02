@@ -8,6 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
+    "lint": "eslint **/*.{js,vue}",
+    "lint:fix": "npm run lint -- --fix",
     "deploy": "npm run build -- --base=/win7/ && node build/deploy.js"
   },
   "dependencies": {
@@ -15,9 +17,14 @@
     "vue-component-style": "^1.1.0"
   },
   "devDependencies": {
+    "@rollup/plugin-eslint": "^8.0.1",
     "@vitejs/plugin-vue": "^1.2.1",
     "@vue/compiler-sfc": "^3.0.5",
     "datauri": "^3.0.0",
+    "eslint": "^7.25.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-vue": "^7.9.0",
     "gh-pages": "^3.1.0",
     "vite": "^2.1.5"
   }

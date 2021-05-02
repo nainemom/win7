@@ -1,7 +1,7 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import path from 'path';
 import fs from 'fs';
 import datauri from 'datauri/sync';
-
 
 const FILES_DIR = path.resolve(__dirname, '../../files');
 
@@ -11,7 +11,7 @@ const getFileObjectOfFsFile = (filePath) => {
   try {
     const stat = fs.lstatSync(filePath);
     const appPath = (() => {
-      let withExt = filePath.replace(`${FILES_DIR}/`, '');
+      const withExt = filePath.replace(`${FILES_DIR}/`, '');
       return withExt.replace(path.extname(withExt), '');
     })();
 
@@ -56,12 +56,11 @@ const getFileObjectOfFsFile = (filePath) => {
     return [appPath, fileType, {
       value: datauri(filePath).content,
     }];
-
-  } catch(e) {
+  } catch (e) {
     return false;
   }
-}
-const getDirFiles = (dir) => fs.readdirSync(dir).filter(x => !['.gitkeep', '.files'].includes(x)).map(x => path.resolve(dir, x))
+};
+const getDirFiles = (dir) => fs.readdirSync(dir).filter((x) => !['.gitkeep', '.files'].includes(x)).map((x) => path.resolve(dir, x));
 
 const calcListOfFiles = (dir) => {
   let expRet = [];
@@ -89,20 +88,18 @@ const calcListOfFiles = (dir) => {
       impRet = [
         ...impRet,
         ...subList.impRet,
-      ]
+      ];
       expRet = [
         ...expRet,
         ...subList.expRet,
       ];
     }
-
   });
   return {
     impRet,
     expRet,
   };
-}
-
+};
 
 export default () => ({
   name: 'files',
@@ -111,11 +108,12 @@ export default () => ({
       let codeImport = '';
       let codeExport = 'export default [';
       const files = calcListOfFiles(FILES_DIR);
-      files.impRet.forEach(({name, from}) => {
-        codeImport = `${codeImport}import ${name} from '${from}';\n`
+      files.impRet.forEach(({ name, from }) => {
+        codeImport = `${codeImport}import ${name} from '${from}';\n`;
       });
       files.expRet.forEach((fileObj) => {
-        codeExport += `${JSON.stringify(fileObj).split('"%').join('').split('%"').join('')},`
+        codeExport += `${JSON.stringify(fileObj).split('"%').join('').split('%"')
+          .join('')},`;
       });
       codeExport += ']';
       return {
@@ -123,5 +121,6 @@ export default () => ({
         code: `${codeImport}${codeExport}`,
       };
     }
-  }
+    return null;
+  },
 });

@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { openFile } from './wm';
 import { fileObject } from './fs';
 
