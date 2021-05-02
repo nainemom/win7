@@ -15,7 +15,7 @@ export const asyncEach = (obj, cb) => new Promise((resolve) => {
       doAction(index + 1);
     }
   });
-  doAction();
+  doAction(0);
 });
 
 export const offsetTo = (el, parent) => {
