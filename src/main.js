@@ -8,6 +8,7 @@ files.forEach((file) => $fs.createNewFile(
   $fs.fileObject(...file),
 ));
 
+window.$fs = $fs;
 window.$app = createApp(App)
   .use(VueComponentStyle)
   .mount('#app')

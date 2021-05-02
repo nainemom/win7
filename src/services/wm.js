@@ -77,6 +77,7 @@ export const calculateFileWindowProperties = (_theFile) => {
     movable: true,
     maximized: getOr(windowProperties.maximized, false),
     minimized: getOr(windowProperties.maximized, false),
+    resizable: getOr(windowProperties.resizable, true),
     hidden,
     width,
     height,

@@ -1,5 +1,7 @@
 import path from 'path';
 import fs from 'fs';
+import datauri from 'datauri/sync';
+
 
 const FILES_DIR = path.resolve(__dirname, '../../files');
 
@@ -16,11 +18,45 @@ const getFileObjectOfFsFile = (filePath) => {
     if (stat.isDirectory()) {
       return [appPath, 'directory'];
     }
-    if (path.extname(filePath) === '.vue') {
-      return [appPath, 'app'];
+
+    const extName = path.extname(filePath).substr(1);
+    const fileType = (() => {
+      if (extName === 'link') return 'shortcut';
+      if (extName === 'vue') return 'app';
+      if (extName === 'json') return 'json';
+      if (['jpg', 'jpeg', 'svg', 'png', 'bmp', 'gif'].includes(extName)) {
+        return 'image';
+      }
+      if (['mp3', 'wav', 'ogg'].includes(extName)) {
+        return 'sound';
+      }
+      if (['mp4', '3gp', 'mkv'].includes(extName)) {
+        return 'video';
+      }
+      return 'text';
+    })();
+    if (fileType === 'shortcut') {
+      return [appPath, 'shortcut', {
+        src: fs.readFileSync(filePath).toString().trim(),
+      }];
     }
-    const jsonContent = JSON.parse(fs.readFileSync(filePath));
-    return [appPath, ...jsonContent];
+    if (fileType === 'app') {
+      return [appPath, 'app']; // will filled later
+    }
+    if (fileType === 'json') {
+      const jsonContent = JSON.parse(fs.readFileSync(filePath));
+      return [appPath, ...jsonContent];
+    }
+    if (fileType === 'text') {
+      return [appPath, 'text', {
+        value: fs.readFileSync(filePath).toString(),
+      }];
+    }
+
+    return [appPath, fileType, {
+      value: datauri(filePath).content,
+    }];
+
   } catch(e) {
     return false;
   }

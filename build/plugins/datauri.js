@@ -1,4 +1,4 @@
-import datauri from 'datauri';
+import datauri from 'datauri/sync';
 const fileRegex = /\.(png|ico|jpg|svg|wav)$/;
 
 
@@ -6,10 +6,10 @@ export default () => ({
   name: 'image',
   transform(_src, id) {
     if (fileRegex.test(id)) {
-      return datauri(id).then((data) => ({
+      return {
         map: null,
-        code: `export default '${data}';`,
-      }));
+        code: `export default '${datauri(id).content}';`,
+      };
     }
   }
 });

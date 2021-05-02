@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="[$style.window, focused && 'focused', window.maximized && 'maximized', window.minimized && 'minimized']"
+    :class="[$style.window, focused && 'focused', window.maximized && 'maximized', window.minimized && 'minimized', window.resizable && 'resizable']"
     :style="{ zIndex: window.zIndex }"
     v-show="!window.hidden"
     @click.capture="focus">
@@ -141,11 +141,12 @@ export default {
       className('window', {
         userSelect: 'none',
         position: 'absolute',
-        resize: 'both',
+        ...(this.window.resizable && {
+          resize: 'both',
+        }),
         background: `linear-gradient(180deg,
           ${rgba(250, baseAlpha)} 0%,
-          ${rgba(250, baseAlpha)} 40%,
-          ${rgba(140, baseAlpha)} 43%,
+          ${rgba(100, baseAlpha)} 50%,
           ${rgba(170, baseAlpha)} 100%
         )`,
         boxShadow: `
@@ -159,7 +160,7 @@ export default {
         overflow: 'hidden',
         fontSize: '15px',
         minWidth: '400px',
-        minHeight: '200px',
+        minHeight: titleHeight,
         '&.maximized': {
           width: '100% !important',
           height: `calc(100% - ${panelSize}) !important`,
