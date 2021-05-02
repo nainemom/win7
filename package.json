@@ -1,7 +1,7 @@
 {
   "name": "win7",
   "version": "1.0.0",
-  "description": "Windows 7 preview with Vue",
+  "description": "Yet another OS preview via web technologies focused on Microsoft Windows 7",
   "author": "Nainemom <nainemom@gmail.com>",
   "private": true,
   "scripts": {

@@ -1,11 +1,10 @@
 <div align="center">
   <a href="https://nainemom.github.io/win7" target="_blank">
     <img src="https://raw.githubusercontent.com/nainemom/win7/master/public/favicon.ico" height="150"/>
-    <h1><b> Windows 7 Preview on Web </b></h1>
+    <h1><b> Microsoft Windows 7 Preview on Web </b></h1>
   </a>
-  <p>Yet another OS preview via web technologies.<p>
+  <p>Yet another OS preview via web technologies focused on Microsoft Windows 7.<p>
 </div>
-
 
 ## Setup
 ```bash
