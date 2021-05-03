@@ -250,28 +250,35 @@ export default {
       });
     },
     async copyOrMoveFilesHere(action, listOfFiles) {
-      const doActionOnSingleFile = (filePath) => new Promise((resolve, reject) => {
+      if (!listOfFiles.length) return;
+      const doActionOnSingleFile = async (filePath) => {
         const newPath = `${this.path}/${this.$fs.getPathName(filePath)}`;
-        if (filePath !== newPath) {
-          if (this.$fs.isPathExists(newPath)) {
-            this.$wm.openDialog({
-              type: 'warning',
-              title: 'File Already Exists',
-              content: `The '${newPath}' is already exists. Do you want to override?`,
-              buttons: ['Cancel All', 'No', 'Yes'],
-              autoClose: true,
-            }).then((userAnswer) => {
-              if (userAnswer === 'No') {
-                resolve();
-              } else if (userAnswer === 'Cancel All') {
-                reject(new Error('canceled'));
-              }
-            });
-          }
-          this.$fs[`${action}FileByPath`](filePath, newPath, true);
+        if (filePath === newPath) {
+          return;
         }
-      });
-      asyncEach(listOfFiles, doActionOnSingleFile);
+        if (this.$fs.isPathExists(newPath)) {
+          const userAnswer = await this.$wm.openDialog({
+            type: 'warning',
+            title: 'File Already Exists',
+            content: `The '${newPath}' is already exists. Do you want to override?`,
+            buttons: ['Cancel All', 'No', 'Yes'],
+            autoClose: true,
+          });
+          if (userAnswer === 'Cancel All') {
+            throw new Error('canceled');
+          }
+          if (userAnswer === 'No') {
+            return;
+          }
+        }
+        console.log(action, filePath, 'to', newPath);
+        this.$fs[`${action}FileByPath`](filePath, newPath, true);
+      };
+      try {
+        asyncEach(listOfFiles, doActionOnSingleFile);
+      } catch (_e) {
+        //
+      }
     },
     addFileToRefs(el) {
       if (el) {
