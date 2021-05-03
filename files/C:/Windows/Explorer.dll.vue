@@ -77,7 +77,8 @@ export default {
         return {
           files: this.$fs.searchFiles(
             this.path,
-            (file) => this.$fs.getPathName(file.path).includes(this.search),
+            (file) => this.$fs
+              .getPathName(file.path).toLowerCase().includes(this.search.toLowerCase()),
             true,
           ),
         };

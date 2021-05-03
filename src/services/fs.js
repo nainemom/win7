@@ -24,17 +24,14 @@ export const getPathDir = (path) => {
   return parsedPath.join('/');
 };
 
-export const getDirectoryFiles = (path, recursive = false) => files.list.filter((fileItem) => {
-  const dirPath = getPathDir(fileItem.path);
-  const checks = [
-    dirPath === path,
-  ];
-  if (recursive) {
-    checks.push(dirPath.startsWith(`${path}/`));
-  }
-
-  return checks.every((x) => x);
-});
+export const getDirectoryFiles = (path, recursive = false) => files.list.filter(
+  (fileItem) => {
+    if (recursive) {
+      return path ? fileItem.path.startsWith(`${path}/`) : true;
+    }
+    return getPathDir(fileItem.path) === path;
+  },
+);
 
 export const isPathExists = (path) => {
   for (let i = files.list.length - 1; i >= 0; i -= 1) {
