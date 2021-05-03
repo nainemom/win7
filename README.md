@@ -4,6 +4,8 @@
     <h1><b> Microsoft Windows 7 Preview on Web </b></h1>
   </a>
   <p>Yet another OS preview via web technologies focused on Microsoft Windows 7.<p>
+  <hr />
+  <img src="https://raw.githubusercontent.com/nainemom/win7/master/screen-record.gif" height="281"/>
 </div>
 
 ## Setup
