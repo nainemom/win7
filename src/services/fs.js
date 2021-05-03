@@ -10,7 +10,7 @@ export const files = reactive({
   list: [],
 });
 
-export const parsePath = (path) => path.split('/');
+export const parsePath = (path) => (path || '').split('/');
 
 export const getPathName = (path) => {
   const parsedPath = parsePath(path);
