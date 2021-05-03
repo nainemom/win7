@@ -271,7 +271,6 @@ export default {
             return;
           }
         }
-        console.log(action, filePath, 'to', newPath);
         this.$fs[`${action}FileByPath`](filePath, newPath, true);
       };
       try {
