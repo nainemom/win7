@@ -2,7 +2,7 @@
   "name": "win7",
   "version": "1.0.0",
   "description": "Yet another OS preview via web technologies focused on Microsoft Windows 7",
-  "author": "Nainemom <nainemom@gmail.com>",
+  "author": "Amir Momenian <nainemom@gmail.com>",
   "private": true,
   "scripts": {
     "dev": "vite",
