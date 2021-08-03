@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "lint": "eslint **/*.{js,vue}",
+    "lint": "eslint --ext .js,vue --ignore-path .gitignore .",
     "lint:fix": "npm run lint -- --fix",
     "deploy": "npm run build -- --base=/win7/ && node build/deploy.js"
   },
