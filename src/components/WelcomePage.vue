@@ -15,7 +15,7 @@
 <script>
 import { inject } from '../utils/vue';
 import { rgba } from '../styles/utils';
-import LoginWallpaper from '../assets/login.png';
+import LoginWallpaper from '../assets/login.jpg';
 import StartupSound from '../assets/sounds/startup.wav';
 
 export default {
