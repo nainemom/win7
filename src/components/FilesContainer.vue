@@ -80,6 +80,9 @@ export default {
       }
       return this.files;
     },
+    isInDesktop() {
+      return this.path === 'C:/User/Desktop' && this.$parent.$options.name === 'Desktop';
+    },
   },
   mounted() {
     this.mover = swipe(
@@ -116,7 +119,8 @@ export default {
           this.selecting = false;
           this.$el.style.overflow = null;
         });
-        return this.getSelectedFiles().map((file) => file.file.path);
+        return this.getSelectedFiles()
+          .map((file) => file.file.path);
       }
       return false;
     },
@@ -141,6 +145,7 @@ export default {
           'Refresh',
           ...(this.staticPath ? ['Create New Folder', 'Create New Text File'] : []),
           ...(this.staticPath && (this.$wm.markedFiles.copyList.length || this.$wm.markedFiles.cutList.length) ? ['Paste'] : []),
+          ...(this.isInDesktop ? ['Change Background'] : []),
         ];
       } else {
         contextMenuItems = [
@@ -185,9 +190,16 @@ export default {
           Promise.all([
             this.copyOrMoveFilesHere('copy', this.$wm.markedFiles.copyList),
             this.copyOrMoveFilesHere('move', this.$wm.markedFiles.cutList),
-          ]).then(() => {
-            this.$wm.unmarkFiles();
-          });
+          ])
+            .then(() => {
+              this.$wm.unmarkFiles();
+            });
+        } else if (item === 'Change Background') {
+          const file = this.$fs.getFileByPath('C:/Program Files/ChangeBackground.exe');
+          if (!file) {
+            throw new Error('file not found!');
+          }
+          this.$wm.openFile(file);
         }
       });
     },
@@ -208,9 +220,10 @@ export default {
         width: pos.left,
         height: pos.top,
       });
-      Object.keys(selection || {}).forEach((key) => {
-        this.$refs.selection.style[key] = px(selection[key]);
-      });
+      Object.keys(selection || {})
+        .forEach((key) => {
+          this.$refs.selection.style[key] = px(selection[key]);
+        });
     },
     selectEnd(pos) {
       this.$el.style.overflow = null;

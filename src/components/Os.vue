@@ -57,6 +57,7 @@ export default {
     },
   },
   errorCaptured(e) {
+    console.error(e);
     $wm.openDialog({
       type: 'error',
       content: e.toString(),
