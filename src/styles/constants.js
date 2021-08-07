@@ -3,7 +3,6 @@ export const panelSize = '46px';
 export const contextMenuWidth = '180px';
 export const contextMenuItemHeight = '30px';
 
-
 export const wallpapers = [
   import('../assets/wallpapers/1.jpg'),
   import('../assets/wallpapers/2.jpeg'),
