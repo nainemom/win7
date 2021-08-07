@@ -58,6 +58,10 @@ export default {
     path: props.str(null),
     fileProps: props.obj(),
     direction: props.oneOf(['row', 'column'], 'row'),
+    contextMenuExtras: props.obj(
+      {},
+      (obj) => typeof obj === 'object' && !Object.keys(obj).find((it) => typeof obj[it] !== 'function'),
+    ),
   }),
   ...provideAs('$filesContainer'),
   data() {
@@ -145,7 +149,7 @@ export default {
           'Refresh',
           ...(this.staticPath ? ['Create New Folder', 'Create New Text File'] : []),
           ...(this.staticPath && (this.$wm.markedFiles.copyList.length || this.$wm.markedFiles.cutList.length) ? ['Paste'] : []),
-          ...(this.isInDesktop ? ['Change Background'] : []),
+          ...Object.keys(this.contextMenuExtras),
         ];
       } else {
         contextMenuItems = [
@@ -194,12 +198,12 @@ export default {
             .then(() => {
               this.$wm.unmarkFiles();
             });
-        } else if (item === 'Change Background') {
-          const file = this.$fs.getFileByPath('C:/Program Files/ChangeBackground.exe');
-          if (!file) {
-            throw new Error('file not found!');
+        } else if (this.contextMenuExtras[item]) {
+          if (typeof this.contextMenuExtras[item] === 'function') {
+            this.contextMenuExtras[item]();
+          } else {
+            throw new Error('bad value for extra menu item');
           }
-          this.$wm.openFile(file);
         }
       });
     },

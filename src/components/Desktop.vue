@@ -1,9 +1,13 @@
 <template>
-  <div :class="$style.desktop" :style="{backgroundImage :`url(${$wm.currentWallpaper.src})`}">
+  <div
+    :class="$style.desktop"
+    :style="{backgroundImage :`url(${$wm.currentWallpaper.src})`}"
+  >
     <FilesContainer
       path="C:/User/Desktop"
       direction="column"
       :file-props="{ shadow: true }"
+      :context-menu-extras="contextMenuExtras"
     />
   </div>
 </template>
@@ -19,8 +23,7 @@ export default {
   components: {
     FilesContainer,
   },
-  ...inject('$fs'),
-  ...inject('$wm'),
+  ...inject('$wm', '$fs'),
   style({ className }) {
     return [
       className('desktop', {
@@ -32,6 +35,22 @@ export default {
         backgroundSize: 'cover',
       }),
     ];
+  },
+  computed: {
+    contextMenuExtras() {
+      return {
+        'Change Background': this.openChangeBackground,
+      };
+    },
+  },
+  methods: {
+    openChangeBackground() {
+      const file = this.$fs.getFileByPath('C:/Program Files/ChangeBackground.exe');
+      if (!file) {
+        throw new Error('Program not found!');
+      }
+      this.$wm.openFile(file);
+    },
   },
 };
 </script>
