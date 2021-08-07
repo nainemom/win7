@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     openChangeBackground() {
-      const file = this.$fs.getFileByPath('C:/Program Files/ChangeBackground.exe');
+      const file = this.$fs.resolveFileByPath('C:/Program Files/ChangeBackground.exe');
       if (!file) {
         throw new Error('Program not found!');
       }
