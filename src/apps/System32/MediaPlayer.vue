@@ -15,13 +15,6 @@ import icon from '../../assets/icons/mp3.png';
 import { props, inject } from '../../utils/vue';
 
 export default {
-  windowProperties: (file) => ({
-    icon,
-    hidden: file ? file.data.hidden : false,
-    height: 100,
-    resizable: false,
-    maximizable: false,
-  }),
   ...inject('$wm'),
   ...props({
     file: props.obj(null),

@@ -28,28 +28,12 @@
 
 <script>
 import NavigateSound from '../../assets/sounds/navigate.wav';
-import icon from '../../assets/icons/my-computer.png';
-import folderIcon from '../../assets/icons/folder.png';
-import driveIcon from '../../assets/icons/drive.png';
 import { rgba } from '../../styles/utils';
 import backIcon from '../../assets/icons/back.png';
 import FilesContainer from '../../components/FilesContainer.vue';
 import { props, inject } from '../../utils/vue';
 
-const calcIcon = (file) => {
-  if (!file) {
-    return icon;
-  }
-  return file.path.endsWith(':') ? driveIcon : folderIcon;
-};
-
 export default {
-  windowProperties: (file) => ({
-    icon: calcIcon(file),
-    width: 600,
-    height: 500,
-    title: !file ? 'Computer' : file.path,
-  }),
   ...inject('$fs', '$wm', '$snd'),
   ...props({
     file: props.obj(null),

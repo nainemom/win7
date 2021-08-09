@@ -13,11 +13,6 @@ import { rgba } from '../../styles/utils';
 import { props } from '../../utils/vue';
 
 export default {
-  windowProperties: (file) => ({
-    icon: file && file.data.icon ? file.data.icon : icon,
-    width: file && file.data.width ? file.data.width : 600,
-    height: file && file.data.height ? file.data.height : 500,
-  }),
   ...props({
     file: props.obj(null),
   }),

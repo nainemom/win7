@@ -29,12 +29,6 @@ import { rgba } from '../../styles/utils';
 import { getPathName } from '../../services/fs';
 
 export default {
-  windowProperties: (file) => ({
-    icon: file ? fileIcon : icon,
-    width: 600,
-    height: 500,
-    title: file ? getPathName(file.path) : 'Camera',
-  }),
   ...inject('$fs', '$snd'),
   ...props({
     file: props.obj(null),

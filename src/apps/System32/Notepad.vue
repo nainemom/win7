@@ -19,11 +19,6 @@ import { props, inject } from '../../utils/vue';
 
 export default {
   ...inject('$wm', '$fs'),
-  windowProperties: (file) => ({
-    icon: file ? fileIcon : icon,
-    width: 600,
-    height: 500,
-  }),
   ...props({
     file: props.obj(null),
     wmId: props.any(),

@@ -45,13 +45,6 @@ const typeToSoundMap = {
 };
 
 export default {
-  windowProperties: (file) => ({
-    icon: file && file.data.type ? typeToIconMap[file.data.type] : WarningIcon,
-    width: 580,
-    height: 200,
-    maximizable: false,
-    title: file && file.data.title ? file.data.title : 'Dialog',
-  }),
   ...inject('$fs', '$wm', '$snd'),
   ...props({
     file: props.obj(null),
