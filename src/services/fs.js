@@ -1,6 +1,7 @@
 import * as BrowserFS from 'browserfs';
 import { markRaw } from 'vue';
 import {join} from 'path-browserify'
+import { getFileType } from './apps';
 const FS_BACKEND = 'InMemory';
 const FS_BACKEND_OPTIONS = {};
 
@@ -92,4 +93,24 @@ export async function readDirectory(path) {
       resolve(data);
     });
   })
+}
+
+export async function fetchFile(path) {
+  return new Promise((resolve,reject) => {
+    fs.readFile(path, function (e,data) {
+      if (e) {
+        return reject(e);
+      }
+      resolve(data);
+    });
+  })
+}
+
+
+export async function escapeShortcut(filePath){
+  const type = getFileType(filePath);
+  if (type === 'shortcut') {
+    return await fetchFile(filePath);
+  }
+  return filePath;
 }

@@ -17,7 +17,7 @@ export function fetchApp(name, isSystemApp) {
   }
 }
 
-function getFileType(filePath) {
+export function getFileType(filePath) {
   if (isDirectory(filePath)) {
     return 'directory';
   }

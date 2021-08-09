@@ -1,7 +1,13 @@
 import { reactive } from 'vue';
 import UnknownIcon from '../assets/icons/unknown.png?url';
-import { resolveFileRunner, resolveFileSource, fileObject, reverseSlash } from './fs';
-import { getFileWindowProperties } from './apps';
+import {
+  resolveFileRunner,
+  resolveFileSource,
+  fileObject,
+  reverseSlash,
+  escapeShortcut
+} from './fs';
+import { getAppForFilePath, getFileWindowProperties } from './apps';
 
 export const state = reactive({
   started: false,
@@ -87,18 +93,16 @@ export const calculateFileWindowProperties = async (filePath) => {
   };
 };
 
-export const openFile = (_theFile) => {
-  const theFile = resolveFileSource(_theFile);
-  const runner = resolveFileRunner(theFile);
-  const windowProperties = calculateFileWindowProperties(theFile);
+export async function openFile(filePath) {
+  filePath = await escapeShortcut(filePath);
+  const appName = getAppForFilePath(filePath);
+  const windowProperties = await calculateFileWindowProperties(filePath);
   const id = `w-${Date.now()}-${Math.random()}`;
   const win = {
     id,
     ...windowProperties,
-    fsData: Object.freeze({
-      runner,
-      file: runner.path !== theFile.path ? theFile : null,
-    }),
+    appName,
+    filePath,
   };
 
   windows.list.push(win);
