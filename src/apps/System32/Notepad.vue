@@ -12,8 +12,6 @@
 </template>
 
 <script>
-import icon from '../../assets/icons/notepad.png';
-import fileIcon from '../../assets/icons/txt.png';
 import { rgba } from '../../styles/utils';
 import { props, inject } from '../../utils/vue';
 

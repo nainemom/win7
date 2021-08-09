@@ -29,7 +29,7 @@
 <script>
 import NavigateSound from '../../assets/sounds/navigate.wav';
 import { rgba } from '../../styles/utils';
-import backIcon from '../../assets/icons/back.png';
+import backIcon from '../../assets/icons/back.png?url';
 import FilesContainer from '../../components/FilesContainer.vue';
 import { props, inject } from '../../utils/vue';
 

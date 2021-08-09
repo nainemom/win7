@@ -11,7 +11,6 @@
 </template>
 
 <script>
-import icon from '../../assets/icons/mp3.png';
 import { props, inject } from '../../utils/vue';
 
 export default {

@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import icon from '../../assets/icons/html.png';
 import { rgba } from '../../styles/utils';
 import { props } from '../../utils/vue';
 

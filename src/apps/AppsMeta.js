@@ -1,7 +1,11 @@
 import { getPathName } from '../services/fs';
 
 import fileIcon from '../assets/icons/jpg.png?url';
-import icon from '../assets/icons/camera.png?url';
+import cameraIcon from '../assets/icons/camera.png?url';
+import webAppIcon from '../assets/icons/html.png?url';
+import computerIcon from '../assets/icons/my-computer.png?url';
+import notePadIcon from '../assets/icons/notepad.png?url';
+import mediaPlayerIcon from '../assets/icons/mp3.png?url';
 import WarningIcon from '../assets/icons/warning.png?url';
 import driveIcon from '../assets/icons/drive.png?url';
 import folderIcon from '../assets/icons/folder.png?url';
@@ -33,7 +37,7 @@ export default {
     windowProperties: (file) => {
       const calcIcon = (file) => {
         if (!file) {
-          return icon;
+          return computerIcon;
         }
         return file.path.endsWith(':') ? driveIcon : folderIcon;
       };
@@ -48,7 +52,7 @@ export default {
   'MediaPlayer':{
     canHandle: (file) => file.type === 'sound',
     windowProperties: (file) => ({
-      icon,
+      icon:mediaPlayerIcon,
       //todo figure it out
       hidden: file ? file.data.hidden : false,
       height: 100,
@@ -59,7 +63,7 @@ export default {
   'Notepad':{
     canHandle: (file) => file.type === 'text',
     windowProperties: (file) => ({
-      icon: file ? fileIcon : icon,
+      icon: file ? fileIcon : notePadIcon,
       width: 600,
       height: 500,
     }),
@@ -67,7 +71,7 @@ export default {
   'WebAppRunner':{
     canHandle: (file) => file.type === 'webapp',
     windowProperties: (file) => ({
-      icon: file && file.data.icon ? file.data.icon : icon,
+      icon: file && file.data.icon ? file.data.icon : webAppIcon,
       width: file && file.data.width ? file.data.width : 600,
       height: file && file.data.height ? file.data.height : 500,
     }),
@@ -75,7 +79,7 @@ export default {
   'Camera':{
     canHandle: (file) => file.type === 'image',
     windowProperties: (file) => ({
-      icon: file ? fileIcon : icon,
+      icon: file ? fileIcon : cameraIcon,
       width: 600,
       height: 500,
       title: file ? getPathName(file.path) : 'Camera',
