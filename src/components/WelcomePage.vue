@@ -40,7 +40,6 @@ export default {
     },
     start() {
       this.$wm.startWindowManager();
-      console.log('sound', StartupSound);
       this.$snd.playSound(StartupSound);
     },
     startFullscreen() {

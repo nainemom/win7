@@ -54,7 +54,6 @@ export default {
     File,
   },
   ...props({
-    files: props.arr([]),
     path: props.str(null),
     fileProps: props.obj(),
     direction: props.oneOf(['row', 'column'], 'row'),
@@ -68,6 +67,8 @@ export default {
       selecting: false,
       fileRefs: [],
       selectionRectangle: null,
+      loading:false,
+      files:[],
     };
   },
   computed: {
@@ -75,9 +76,6 @@ export default {
       return this.path !== null;
     },
     dirFiles() {
-      if (this.staticPath) {
-        return this.$fs.getDirectoryFiles(this.path);
-      }
       return this.files;
     },
   },
@@ -90,6 +88,7 @@ export default {
     );
     this.droper = drop(this.$el, this.onDrop);
     this.dragger = drag(this.$el, this.onDrag);
+    this.fetchDirectoryFiles()
   },
   beforeUnmount() {
     if (this.mover) {
@@ -284,6 +283,18 @@ export default {
         this.fileRefs.push(el);
       }
     },
+    async fetchDirectoryFiles() {
+      this.loading = true;
+      this.files = [];
+      try {
+        const list = await window.$fs.readDirectory(this.path);
+        this.files = [...list];
+      } catch (e) {
+        console.error(e);
+      }finally {
+        this.loading = false;
+      }
+    }
   },
   style({ className }) {
     return [

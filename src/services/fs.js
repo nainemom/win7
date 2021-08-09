@@ -1,6 +1,6 @@
 import * as BrowserFS from 'browserfs';
 import { markRaw } from 'vue';
-
+import {join} from 'path-browserify'
 const FS_BACKEND = 'InMemory';
 const FS_BACKEND_OPTIONS = {};
 
@@ -34,6 +34,8 @@ async function populateFS() {
   fs.mkdirSync('/C:/User/Music');
   fs.mkdirSync('/C:/User/Pictures');
   fs.mkdirSync('/C:/User/Start Menu');
+
+  fs.writeFileSync('/C:/User/Desktop/TextFile.txt',"hello world",{ encoding: 'utf8'});
 }
 
 export async function initFS() {
@@ -72,4 +74,17 @@ export function fileRef(path, type) {
     path,
     type
   };
+}
+
+
+export async function readDirectory(path) {
+  return new Promise((resolve,reject) => {
+    fs.readdir(path, function (e,data) {
+      if (e) {
+        return reject(e);
+      }
+      data = data.map(it => join(path,it));
+      resolve(data);
+    });
+  })
 }

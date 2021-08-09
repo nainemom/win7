@@ -48,10 +48,11 @@
 import { inject, props } from '../utils/vue';
 import ShortcutIcon from '../assets/icons/shortcut.png';
 import { rgba } from '../styles/utils';
+import {basename} from 'path-browserify';
 
 export default {
   ...props({
-    file: props.obj(),
+    file: props.str(),
     darkText: props.bool(),
     noIcon: props.bool(),
     shadow: props.bool(),
@@ -67,6 +68,9 @@ export default {
     };
   },
   computed: {
+    fileName() {
+      return basename(this.file)
+    },
     icon() {
       return this.$wm.calculateFileWindowProperties(this.file).icon;
     },
