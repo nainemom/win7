@@ -63,15 +63,15 @@
 </template>
 
 <script>
-import { inject, props } from '../utils/vue';
-import { each } from '../utils/utils';
-import { rgba, px } from '../styles/utils';
-import { panelSize } from '../styles/constants';
-import swipe from '../utils/swipe';
-import MaximizeIcon from '../assets/window/maximize.png';
-import UnmaximizeIcon from '../assets/window/unmaximize.png';
-import MinimizeIcon from '../assets/window/minimize.png';
-import CloseIcon from '../assets/window/close.png';
+import { inject, props } from '../../utils/vue';
+import { each } from '../../utils/utils';
+import { rgba, px } from '../../styles/utils';
+import { panelSize } from '../../styles/constants';
+import swipe from '../../utils/swipe';
+import MaximizeIcon from '../../assets/window/maximize.png';
+import UnmaximizeIcon from '../../assets/window/unmaximize.png';
+import MinimizeIcon from '../../assets/window/minimize.png';
+import CloseIcon from '../../assets/window/close.png';
 
 export default {
   ...props({

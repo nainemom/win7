@@ -19,7 +19,7 @@
 
 <script>
 import WelcomePage from './WelcomePage.vue';
-import Window from './Window.vue';
+import Window from '../apps/System32/Window.vue';
 import Desktop from './Desktop.vue';
 import Taskbar from './Taskbar/Taskbar.vue';
 import ContextMenu from './ContextMenu.vue';
