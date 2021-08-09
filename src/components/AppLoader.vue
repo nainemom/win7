@@ -25,10 +25,8 @@ export default {
   },
   render(){
     if (!this.module) {
-      console.log('no loaded');
       return null;
     }
-    console.log('loaded');
     return h(this.module,{
       value:true,
     });

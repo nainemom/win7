@@ -1,6 +1,7 @@
 import { getPathName } from '../services/fs';
 
 import fileIcon from '../assets/icons/jpg.png?url';
+import textIcon from '../assets/icons/txt.png?url';
 import cameraIcon from '../assets/icons/camera.png?url';
 import webAppIcon from '../assets/icons/html.png?url';
 import computerIcon from '../assets/icons/my-computer.png?url';
@@ -15,8 +16,9 @@ import QuestionIcon from '../assets/icons/question.png?url';
 
 export default {
   'Dialog':{
-    canHandle: (file) => file.type === 'dialog',
-    windowProperties: (file) => {
+    //dialog is not for opening files!
+    //canHandle: ({ fileType,filePath }) => fileType === 'dialog',
+    windowProperties: (arg) => {
       const typeToIconMap = {
         error: ErrorIcon,
         info: InfoIcon,
@@ -24,60 +26,61 @@ export default {
         question: QuestionIcon,
       };
       return ({
-        icon: file && file.data.type ? typeToIconMap[file.data.type] : WarningIcon,
+        icon: arg && arg.data.type ? typeToIconMap[arg.data.type] : WarningIcon,
         width: 580,
         height: 200,
         maximizable: false,
-        title: file && file.data.title ? file.data.title : 'Dialog',
+        title: arg && arg.data.title ? arg.data.title : 'Dialog',
       });
     },
   },
   'Explorer':{
-    canHandle: (file) => file.type === 'directory',
-    windowProperties: (file) => {
+    canHandle: ({ fileType }) => fileType === 'directory',
+    windowProperties: async (filePath) => {
       const calcIcon = (file) => {
         if (!file) {
           return computerIcon;
         }
-        return file.path.endsWith(':') ? driveIcon : folderIcon;
+        return filePath.endsWith(':') ? driveIcon : folderIcon;
       };
       return ({
-        icon: calcIcon(file),
+        icon: calcIcon(filePath),
         width: 600,
         height: 500,
-        title: !file ? 'Computer' : file.path,
+        title: !filePath ? 'Computer' : filePath.path,
       });
     },
   },
   'MediaPlayer':{
-    canHandle: (file) => file.type === 'sound',
-    windowProperties: (file) => ({
-      icon:mediaPlayerIcon,
-      //todo figure it out
-      hidden: file ? file.data.hidden : false,
-      height: 100,
-      resizable: false,
-      maximizable: false,
-    }),
+    canHandle: ({ fileType }) => fileType === 'audio',
+    windowProperties: async (file) => {
+      return ({
+        icon: mediaPlayerIcon,
+        height: 100,
+        resizable: false,
+        maximizable: false,
+      });
+    },
   },
   'Notepad':{
-    canHandle: (file) => file.type === 'text',
+    canHandle: ({ fileType }) => fileType === 'text',
     windowProperties: (file) => ({
-      icon: file ? fileIcon : notePadIcon,
+      icon: file ? textIcon : notePadIcon,
       width: 600,
       height: 500,
     }),
   },
   'WebAppRunner':{
-    canHandle: (file) => file.type === 'webapp',
+    canHandle: ({ fileType }) => fileType === 'webapp',
     windowProperties: (file) => ({
+      //we can fetch file data here !!!
       icon: file && file.data.icon ? file.data.icon : webAppIcon,
       width: file && file.data.width ? file.data.width : 600,
       height: file && file.data.height ? file.data.height : 500,
     }),
   },
   'Camera':{
-    canHandle: (file) => file.type === 'image',
+    canHandle: ({ fileType }) => fileType === 'image',
     windowProperties: (file) => ({
       icon: file ? fileIcon : cameraIcon,
       width: 600,

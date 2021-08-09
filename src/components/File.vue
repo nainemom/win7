@@ -31,7 +31,7 @@
       v-if="!renaming"
       class="name"
     >
-      {{ name }}
+      {{ fileName }}
     </div>
     <input
       v-if="renaming"
@@ -49,6 +49,7 @@ import { inject, props } from '../utils/vue';
 import ShortcutIcon from '../assets/icons/shortcut.png';
 import { rgba } from '../styles/utils';
 import {basename} from 'path-browserify';
+import { calculateFileWindowProperties } from '../services/wm';
 
 export default {
   ...props({
@@ -65,20 +66,20 @@ export default {
     return {
       selected: false,
       renaming: false,
+      icon:null,
     };
+  },
+  async created() {
+    const properties = await calculateFileWindowProperties(this.file);
+    this.icon = properties.icon;
+    this.$forceUpdate();
   },
   computed: {
     fileName() {
       return basename(this.file)
     },
-    icon() {
-      return this.$wm.calculateFileWindowProperties(this.file).icon;
-    },
     shortcutIcon() {
       return this.file.type === 'shortcut' ? ShortcutIcon : '';
-    },
-    name() {
-      return this.$fs.getPathName(this.file.path);
     },
     isCutting() {
       return this.$wm.markedFiles.cutList.includes(this.file.path);

@@ -1,6 +1,7 @@
 import { reactive } from 'vue';
-import UnknownIcon from '../assets/icons/unknown.png';
-import { getFileWindowProperties, resolveFileRunner, resolveFileSource,fileObject } from './fs';
+import UnknownIcon from '../assets/icons/unknown.png?url';
+import { resolveFileRunner, resolveFileSource, fileObject, reverseSlash } from './fs';
+import { getFileWindowProperties } from './apps';
 
 export const state = reactive({
   started: false,
@@ -58,10 +59,8 @@ export const windows = reactive({
 
 let latestZIndex = 20;
 
-export const calculateFileWindowProperties = (_theFile) => {
-  return {};
-  const theFile = resolveFileSource(_theFile);
-  const windowProperties = getFileWindowProperties(theFile) || {};
+export const calculateFileWindowProperties = async (filePath) => {
+  const windowProperties = await getFileWindowProperties(filePath) || {};
   const getOr = (value, defaultvalue) => (typeof value === 'undefined' ? defaultvalue : value);
   const width = getOr(windowProperties.width, 400);
   const height = getOr(windowProperties.height, 400);
@@ -70,7 +69,7 @@ export const calculateFileWindowProperties = (_theFile) => {
     latestZIndex += 1;
   }
   return {
-    title: windowProperties.title || getPathName(theFile.path) || 'Window',
+    title: windowProperties.title || reverseSlash(filePath) || 'Window',
     maximizable: getOr(windowProperties.maximizable, true),
     closable: getOr(windowProperties.closable, true),
     minimizable: getOr(windowProperties.minimizable, true),
