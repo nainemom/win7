@@ -1,8 +1,6 @@
 import { reactive } from 'vue';
 import UnknownIcon from '../assets/icons/unknown.png';
-import {
-  resolveFileSource, resolveFileRunner, getFileWindowProperties, getPathName, fileObject,
-} from './fs';
+import { getFileWindowProperties, resolveFileRunner, resolveFileSource,fileObject } from './fs';
 
 export const state = reactive({
   started: false,
@@ -61,6 +59,7 @@ export const windows = reactive({
 let latestZIndex = 20;
 
 export const calculateFileWindowProperties = (_theFile) => {
+  return {};
   const theFile = resolveFileSource(_theFile);
   const windowProperties = getFileWindowProperties(theFile) || {};
   const getOr = (value, defaultvalue) => (typeof value === 'undefined' ? defaultvalue : value);
@@ -107,7 +106,7 @@ export const openFile = (_theFile) => {
   return win;
 };
 
-export const openDialog = (dialogObj) => new Promise((resolve) => openFile(fileObject('', 'dialog', {
+export const openDialog = () => {}/*(dialogObj) => new Promise((resolve) => openFile(fileObject('', 'dialog', {
   type: 'error',
   content: '---',
   buttons: ['OK'],
@@ -116,7 +115,7 @@ export const openDialog = (dialogObj) => new Promise((resolve) => openFile(fileO
   autoClose: true,
   ...dialogObj,
   onClick: (btn) => resolve(btn),
-})));
+})));*/
 
 export const findWindowById = (id, returnIndex = false) => windows.list[returnIndex ? 'findIndex' : 'find']((win) => win.id === id);
 

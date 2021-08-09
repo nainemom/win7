@@ -16,10 +16,13 @@
 import { inject } from '../utils/vue';
 import { rgba } from '../styles/utils';
 import LoginWallpaper from '../assets/login.png';
-import StartupSound from '../assets/sounds/startup.wav';
+import StartupSound from '../assets/sounds/startup.wav?url';
 
 export default {
   ...inject('$wm', '$snd'),
+  mounted() {
+    this.start();
+  },
   computed: {
     isFullScreen() {
       return !!window.document.fullscreenElement;
@@ -37,6 +40,7 @@ export default {
     },
     start() {
       this.$wm.startWindowManager();
+      console.log('sound', StartupSound);
       this.$snd.playSound(StartupSound);
     },
     startFullscreen() {

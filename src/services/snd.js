@@ -1,9 +1,19 @@
 /* eslint-disable import/prefer-default-export */
 import { openFile } from './wm';
-import { fileObject } from './fs';
 
-export const playSound = (soundSrc) => new Promise((resolve) => openFile(fileObject('', 'sound', {
-  hidden: true,
-  value: soundSrc,
-  onEnd: resolve,
-})));
+export const playSound = (soundSrc) => {
+  const audioTag = document.createElement('audio');
+  audioTag.src = soundSrc;
+
+  function unFailure() {
+    console.log('callback');
+    playSound(soundSrc);
+  }
+
+  let addedEventListener = false;
+  audioTag.play()
+    .catch(e => {
+      window.addEventListener('click',unFailure,{once:true});
+    });
+};
+
