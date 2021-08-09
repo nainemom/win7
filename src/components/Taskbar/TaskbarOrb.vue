@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import Popup from '../../apps/System32/Popup.vue';
+import Popup from '../Popup.vue';
 import File from '../File.vue';
 import { inject } from '../../utils/vue';
 import { panelSize } from '../../styles/constants';

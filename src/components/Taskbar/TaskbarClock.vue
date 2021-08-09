@@ -19,7 +19,7 @@
 <script>
 import { rgba } from '../../styles/utils';
 import { panelSize } from '../../styles/constants';
-import Popup from '../../apps/System32/Popup.vue';
+import Popup from '../Popup.vue';
 import ClockWidget from './ClockWidget.vue';
 import CalendarWidget from './CalendarWidget.vue';
 
