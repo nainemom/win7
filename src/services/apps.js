@@ -1,5 +1,6 @@
 import appsMeta from '../apps/AppsMeta';
 import { extname } from 'path-browserify';
+import { fetchTextFile } from './fs';
 
 function isFile(filePath) {
   return !!extname(filePath);
@@ -44,11 +45,18 @@ export function getFileType(filePath) {
     return 'shortcut';
   }
 
+  if (['exe'].includes(ext)) {
+    return 'app';
+  }
+
   return null;
 }
 
 export function getAppForFilePath(filePath) {
   const fileType = getFileType(filePath);
+  if(fileType === 'app'){
+    return fetchTextFile(filePath);
+  }
   for (const appName in appsMeta) {
     const { canHandle } = appsMeta[appName];
     if (canHandle && typeof canHandle === 'function') {
@@ -65,7 +73,7 @@ export function getAppForFilePath(filePath) {
 
 
 export async function getFileWindowProperties(filePath) {
-  const appName = getAppForFilePath(filePath);
+  const appName = await getAppForFilePath(filePath);
   const { windowProperties } = appsMeta[appName];
   if (!(windowProperties && typeof windowProperties === 'function')) {
     return {};

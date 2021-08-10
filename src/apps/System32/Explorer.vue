@@ -19,6 +19,7 @@
       >
     </div>
     <FilesContainer
+      :key="path"
       :class="$style.content"
       v-bind="filesContainerProps"
       :file-props="{ darkText: true, onClick: click,}"
@@ -27,11 +28,12 @@
 </template>
 
 <script>
-import NavigateSound from '../../assets/sounds/navigate.wav';
+import NavigateSound from '../../assets/sounds/navigate.wav?url';
 import { rgba } from '../../styles/utils';
 import backIcon from '../../assets/icons/back.png?url';
 import FilesContainer from '../../components/FilesContainer.vue';
 import { props, inject } from '../../utils/vue';
+import { getFileType } from '../../services/apps';
 
 export default {
   ...inject('$fs', '$wm', '$snd'),
@@ -42,10 +44,10 @@ export default {
     FilesContainer,
   },
   data() {
-    const hasFile = this.file && this.file.path;
+    const hasFile = this.filePath;
     return {
-      path: hasFile ? this.file.path : '',
-      search: hasFile ? this.file.data.search : '',
+      path: hasFile ? this.filePath : '/',
+      search: hasFile ? {} /*this.file.data.search*/ : '',
     };
   },
   computed: {
@@ -71,16 +73,16 @@ export default {
         };
       }*/
       return {
-        path: this.filePath,
+        path: this.path || '/',
       };
     },
   },
   methods: {
-    click(file) {
-      const theFile = this.$fs.resolveFileSource(file);
-      if (theFile.type === 'directory') {
+    click(filePath) {
+      const fileType = getFileType(filePath);
+      if (fileType === 'directory') {
         this.$snd.playSound(NavigateSound);
-        this.path = theFile.path;
+        this.path = filePath;
         return true;
       }
       return false;

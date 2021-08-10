@@ -46,6 +46,13 @@ async function populateFS() {
   fs.writeFileSync('/C:/User/Desktop/Me.jpg',"hello world",{ encoding: 'utf8'});
 
   fs.writeFileSync('/C:/User/Desktop/directory/haha.txt',"hello world",{ encoding: 'utf8'});
+
+
+  fs.writeFileSync('/C:/Program Files/Text.txt',"yo hahah",{encoding:'utf8'});
+  fs.writeFileSync('/C:/User/Start Menu/Text.txt',"yo hahah",{encoding:'utf8'});
+
+
+  fs.writeFileSync('/C:/Program Files/Explorer.exe',"Explorer",{encoding:'utf8'});
 }
 
 export async function initFS() {
@@ -97,9 +104,14 @@ export async function readDirectory(path) {
   })
 }
 
-export async function fetchFile(path) {
+export async function fetchTextFile(path){
+  //await new Promise(r => setTimeout(r,1500));
+  return fetchFile(path,{ encoding: 'utf8'})
+}
+
+export async function fetchFile(path,options = {}) {
   return new Promise((resolve,reject) => {
-    fs.readFile(path, function (e,data) {
+    fs.readFile(path,options, function (e,data) {
       if (e) {
         return reject(e);
       }
@@ -115,4 +127,15 @@ export async function escapeShortcut(filePath){
     return await fetchFile(filePath);
   }
   return filePath;
+}
+
+export async function writeTextFile(filePath,content){
+  return new Promise((resolve, reject) => {
+    fs.writeFile(filePath,content,{encoding:'utf8'},function (e){
+      if (e) {
+        return reject(e);
+      }
+      resolve();
+    })
+  })
 }

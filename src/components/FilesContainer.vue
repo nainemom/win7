@@ -54,16 +54,12 @@ export default {
     File,
   },
   ...props({
-    path: props.str(null),
+    //todo default value not working
+    path: props.str('/'),
     fileProps: props.obj(),
     direction: props.oneOf(['row', 'column'], 'row'),
   }),
   ...provideAs('$filesContainer'),
-  watch: {
-    path(n,o){
-      console.log('file container path changed!', n,'from ', o);
-    }
-  },
   data() {
     return {
       mover: null,
@@ -289,10 +285,6 @@ export default {
       }
     },
     async fetchDirectoryFiles() {
-      if (!this.path) {
-        console.log('hey path is null!');
-        return;
-      }
       this.loading = true;
       this.files = [];
       try {

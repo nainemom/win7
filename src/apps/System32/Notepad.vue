@@ -1,11 +1,13 @@
 <template>
   <div :class="$style.notepad">
     <div class="menubar">
-      <span @click="save"> Save </span>
+      <span @click="onSaveClicked"> Save </span>
       <span @click="exit"> Exit </span>
     </div>
     <textarea
+      :disabled="loading"
       ref="textarea"
+      :placeholder="loading ? 'loading...' : null"
       v-model="value"
     />
   </div>
@@ -18,38 +20,50 @@ import { props, inject } from '../../utils/vue';
 export default {
   ...inject('$wm', '$fs'),
   ...props({
-    file: props.obj(null),
+    filePath: props.obj(null),
     wmId: props.any(),
   }),
   data() {
     return {
-      value: this.file ? this.file.data.value : '',
+      value: '',
+      loading: false,
+      saving: false,
     };
+  },
+  created() {
+    if (this.filePath) {
+      this.loading = true;
+      this.$fs.fetchTextFile(this.filePath)
+        .then(data => {
+          this.value = data;
+          this.loading = false;
+        });
+    }
   },
   mounted() {
     this.$refs.textarea.focus();
+  },
+  computed: {
+    isNewFile(){
+      return !this.filePath;
+    }
   },
   methods: {
     exit() {
       this.$wm.closeWindow(this.wmId);
     },
-    save() {
-      if (this.file) {
-        this.file.data.value = this.value;
-        this.$wm.openDialog({
-          type: 'info',
-          content: 'File Saved!',
-          buttons: ['OK'],
-        });
-      } else {
-        const fileName = `Text File ${Date.now()}.txt`;
-        const filePath = `C:/User/Documents/${fileName}`;
-        this.$fs.createNewFile(this.$fs.fileObject(filePath, 'text', {
-          value: this.value,
-        }));
-        this.$fs.createNewFile(this.$fs.fileObject(`C:/User/Desktop/${fileName}`, 'shortcut', {
-          src: filePath,
-        }));
+    async saveFile() {
+      let newFileName = `Text File ${Date.now()}.txt`;
+      let path = this.filePath || `/C:/User/Documents/${newFileName}`;
+      await this.$fs.writeTextFile(path, this.value);
+      this.$wm.openDialog({
+        type: 'info',
+        content: 'File Saved!',
+        buttons: ['OK'],
+      });
+
+      if (!this.isNewFile) {
+        await this.$fs.writeTextFile(`C:/User/Desktop/${newFileName}.link`,path);
         this.exit();
       }
     },

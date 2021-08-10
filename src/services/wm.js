@@ -7,7 +7,7 @@ import {
   reverseSlash,
   escapeShortcut
 } from './fs';
-import { getAppForFilePath, getFileWindowProperties } from './apps';
+import { getAppForFilePath, getFileType, getFileWindowProperties } from './apps';
 
 export const state = reactive({
   started: false,
@@ -96,15 +96,19 @@ export const calculateFileWindowProperties = async (filePath) => {
 
 export async function openFile(filePath) {
   filePath = await escapeShortcut(filePath);
-  const appName = getAppForFilePath(filePath);
+  const fileType = getFileType(filePath);
+  const appName = await getAppForFilePath(filePath);
   const windowProperties = await calculateFileWindowProperties(filePath);
   const id = `w-${Date.now()}-${Math.random()}`;
   const win = {
     id,
     ...windowProperties,
     appName,
-    filePath,
   };
+
+  if(fileType !== 'app'){
+    win.filePath = filePath;
+  }
 
   windows.list.push(win);
   return win;

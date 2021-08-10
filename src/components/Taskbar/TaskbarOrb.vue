@@ -61,24 +61,41 @@ export default {
     return {
       popup: false,
       searchString: '',
+      leftFiles: [],
+      rightFiles:[],
     };
+  },
+  async created() {
+    this.$fs.readDirectory('/C:/Program Files')
+      .then(files => {
+        this.leftFiles = [...files];
+      });
+
+    this.$fs.readDirectory('/C:/User/Start Menu')
+    .then(files => {
+        this.rightFiles = [...files];
+    })
   },
   computed: {
     leftContainerFiles() {
       if (this.searchString) {
         return this.$fs.searchFiles('', (theFile) => theFile.path.includes(this.searchString), true);
       }
-      return this.$fs.getDirectoryFiles('C:/Program Files');
+      return this.leftFiles;
     },
     rightContainerFiles() {
-      return this.$fs.getDirectoryFiles('C:/User/Start Menu');
+      return this.rightFiles;
     },
   },
   watch: {
     popup(popup) {
       if (popup) {
         this.$nextTick(() => {
-          this.$refs.searchInput.focus();
+          try {
+            this.$refs.searchInput.focus();
+          } catch (e) {
+            console.error(e);
+          }
         });
       }
     },
