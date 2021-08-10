@@ -2,7 +2,7 @@ import * as BrowserFS from 'browserfs';
 import { join } from 'path-browserify';
 import { getFileType } from './apps';
 
-import { extname } from 'path-browserify';
+import { extname, basename, dirname } from 'path-browserify';
 
 export function isFile(filePath) {
   return !!extname(filePath);
@@ -135,8 +135,8 @@ export async function fetchFile(path, options = {}) {
 
 export async function deletePath(path) {
   if (isDirectory(path)) {
-    return deleteDirectory(path)
-  }else{
+    return deleteDirectory(path);
+  } else {
     return deleteFile(path);
   }
 }
@@ -153,14 +153,14 @@ export async function deleteFile(filePath) {
 }
 
 function isEmptyDirectory(filePath) {
-  const list = fs.readdirSync(filePath)
+  const list = fs.readdirSync(filePath);
   return list.length === 0;
 }
 
 export async function deleteDirectory(filePath) {
   if (isEmptyDirectory(filePath)) {
     fs.rmdirSync(filePath);
-  }else{
+  } else {
     throw new Error('Folder is not empty!');
   }
 }
@@ -237,4 +237,27 @@ export async function writeTextFile(filePath, content) {
       resolve();
     });
   });
+}
+
+export async function renamePath(filePath, newName) {
+  fs.renameSync(filePath, join(dirname(filePath), newName));
+}
+
+
+export async function moveFile(filePath,directory){
+  fs.renameSync(filePath,directory);
+}
+
+export async function copyFile(filePath,directory){
+  const fileContent = await fetchFile(filePath)
+  let fileName = basename(filePath);
+  let targetFile;
+  while (true){
+    targetFile = join(directory, fileName);
+    if (!fs.existsSync(targetFile)) {
+      break;
+    }
+    fileName = 'copy of '+fileName;
+  }
+  fs.writeFileSync(targetFile,fileContent);
 }

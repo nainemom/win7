@@ -44,7 +44,7 @@ export default {
     this.$refs.textarea.focus();
   },
   computed: {
-    isNewFile(){
+    isNewFile() {
       return !this.filePath;
     }
   },
@@ -52,7 +52,7 @@ export default {
     exit() {
       this.$wm.closeWindow(this.wmId);
     },
-    async saveFile() {
+    async onSaveClicked() {
       let newFileName = `Text File ${Date.now()}.txt`;
       let path = this.filePath || `/C:/User/Documents/${newFileName}`;
       await this.$fs.writeTextFile(path, this.value);
@@ -63,7 +63,7 @@ export default {
       });
 
       if (!this.isNewFile) {
-        await this.$fs.writeTextFile(`C:/User/Desktop/${newFileName}.link`,path);
+        await this.$fs.writeTextFile(`C:/User/Desktop/${newFileName}.link`, path);
         this.exit();
       }
     },

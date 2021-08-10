@@ -10,6 +10,7 @@
       :key="file.path"
       :file="file"
       v-bind="fileProps"
+      @refresh="fetchDirectoryFiles"
     />
     <div
       v-if="selecting"
@@ -26,7 +27,16 @@ import { offsetTo, asyncEach } from '../utils/utils';
 import swipe from '../utils/swipe';
 import { drag, drop } from '../utils/dragndrop';
 import File from './File.vue';
-import { createNewFolder, createNewTextFile, deleteFile, deletePath } from '../services/fs';
+import {
+  copyFile,
+  createNewFolder,
+  createNewTextFile,
+  deleteFile,
+  deletePath,
+  isDirectory,
+  isFile,
+  moveFile
+} from '../services/fs';
 
 const fixSelectionPosition = (selection) => {
   if (!selection) {
@@ -167,7 +177,7 @@ export default {
         } else if (item === 'Delete') {
           this.loading = true;
           for (let file of selectedFiles) {
-            const { file : filePath } = file;
+            const { file: filePath } = file;
             try {
               await deletePath(filePath);
             } catch (err) {
@@ -187,9 +197,15 @@ export default {
         } else if (item === 'Rename') {
           selectedFiles.forEach((file) => file.startRename());
         } else if (item === 'Cut') {
-          selectedFiles.forEach((file) => this.$wm.markFileForCut(file.file));
+          selectedFiles.forEach((file) => {
+            let filePath = file.file;
+            this.$wm.markFileForCut(filePath);
+          });
         } else if (item === 'Copy') {
-          selectedFiles.forEach((file) => this.$wm.markFileForCopy(file.file));
+          selectedFiles.forEach((file) => {
+            let filePath = file.file;
+            this.$wm.markFileForCopy(filePath);
+          });
         } else if (item === 'Paste') {
           Promise.all([
             this.copyOrMoveFilesHere('copy', this.$wm.markedFiles.copyList),
@@ -260,35 +276,22 @@ export default {
         file.selected = false;
       });
     },
-    async copyOrMoveFilesHere(action, listOfFiles) {
-      if (!listOfFiles.length) return;
-      const doActionOnSingleFile = async (filePath) => {
-        const newPath = `${this.path}/${this.$fs.getPathName(filePath)}`;
-        if (filePath === newPath) {
-          return;
-        }
-        if (this.$fs.isPathExists(newPath)) {
-          const userAnswer = await this.$wm.openDialog({
-            type: 'warning',
-            title: 'File Already Exists',
-            content: `The '${newPath}' is already exists. Do you want to override?`,
-            buttons: ['Cancel All', 'No', 'Yes'],
-            autoClose: true,
-          });
-          if (userAnswer === 'Cancel All') {
-            throw new Error('canceled');
-          }
-          if (userAnswer === 'No') {
-            return;
-          }
-        }
-        this.$fs[`${action}FileByPath`](filePath, newPath, true);
-      };
-      try {
-        asyncEach(listOfFiles, doActionOnSingleFile);
-      } catch (_e) {
-        //
+    async copyOrMoveFilesHere(action, _files) {
+      if (!_files.length) return;
+      const files = [..._files];
+      if (action === 'move') {
+        await Promise.all(files.map(file => moveFile(file, this.path)));
       }
+      if (action === 'copy') {
+        await Promise.all(files.filter(file => isFile(file))
+          .map(file => copyFile(file, this.path)));
+
+        if (files.filter(isDirectory).length) {
+          console.error('cannot copy directories')
+          //todo alert cannot copy directory for now!
+        }
+      }
+      this.fetchDirectoryFiles();
     },
     addFileToRefs(el) {
       if (el) {

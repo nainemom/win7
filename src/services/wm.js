@@ -27,13 +27,13 @@ export const unmarkFiles = () => {
   markedFiles.copyList = [];
 };
 
-export const markFileForCopy = (theFile) => {
-  markedFiles.copyList.push(theFile.path);
+export const markFileForCopy = (filePath) => {
+  markedFiles.copyList.push(filePath);
   markedFiles.cutList = [];
 };
 
-export const markFileForCut = (theFile) => {
-  markedFiles.cutList.push(theFile.path);
+export const markFileForCut = (filePath) => {
+  markedFiles.cutList.push(filePath);
   markedFiles.copyList = [];
 };
 

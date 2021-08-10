@@ -28,13 +28,13 @@
       >
     </div>
     <div
-      v-if="!renaming"
+      v-if="!showRename"
       class="name"
     >
       {{ fileName }}
     </div>
     <input
-      v-if="renaming"
+      v-if="showRename"
       ref="renameInput"
       v-model="renaming"
       class="name"
@@ -48,8 +48,9 @@
 import { inject, props } from '../utils/vue';
 import ShortcutIcon from '../assets/icons/shortcut.png';
 import { rgba } from '../styles/utils';
-import {basename} from 'path-browserify';
+import { basename } from 'path-browserify';
 import { calculateFileWindowProperties } from '../services/wm';
+import { renamePath } from '../services/fs';
 
 export default {
   ...props({
@@ -65,8 +66,9 @@ export default {
   data() {
     return {
       selected: false,
-      renaming: false,
-      icon:null,
+      showRename:false,
+      renaming: '',
+      icon: null,
     };
   },
   async created() {
@@ -76,7 +78,7 @@ export default {
   },
   computed: {
     fileName() {
-      return basename(this.file)
+      return basename(this.file);
     },
     isShortcut() {
       return this.file.endsWith('.link');
@@ -117,17 +119,24 @@ export default {
       }
       this.$wm.openFile(this.file);
     },
-    startRename() {
-      this.renaming = this.name;
+    async startRename() {
+      this.showRename = true;
+      this.renaming = this.fileName;
       this.$nextTick(() => {
-        this.$refs.renameInput.select();
+        if (this.$refs.renameInput) {
+          this.$refs.renameInput.select();
+        } else {
+          //todo fix this issue
+          console.error('$refs.renameInput was undefined!');
+        }
       });
     },
     renameDone(isOk) {
       if (isOk) {
-        this.$fs.moveFileByPath(this.file.path, `${this.$fs.getPathDir(this.file.path)}/${this.renaming}`);
+        renamePath(this.file, this.renaming);
       }
-      this.renaming = false;
+      this.showRename = false;
+      this.$emit('refresh')
     },
   },
   style({ className }) {
@@ -206,7 +215,8 @@ export default {
             color: rgba(255, 1),
           }),
           ...(this.shadow && {
-            textShadow: new Array(2).fill(`0 0 3px ${rgba(0, 0.8)}`).join(','),
+            textShadow: new Array(2).fill(`0 0 3px ${rgba(0, 0.8)}`)
+              .join(','),
           }),
         },
         '&.renaming > .name': {
