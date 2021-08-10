@@ -1,4 +1,4 @@
-import { getPathName } from '../services/fs';
+import { getPathName, reverseSlash } from '../services/fs';
 
 import fileIcon from '../assets/icons/jpg.png?url';
 import textIcon from '../assets/icons/txt.png?url';
@@ -39,7 +39,7 @@ export default {
     canHandle: ({ fileType }) => fileType === 'directory',
     windowProperties: async (filePath) => {
       const calcIcon = (file) => {
-        if (!file) {
+        if (!file || file.endsWith('.exe')) {
           return computerIcon;
         }
         return filePath.endsWith(':') ? driveIcon : folderIcon;
@@ -48,7 +48,7 @@ export default {
         icon: calcIcon(filePath),
         width: 600,
         height: 500,
-        title: !filePath ? 'Computer' : filePath.path,
+        title: 'Explorer',
         isSystemApp: true,
       });
     },

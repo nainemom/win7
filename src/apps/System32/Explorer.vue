@@ -34,6 +34,7 @@ import backIcon from '../../assets/icons/back.png?url';
 import FilesContainer from '../../components/FilesContainer.vue';
 import { props, inject } from '../../utils/vue';
 import { getFileType } from '../../services/apps';
+import { reverseSlash } from '../../services/fs';
 
 export default {
   ...inject('$fs', '$wm', '$snd'),
@@ -52,8 +53,10 @@ export default {
   },
   computed: {
     pathBar() {
-      return this.path.split('/')
-        .join('\\') || 'Computer';
+      if (!this.path || this.path === '/') {
+        return 'My Computer';
+      }
+      return reverseSlash(this.path).substring(1);
     },
     searchPlaceholder() {
       return `Search in ${this.$fs.getPathName(this.path) || 'Computer'}`;
@@ -89,10 +92,10 @@ export default {
     },
     back() {
       this.$snd.playSound(NavigateSound);
-      if (this.path.includes('/')) {
+      if (this.path.includes('/') && this.path.length > 1) {
         this.path = this.path.substr(0, this.path.lastIndexOf('/'));
       } else {
-        this.path = '';
+        this.path = '/';
       }
     },
   },

@@ -1,38 +1,50 @@
 <template>
-  <audio
-    autoplay
-    controls
-    :class="$style.player"
-    class="no-border"
-    @ended="onEnd"
-  >
-    <source :src="soundData.value">
-  </audio>
+  <div v-if="loading">
+    Loading ...
+  </div>
+  <template v-if="data">
+    <audio
+      autoplay
+      controls
+      :class="$style.player"
+      class="no-border"
+      @ended="onEnd"
+    >
+      <source :src="data">
+    </audio>
+  </template>
 </template>
 
 <script>
 import { props, inject } from '../../utils/vue';
+import { fetchTextFile } from '../../services/fs';
 
 export default {
-  ...inject('$wm'),
+  ...inject('$wm','$fs'),
   ...props({
-    file: props.obj(null),
+    filePath: props.obj(null),
   }),
-  computed: {
-    soundData() {
-      return this.file ? this.file.data : {};
-    },
+  data() {
+    return {
+      data:null,
+      loading:false,
+    }
+  },
+  async created() {
+    if (this.filePath) {
+      this.loading = true;
+      try {
+        this.data = await this.$fs.fetchTextFile(this.filePath);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        this.loading = false;
+      }
+    }
   },
   methods: {
     onEnd() {
-      if (typeof this.soundData.onEnd === 'function') {
-        this.soundData.onEnd();
-      }
-      if (this.file.data.hidden) {
-        this.$nextTick(() => {
-          this.$wm.closeWindow(this.wmId);
-        });
-      }
+
     },
   },
   style({ className }) {

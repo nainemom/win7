@@ -1,6 +1,6 @@
 import appsMeta from '../apps/AppsMeta';
 import { extname } from 'path-browserify';
-import { fetchTextFile } from './fs';
+import { escapeShortcut, fetchTextFile } from './fs';
 
 function isFile(filePath) {
   return !!extname(filePath);
@@ -73,11 +73,12 @@ export function getAppForFilePath(filePath) {
 
 
 export async function getFileWindowProperties(filePath) {
-  const appName = await getAppForFilePath(filePath);
+  const escaped = await escapeShortcut(filePath);
+  const appName = await getAppForFilePath(escaped);
   const { windowProperties } = appsMeta[appName];
   if (!(windowProperties && typeof windowProperties === 'function')) {
     return {};
   }
-  const result = await windowProperties(filePath);
+  const result = await windowProperties(escaped);
   return result;
 }

@@ -2,6 +2,7 @@
   <div
     :class="$style.filesContainer"
     @contextmenu="openContextMenu"
+    :style="{cursor:loading ? 'wait' : 'inherit'}"
   >
     <File
       v-for="file in dirFiles"

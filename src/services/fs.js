@@ -33,26 +33,31 @@ async function populateFS() {
   fs.mkdirSync('/C:/User');
   fs.mkdirSync('/C:/Program Files');
   fs.mkdirSync('/C:/Windows');
+  fs.mkdirSync('/C:/Windows/System32');
 
   fs.mkdirSync('/C:/User/Desktop');
-  fs.mkdirSync('/C:/User/Desktop/directory');
+  fs.mkdirSync('/C:/User/Desktop/NewFolder');
   fs.mkdirSync('/C:/User/Documents');
   fs.mkdirSync('/C:/User/Music');
   fs.mkdirSync('/C:/User/Pictures');
   fs.mkdirSync('/C:/User/Start Menu');
 
+
+  fs.writeFileSync('/C:/Program Files/Camera.exe',"Camera",{encoding:'utf8'});
+  fs.writeFileSync('/C:/Windows/System32/Explorer.exe',"Explorer",{encoding:'utf8'});
+  fs.writeFileSync('/C:/Windows/System32/Notepad.exe',"Notepad",{encoding:'utf8'});
+  fs.writeFileSync('/C:/Windows/System32/MediaPlayer.exe',"MediaPlayer",{encoding:'utf8'});
+  fs.writeFileSync('/C:/Windows/System32/BluePage.exe',"BluePage",{encoding:'utf8'});
+
   fs.writeFileSync('/C:/User/Desktop/TextFile.txt',"hello world",{ encoding: 'utf8'});
-  fs.writeFileSync('/C:/User/Desktop/Music.mp3',"asdf",{ encoding: 'utf8'});
+  fs.writeFileSync('/C:/User/Music/Hayde - Saghi.mp3',"https://dl.dl2musica.com/singles/0003/Hayedeh%20-%20Saghi.mp3",{ encoding: 'utf8'});
   fs.writeFileSync('/C:/User/Desktop/Me.jpg',"hello world",{ encoding: 'utf8'});
 
-  fs.writeFileSync('/C:/User/Desktop/directory/haha.txt',"hello world",{ encoding: 'utf8'});
+  fs.writeFileSync('/C:/User/Desktop/NewFolder/haha.txt',"hello world",{ encoding: 'utf8'});
+  fs.writeFileSync('/C:/User/Desktop/Explorer.link',"/C:/Windows/System32/Explorer.exe",{ encoding: 'utf8'});
+  fs.writeFileSync('/C:/User/Desktop/Notepad.link',"/C:/Windows/System32/Notepad.exe",{ encoding: 'utf8'});
+  fs.writeFileSync('/C:/User/Desktop/Hayde - Saghi.link',"/C:/User/Music/Hayde - Saghi.mp3",{ encoding: 'utf8'});
 
-
-  fs.writeFileSync('/C:/Program Files/Text.txt',"yo hahah",{encoding:'utf8'});
-  fs.writeFileSync('/C:/User/Start Menu/Text.txt',"yo hahah",{encoding:'utf8'});
-
-
-  fs.writeFileSync('/C:/Program Files/Explorer.exe',"Explorer",{encoding:'utf8'});
 }
 
 export async function initFS() {
@@ -124,7 +129,7 @@ export async function fetchFile(path,options = {}) {
 export async function escapeShortcut(filePath){
   const type = getFileType(filePath);
   if (type === 'shortcut') {
-    return await fetchFile(filePath);
+    return await fetchTextFile(filePath);
   }
   return filePath;
 }

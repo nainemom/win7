@@ -78,8 +78,11 @@ export default {
     fileName() {
       return basename(this.file)
     },
+    isShortcut() {
+      return this.file.endsWith('.link');
+    },
     shortcutIcon() {
-      return this.file.type === 'shortcut' ? ShortcutIcon : '';
+      return this.isShortcut ? ShortcutIcon : '';
     },
     isCutting() {
       return this.$wm.markedFiles.cutList.includes(this.file.path);
