@@ -5,12 +5,12 @@
         <img :src="icon">
       </div>
       <div class="content">
-        {{ file.data.content }}
+        {{ content }}
       </div>
     </div>
     <div class="buttons">
       <button
-        v-for="button in file.data.buttons"
+        v-for="button in buttons"
         :key="button"
         @click="emitClick(button)"
       >
@@ -21,12 +21,12 @@
 </template>
 
 <script>
-import ErrorIcon from '../../assets/icons/error.png';
-import InfoIcon from '../../assets/icons/info.png';
-import WarningIcon from '../../assets/icons/warning.png';
-import QuestionIcon from '../../assets/icons/question.png';
-import ErrorSound from '../../assets/sounds/error.wav';
-import DingSound from '../../assets/sounds/ding.wav';
+import ErrorIcon from '../../assets/icons/error.png?url';
+import InfoIcon from '../../assets/icons/info.png?url';
+import WarningIcon from '../../assets/icons/warning.png?url';
+import QuestionIcon from '../../assets/icons/question.png?url';
+import ErrorSound from '../../assets/sounds/error.wav?url';
+import DingSound from '../../assets/sounds/ding.wav?url';
 import { props, inject } from '../../utils/vue';
 import { rgba } from '../../styles/utils';
 
@@ -47,20 +47,21 @@ const typeToSoundMap = {
 export default {
   ...inject('$fs', '$wm', '$snd'),
   ...props({
-    file: props.obj(null),
     wmId: props.any(),
+    type:{},
+    content:{},
+    buttons:{},
+    title:{},
+    defaultInput:{},
+    autoClose:{},
+    onClick:{},
   }),
   computed: {
-    dialogData() {
-      return {
-        ...(this.file && this.file.data),
-      };
-    },
     icon() {
-      return typeToIconMap[this.dialogData.type];
+      return typeToIconMap[this.type];
     },
     sound() {
-      return typeToSoundMap[this.dialogData.type];
+      return typeToSoundMap[this.type];
     },
   },
   mounted() {
@@ -68,10 +69,10 @@ export default {
   },
   methods: {
     emitClick(button) {
-      if (typeof this.dialogData.onClick === 'function') {
-        this.dialogData.onClick(button);
+      if (typeof this.onClick === 'function') {
+        this.onClick(button);
       }
-      if (this.dialogData.autoClose) {
+      if (this.autoClose) {
         this.$wm.closeWindow(this.wmId);
       }
     },

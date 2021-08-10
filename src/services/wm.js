@@ -8,6 +8,7 @@ import {
   escapeShortcut
 } from './fs';
 import { getAppForFilePath, getFileType, getFileWindowProperties } from './apps';
+import { getDialogWindowProperties } from '../utils/dialog';
 
 export const state = reactive({
   started: false,
@@ -90,40 +91,58 @@ export const calculateFileWindowProperties = async (filePath) => {
     top: (window.innerHeight / 2) - (height / 2) + (Math.random() * 20) - 10,
     icon: getOr(windowProperties.icon, UnknownIcon),
     zIndex: hidden ? -1 : latestZIndex,
-    isSystemApp:windowProperties.isSystemApp,
+    isSystemApp: windowProperties.isSystemApp,
   };
 };
+
+function makeWindow(windowProperties, appName, fileType, filePath) {
+  const id = `w-${Date.now()}-${Math.random()}`;
+  const win = {
+    id,
+    ...windowProperties,
+  };
+
+  return win;
+}
 
 export async function openFile(filePath) {
   filePath = await escapeShortcut(filePath);
   const fileType = getFileType(filePath);
   const appName = await getAppForFilePath(filePath);
-  const windowProperties = await calculateFileWindowProperties(filePath);
-  const id = `w-${Date.now()}-${Math.random()}`;
-  const win = {
-    id,
+  let windowProperties = await calculateFileWindowProperties(filePath);
+  windowProperties = {
     ...windowProperties,
-    appName,
+    appName
   };
 
-  if(fileType !== 'app'){
-    win.filePath = filePath;
+  if (fileType !== 'app') {
+    windowProperties.filePath = filePath;
   }
 
+  const win = makeWindow(windowProperties);
   windows.list.push(win);
   return win;
 };
 
-export const openDialog = () => {}/*(dialogObj) => new Promise((resolve) => openFile(fileObject('', 'dialog', {
-  type: 'error',
-  content: '---',
-  buttons: ['OK'],
-  title: 'Dialog',
-  defaultInput: '',
-  autoClose: true,
-  ...dialogObj,
-  onClick: (btn) => resolve(btn),
-})));*/
+export const openDialog = (options) => {
+  const base = getDialogWindowProperties(options.type || 'warning');
+  const windowProperties = {
+    type: 'warning',
+    content: '---',
+    buttons: ['OK'],
+    title: 'Dialog',
+    defaultInput: '',
+    autoClose: true,
+    zIndex: latestZIndex,
+    onClick: (btn) => {
+    },
+    ...base,
+    ...options,
+  };
+
+  const win = makeWindow(windowProperties);
+  windows.list.push(win);
+};
 
 export const findWindowById = (id, returnIndex = false) => windows.list[returnIndex ? 'findIndex' : 'find']((win) => win.id === id);
 

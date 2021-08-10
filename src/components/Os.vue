@@ -3,16 +3,16 @@
     :class="$style.os"
     @contextmenu.prevent
   >
-    <WelcomePage v-if="!isWmStarted" />
+    <WelcomePage v-if="!isWmStarted"/>
     <template v-else>
-      <Desktop />
-      <Taskbar />
+      <Desktop/>
+      <Taskbar/>
       <Window
         v-for="win in windowsList"
         :key="win.id"
         :window="win"
       />
-      <ContextMenu v-bind="contextMenu" />
+      <ContextMenu v-bind="contextMenu"/>
     </template>
   </div>
 </template>
@@ -57,6 +57,7 @@ export default {
     },
   },
   errorCaptured(e) {
+    console.error();
     $wm.openDialog({
       type: 'error',
       content: e.toString(),
@@ -71,7 +72,10 @@ export default {
       this.$refs.contextMenu.open(...args);
     },
   },
-  style({ className, custom }) {
+  style({
+    className,
+    custom
+  }) {
     return [
       className('os', {
         position: 'fixed',
