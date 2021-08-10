@@ -36,6 +36,68 @@ function getFS() {
   });
 }
 
+function _writePrograms() {
+  //actual vue applications
+  fs.writeFileSync('/C:/Windows/System32/Explorer.exe', 'Explorer', { encoding: 'utf8' });
+  fs.writeFileSync('/C:/Windows/System32/Notepad.exe', 'Notepad', { encoding: 'utf8' });
+  fs.writeFileSync('/C:/Windows/System32/MediaPlayer.exe', 'MediaPlayer', { encoding: 'utf8' });
+  //fs.writeFileSync('/C:/Windows/System32/BluePage.exe', 'BluePage', { encoding: 'utf8' });
+  fs.writeFileSync('/C:/Program Files/Camera.exe', 'Camera', { encoding: 'utf8' });
+
+  //web apps
+  const methodDraw = {
+    'icon': 'https://editor.method.ac/images/favicon.svg',
+    'url': 'https://editor.method.ac/',
+    'width': 900,
+    'height': 700
+  };
+  const snap =   {
+    "icon": "https://passenger-pwa-cdn.snapp.ir/logos/square-minimal-144.png",
+    "url": "https://app.snapp.taxi/",
+    "width": 500,
+    "height": 800
+  };
+  const Viska = {
+    "icon": "https://viska.chat/logo-transparent.png",
+    "url": "https://viska.chat/",
+    "width": 500,
+    "height": 800
+  }
+
+  const win93 = {
+    "icon": "https://v1.windows93.net/favicon.ico",
+    "url": "https://v1.windows93.net/",
+    "width": 1000,
+    "height": 800
+  }
+
+  fs.writeFileSync('/C:/Program Files/Method Draw.wapp', JSON.stringify(methodDraw), { encoding: 'utf8' });
+  fs.writeFileSync('/C:/Program Files/Snap.wapp', JSON.stringify(snap), { encoding: 'utf8' });
+  fs.writeFileSync('/C:/Program Files/Viska.wapp', JSON.stringify(Viska), { encoding: 'utf8' });
+  fs.writeFileSync('/C:/Program Files/win93.wapp', JSON.stringify(win93), { encoding: 'utf8' });
+
+  //shortcuts
+  fs.writeFileSync('/C:/User/Desktop/My Computer.link', '/C:/Windows/System32/Explorer.exe', { encoding: 'utf8' });
+  fs.writeFileSync('/C:/User/Desktop/Notepad.link', '/C:/Windows/System32/Notepad.exe', { encoding: 'utf8' });
+  fs.writeFileSync('/C:/User/Desktop/Hayde - Saghi.link', '/C:/User/Music/Hayde - Saghi.mp3', { encoding: 'utf8' });
+  fs.writeFileSync('/C:/User/Desktop/Method Draw.link', '/C:/Program Files/Method Draw.wapp', { encoding: 'utf8' });
+  fs.writeFileSync('/C:/User/Desktop/Snap!.link', '/C:/Program Files/Snap.wapp', { encoding: 'utf8' });
+  fs.writeFileSync('/C:/User/Desktop/Viska.link', '/C:/Program Files/Viska.wapp', { encoding: 'utf8' });
+  fs.writeFileSync('/C:/User/Desktop/win93.link', '/C:/Program Files/win93.wapp', { encoding: 'utf8' });
+
+
+  fs.mkdirSync('/C:/User/Desktop/New Folder');
+  fs.writeFileSync('/C:/User/Desktop/New Folder/Text File.txt', 'hello world', { encoding: 'utf8' });
+}
+
+function _writeStartMenuItem() {
+  fs.writeFileSync('/C:/User/Start Menu/My Computer.link', '/C:/Windows/System32/Explorer.exe', { encoding: 'utf8' });
+  fs.writeFileSync('/C:/User/Start Menu/Desktop.link', '/C:/User/Desktop', { encoding: 'utf8' });
+  fs.writeFileSync('/C:/User/Start Menu/Documents.link', '/C:/User/Documents', { encoding: 'utf8' });
+  fs.writeFileSync('/C:/User/Start Menu/Music.link', '/C:/User/Music', { encoding: 'utf8' });
+  fs.writeFileSync('/C:/User/Start Menu/Pictures.link', '/C:/User/Pictures', { encoding: 'utf8' });
+}
+
 async function populateFS() {
   fs.mkdirSync('/C:');
   fs.mkdirSync('/D:');
@@ -46,27 +108,16 @@ async function populateFS() {
   fs.mkdirSync('/C:/Windows/System32');
 
   fs.mkdirSync('/C:/User/Desktop');
-  fs.mkdirSync('/C:/User/Desktop/NewFolder');
   fs.mkdirSync('/C:/User/Documents');
   fs.mkdirSync('/C:/User/Music');
   fs.mkdirSync('/C:/User/Pictures');
   fs.mkdirSync('/C:/User/Start Menu');
 
-  fs.writeFileSync('/C:/Program Files/Camera.exe', 'Camera', { encoding: 'utf8' });
-  fs.writeFileSync('/C:/Windows/System32/Explorer.exe', 'Explorer', { encoding: 'utf8' });
-  fs.writeFileSync('/C:/Windows/System32/Notepad.exe', 'Notepad', { encoding: 'utf8' });
-  fs.writeFileSync('/C:/Windows/System32/MediaPlayer.exe', 'MediaPlayer', { encoding: 'utf8' });
-  fs.writeFileSync('/C:/Windows/System32/BluePage.exe', 'BluePage', { encoding: 'utf8' });
+  _writePrograms();
+  _writeStartMenuItem();
 
   fs.writeFileSync('/C:/User/Desktop/TextFile.txt', 'hello world', { encoding: 'utf8' });
   fs.writeFileSync('/C:/User/Music/Hayde - Saghi.mp3', 'https://dl.dl2musica.com/singles/0003/Hayedeh%20-%20Saghi.mp3', { encoding: 'utf8' });
-  fs.writeFileSync('/C:/User/Desktop/Me.jpg', 'hello world', { encoding: 'utf8' });
-
-  fs.writeFileSync('/C:/User/Desktop/NewFolder/haha.txt', 'hello world', { encoding: 'utf8' });
-  fs.writeFileSync('/C:/User/Desktop/Explorer.link', '/C:/Windows/System32/Explorer.exe', { encoding: 'utf8' });
-  fs.writeFileSync('/C:/User/Desktop/Notepad.link', '/C:/Windows/System32/Notepad.exe', { encoding: 'utf8' });
-  fs.writeFileSync('/C:/User/Desktop/Hayde - Saghi.link', '/C:/User/Music/Hayde - Saghi.mp3', { encoding: 'utf8' });
-
 }
 
 export async function initFS() {
@@ -243,21 +294,20 @@ export async function renamePath(filePath, newName) {
   fs.renameSync(filePath, join(dirname(filePath), newName));
 }
 
-
-export async function moveFile(filePath,directory){
-  fs.renameSync(filePath,directory);
+export async function moveFile(filePath, directory) {
+  fs.renameSync(filePath, directory);
 }
 
-export async function copyFile(filePath,directory){
-  const fileContent = await fetchFile(filePath)
+export async function copyFile(filePath, directory) {
+  const fileContent = await fetchFile(filePath);
   let fileName = basename(filePath);
   let targetFile;
-  while (true){
+  while (true) {
     targetFile = join(directory, fileName);
     if (!fs.existsSync(targetFile)) {
       break;
     }
-    fileName = 'copy of '+fileName;
+    fileName = 'copy of ' + fileName;
   }
-  fs.writeFileSync(targetFile,fileContent);
+  fs.writeFileSync(targetFile, fileContent);
 }

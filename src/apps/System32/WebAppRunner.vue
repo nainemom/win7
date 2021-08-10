@@ -3,7 +3,7 @@
     :class="$style.webAppRunner"
     class="no-border"
   >
-    <iframe :src="file.data.url" />
+    <iframe :src="url" />
   </div>
 </template>
 
@@ -13,7 +13,7 @@ import { props } from '../../utils/vue';
 
 export default {
   ...props({
-    file: props.obj(null),
+    url: props.str(),
   }),
   style({ className }) {
     return [

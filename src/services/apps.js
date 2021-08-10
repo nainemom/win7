@@ -67,7 +67,7 @@ export function getAppForFilePath(filePath) {
 export async function getFileWindowProperties(filePath) {
   const escaped = await escapeShortcut(filePath);
   const appName = await getAppForFilePath(escaped);
-  const { windowProperties } = appsMeta[appName];
+  const { windowProperties } = appsMeta[appName] || {};
   if (!(windowProperties && typeof windowProperties === 'function')) {
     return {};
   }

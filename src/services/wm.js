@@ -76,6 +76,7 @@ export const calculateFileWindowProperties = async (filePath) => {
     latestZIndex += 1;
   }
   return {
+    ...windowProperties,
     title: windowProperties.title || reverseSlash(filePath) || 'Window',
     maximizable: getOr(windowProperties.maximizable, true),
     closable: getOr(windowProperties.closable, true),
@@ -110,10 +111,7 @@ export async function openFile(filePath) {
   const fileType = getFileType(filePath);
   const appName = await getAppForFilePath(filePath);
   let windowProperties = await calculateFileWindowProperties(filePath);
-  windowProperties = {
-    ...windowProperties,
-    appName
-  };
+  windowProperties.appName = appName;
 
   if (fileType !== 'app') {
     windowProperties.filePath = filePath;
