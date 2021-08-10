@@ -26,6 +26,7 @@ import { offsetTo, asyncEach } from '../utils/utils';
 import swipe from '../utils/swipe';
 import { drag, drop } from '../utils/dragndrop';
 import File from './File.vue';
+import { createNewFolder, createNewTextFile, deleteFile, deletePath } from '../services/fs';
 
 const fixSelectionPosition = (selection) => {
   if (!selection) {
@@ -69,8 +70,8 @@ export default {
       selecting: false,
       fileRefs: [],
       selectionRectangle: null,
-      loading:false,
-      files:[],
+      loading: false,
+      files: [],
     };
   },
   computed: {
@@ -90,7 +91,7 @@ export default {
     );
     this.droper = drop(this.$el, this.onDrop);
     this.dragger = drag(this.$el, this.onDrag);
-    this.fetchDirectoryFiles()
+    this.fetchDirectoryFiles();
   },
   beforeUnmount() {
     if (this.mover) {
@@ -117,7 +118,8 @@ export default {
           this.selecting = false;
           this.$el.style.overflow = null;
         });
-        return this.getSelectedFiles().map((file) => file.file.path);
+        return this.getSelectedFiles()
+          .map((file) => file.file.path);
       }
       return false;
     },
@@ -159,23 +161,29 @@ export default {
         }
       }
 
-      this.$wm.openContextMenu(e, contextMenuItems, (item) => {
+      this.$wm.openContextMenu(e, contextMenuItems, async (item) => {
         if (item === 'Open') {
           selectedFiles.forEach((file) => file.click(null));
         } else if (item === 'Delete') {
-          selectedFiles.forEach((file) => this.$fs.deleteFileByPath(file.file.path));
+          this.loading = true;
+          for (let file of selectedFiles) {
+            const { file : filePath } = file;
+            try {
+              await deletePath(filePath);
+            } catch (err) {
+              console.error(err);
+            }
+          }
+          this.loading = false;
+          await this.fetchDirectoryFiles();
         } else if (item === 'Refresh') {
-          this.$el.classList.add('refreshing');
-          this.$nextTick(() => {
-            setTimeout(() => {
-              this.$el.classList.remove('refreshing');
-            }, 100);
-          });
+          await this.fetchDirectoryFiles();
         } else if (item === 'Create New Folder') {
-          this.$fs.createNewFolder(this.path);
+          await createNewFolder(this.path);
+          await this.fetchDirectoryFiles();
         } else if (item === 'Create New Text File') {
-          const dst = `${this.path}/Text File ${Date.now()}.txt`;
-          this.$fs.createNewFile(this.$fs.fileObject(dst, 'text'));
+          await createNewTextFile(this.path);
+          await this.fetchDirectoryFiles();
         } else if (item === 'Rename') {
           selectedFiles.forEach((file) => file.startRename());
         } else if (item === 'Cut') {
@@ -186,9 +194,10 @@ export default {
           Promise.all([
             this.copyOrMoveFilesHere('copy', this.$wm.markedFiles.copyList),
             this.copyOrMoveFilesHere('move', this.$wm.markedFiles.cutList),
-          ]).then(() => {
-            this.$wm.unmarkFiles();
-          });
+          ])
+            .then(() => {
+              this.$wm.unmarkFiles();
+            });
         }
       });
     },
@@ -209,9 +218,10 @@ export default {
         width: pos.left,
         height: pos.top,
       });
-      Object.keys(selection || {}).forEach((key) => {
-        this.$refs.selection.style[key] = px(selection[key]);
-      });
+      Object.keys(selection || {})
+        .forEach((key) => {
+          this.$refs.selection.style[key] = px(selection[key]);
+        });
     },
     selectEnd(pos) {
       this.$el.style.overflow = null;
@@ -293,7 +303,7 @@ export default {
         this.files = [...list];
       } catch (e) {
         console.error(e);
-      }finally {
+      } finally {
         this.loading = false;
       }
     }

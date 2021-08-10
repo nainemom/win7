@@ -1,14 +1,6 @@
 import appsMeta from '../apps/AppsMeta';
-import { extname } from 'path-browserify';
-import { escapeShortcut, fetchTextFile } from './fs';
-
-function isFile(filePath) {
-  return !!extname(filePath);
-}
-
-function isDirectory(filePath) {
-  return !extname(filePath);
-}
+import { escapeShortcut, fetchTextFile, isDirectory } from './fs';
+import {extname} from 'path-browserify';
 
 export function fetchApp(name, isSystemApp) {
   if (isSystemApp) {
