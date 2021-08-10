@@ -21,7 +21,7 @@
     <FilesContainer
       :class="$style.content"
       v-bind="filesContainerProps"
-      :file-props="{ darkText: true, onClick: click }"
+      :file-props="{ darkText: true, onClick: click,}"
     />
   </div>
 </template>
@@ -36,7 +36,7 @@ import { props, inject } from '../../utils/vue';
 export default {
   ...inject('$fs', '$wm', '$snd'),
   ...props({
-    file: props.obj(null),
+    filePath: props.obj(null),
   }),
   components: {
     FilesContainer,
@@ -50,24 +50,28 @@ export default {
   },
   computed: {
     pathBar() {
-      return this.path.split('/').join('\\') || 'Computer';
+      return this.path.split('/')
+        .join('\\') || 'Computer';
     },
     searchPlaceholder() {
       return `Search in ${this.$fs.getPathName(this.path) || 'Computer'}`;
     },
     filesContainerProps() {
-      if (this.search) {
+      //todo search
+      /*if (this.search) {
         return {
           files: this.$fs.searchFiles(
             this.path,
             (file) => this.$fs
-              .getPathName(file.path).toLowerCase().includes(this.search.toLowerCase()),
+              .getPathName(file.path)
+              .toLowerCase()
+              .includes(this.search.toLowerCase()),
             true,
           ),
         };
-      }
+      }*/
       return {
-        path: this.path,
+        path: this.filePath,
       };
     },
   },

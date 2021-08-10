@@ -90,6 +90,7 @@ export const calculateFileWindowProperties = async (filePath) => {
     top: (window.innerHeight / 2) - (height / 2) + (Math.random() * 20) - 10,
     icon: getOr(windowProperties.icon, UnknownIcon),
     zIndex: hidden ? -1 : latestZIndex,
+    isSystemApp:windowProperties.isSystemApp,
   };
 };
 

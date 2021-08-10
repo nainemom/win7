@@ -35,7 +35,7 @@ async function populateFS() {
   fs.mkdirSync('/C:/Windows');
 
   fs.mkdirSync('/C:/User/Desktop');
-  fs.mkdirSync('/C:/User/Desktop/dirctory');
+  fs.mkdirSync('/C:/User/Desktop/directory');
   fs.mkdirSync('/C:/User/Documents');
   fs.mkdirSync('/C:/User/Music');
   fs.mkdirSync('/C:/User/Pictures');
@@ -44,6 +44,8 @@ async function populateFS() {
   fs.writeFileSync('/C:/User/Desktop/TextFile.txt',"hello world",{ encoding: 'utf8'});
   fs.writeFileSync('/C:/User/Desktop/Music.mp3',"asdf",{ encoding: 'utf8'});
   fs.writeFileSync('/C:/User/Desktop/Me.jpg',"hello world",{ encoding: 'utf8'});
+
+  fs.writeFileSync('/C:/User/Desktop/directory/haha.txt',"hello world",{ encoding: 'utf8'});
 }
 
 export async function initFS() {

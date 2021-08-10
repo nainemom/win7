@@ -31,6 +31,7 @@ export default {
         height: 200,
         maximizable: false,
         title: arg && arg.data.title ? arg.data.title : 'Dialog',
+        isSystemApp: true,
       });
     },
   },
@@ -48,6 +49,7 @@ export default {
         width: 600,
         height: 500,
         title: !filePath ? 'Computer' : filePath.path,
+        isSystemApp: true,
       });
     },
   },
@@ -59,6 +61,7 @@ export default {
         height: 100,
         resizable: false,
         maximizable: false,
+        isSystemApp: true,
       });
     },
   },
@@ -68,6 +71,7 @@ export default {
       icon: file ? textIcon : notePadIcon,
       width: 600,
       height: 500,
+      isSystemApp: true,
     }),
   },
   'WebAppRunner':{
@@ -77,6 +81,7 @@ export default {
       icon: file && file.data.icon ? file.data.icon : webAppIcon,
       width: file && file.data.width ? file.data.width : 600,
       height: file && file.data.height ? file.data.height : 500,
+      isSystemApp: true,
     }),
   },
   'Camera':{

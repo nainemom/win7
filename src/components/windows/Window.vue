@@ -52,28 +52,30 @@
         </div>
       </div>
     </div>
-    <component
-      :is="window.fsData.runner.data.component"
+    <WindowsContent
+      :window="window"
       ref="content"
       :class="$style.content"
-      :file="window.fsData.file"
       :wm-id="window.id"
+      :key="window.id"
     />
   </div>
 </template>
 
 <script>
-import { inject, props } from '../utils/vue';
-import { each } from '../utils/utils';
-import { rgba, px } from '../styles/utils';
-import { panelSize } from '../styles/constants';
-import swipe from '../utils/swipe';
-import MaximizeIcon from '../assets/window/maximize.png';
-import UnmaximizeIcon from '../assets/window/unmaximize.png';
-import MinimizeIcon from '../assets/window/minimize.png';
-import CloseIcon from '../assets/window/close.png';
+import { inject, props } from '../../utils/vue';
+import { each } from '../../utils/utils';
+import { rgba, px } from '../../styles/utils';
+import { panelSize } from '../../styles/constants';
+import swipe from '../../utils/swipe';
+import MaximizeIcon from '../../assets/window/maximize.png';
+import UnmaximizeIcon from '../../assets/window/unmaximize.png';
+import MinimizeIcon from '../../assets/window/minimize.png';
+import CloseIcon from '../../assets/window/close.png';
+import WindowsContent from './WindowsContent.vue';
 
 export default {
+  components: { WindowsContent },
   ...props({
     window: props.obj(),
   }),
