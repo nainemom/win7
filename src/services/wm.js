@@ -165,7 +165,7 @@ export const isWindowFocused = (id) => {
 
 export const currentWallpaper = reactive({ src: localStorage.getItem('wallpaper') });
 if (!currentWallpaper.src) {
-  import('../assets/wallpapers/1.jpg').then(m => {
+  import('../../files/C:/Windows/wallpapers/1.jpg').then((m) => {
     currentWallpaper.src = m.default;
   });
 }

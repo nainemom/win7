@@ -46,8 +46,8 @@ props.num = (defaultValue = 0) => ({
   ...propDefaultValue(defaultValue),
 });
 
-props.obj = (defaultValue = () => ({})) => ({
-  validator: (v) => typeOf(v) === 'Object',
+props.obj = (defaultValue = () => ({}), validator) => ({
+  validator: validator || ((v) => typeOf(v) === 'Object'),
   ...propDefaultValue(defaultValue),
 });
 

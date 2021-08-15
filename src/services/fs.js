@@ -163,5 +163,3 @@ export const getFileWindowProperties = (_theFile) => {
   const ret = runner && runner.data && runner.data.component && typeof runner.data.component.windowProperties === 'function' ? runner.data.component.windowProperties(isNotApp && theFile) : {};
   return ret;
 };
-
-export const getFileByPath = (path) => files.list.find((it) => it.path === path);
