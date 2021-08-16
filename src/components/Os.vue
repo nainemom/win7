@@ -27,6 +27,7 @@ import ContextMenu from './ContextMenu.vue';
 import * as $fs from '../services/fs';
 import * as $wm from '../services/wm';
 import * as $snd from '../services/snd';
+import * as $cnf from '../services/cnf';
 import { fitSize } from '../styles/common';
 
 export default {
@@ -42,6 +43,7 @@ export default {
       $wm,
       $fs,
       $snd,
+      $cnf,
       $os: this,
     };
   },
@@ -57,6 +59,8 @@ export default {
     },
   },
   errorCaptured(e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
     $wm.openDialog({
       type: 'error',
       content: e.toString(),
