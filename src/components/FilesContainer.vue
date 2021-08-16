@@ -28,6 +28,7 @@ import swipe from '../utils/swipe';
 import { drag, drop } from '../utils/dragndrop';
 import File from './File.vue';
 import {
+  copyDirectory,
   copyFile,
   createNewFolder,
   createNewTextFile,
@@ -287,8 +288,10 @@ export default {
           .map(file => copyFile(file, this.path)));
 
         if (files.filter(isDirectory).length) {
-          console.error('cannot copy directories')
-          //todo alert cannot copy directory for now!
+          await Promise.all(
+            files.filter(file => isDirectory(file))
+              .map(file => copyDirectory(file, this.path))
+          );
         }
       }
       await this.fetchDirectoryFiles();

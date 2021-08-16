@@ -153,8 +153,8 @@ export async function renamePath(filePath, newName) {
 
 export async function moveFile(oldFile, directory) {
   await new Promise((resolve, reject) => {
-    const newFile = join(directory,basename(oldFile));
-      fs.rename(oldFile, newFile, resolve);
+    const newFile = join(directory, basename(oldFile));
+    fs.rename(oldFile, newFile, resolve);
   });
 }
 
@@ -185,6 +185,28 @@ export function isDirectory(filePath) {
 
 export function reverseSlash(filePath) {
   return filePath.replace(/\//g, '/');
+}
+
+export async function copyDirectory(srcDirectory, dstDirectory) {
+  await makeDirectory(dstDirectory);
+
+  const files = await readDirectory(srcDirectory);
+  for (const file of files) {
+    if (isDirectory(file)) {
+      const name = basename(file);
+      await copyDirectory(file, join(dstDirectory,name));
+    } else {
+      await copyFile(file, dstDirectory);
+    }
+  }
+}
+
+async function makeDirectory(path, options = null) {
+  if (!(await existsPath(path))) {
+    return new Promise((resolve, reject) => {
+      fs.mkdir(path, options, resolve);
+    });
+  }
 }
 
 function getFS() {
