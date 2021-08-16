@@ -62,7 +62,7 @@ export default {
     },
     searchPlaceholder() {
       const path = this.path;
-      let name = basename(path) || 'Computer';
+      const name = basename(path) || 'Computer';
       return `Search in ${name}`;
     },
     filesContainerProps() {
