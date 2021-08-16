@@ -58,6 +58,10 @@ export default {
     path: props.str(null),
     fileProps: props.obj(),
     direction: props.oneOf(['row', 'column'], 'row'),
+    contextMenuExtras: props.obj(
+      {},
+      (obj) => typeof obj === 'object' && !Object.keys(obj).find((it) => typeof obj[it] !== 'function'),
+    ),
   }),
   ...provideAs('$filesContainer'),
   data() {
@@ -79,6 +83,9 @@ export default {
         return this.$fs.getDirectoryFiles(this.path);
       }
       return this.files;
+    },
+    isInDesktop() {
+      return this.path === 'C:/User/Desktop' && this.$parent.$options.name === 'Desktop';
     },
   },
   mounted() {
@@ -116,7 +123,8 @@ export default {
           this.selecting = false;
           this.$el.style.overflow = null;
         });
-        return this.getSelectedFiles().map((file) => file.file.path);
+        return this.getSelectedFiles()
+          .map((file) => file.file.path);
       }
       return false;
     },
@@ -141,6 +149,7 @@ export default {
           'Refresh',
           ...(this.staticPath ? ['Create New Folder', 'Create New Text File'] : []),
           ...(this.staticPath && (this.$wm.markedFiles.copyList.length || this.$wm.markedFiles.cutList.length) ? ['Paste'] : []),
+          ...Object.keys(this.contextMenuExtras),
         ];
       } else {
         contextMenuItems = [
@@ -185,9 +194,16 @@ export default {
           Promise.all([
             this.copyOrMoveFilesHere('copy', this.$wm.markedFiles.copyList),
             this.copyOrMoveFilesHere('move', this.$wm.markedFiles.cutList),
-          ]).then(() => {
-            this.$wm.unmarkFiles();
-          });
+          ])
+            .then(() => {
+              this.$wm.unmarkFiles();
+            });
+        } else if (this.contextMenuExtras[item]) {
+          if (typeof this.contextMenuExtras[item] === 'function') {
+            this.contextMenuExtras[item]();
+          } else {
+            throw new Error('bad value for extra menu item');
+          }
         }
       });
     },
@@ -208,9 +224,10 @@ export default {
         width: pos.left,
         height: pos.top,
       });
-      Object.keys(selection || {}).forEach((key) => {
-        this.$refs.selection.style[key] = px(selection[key]);
-      });
+      Object.keys(selection || {})
+        .forEach((key) => {
+          this.$refs.selection.style[key] = px(selection[key]);
+        });
     },
     selectEnd(pos) {
       this.$el.style.overflow = null;
