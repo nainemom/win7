@@ -1,8 +1,7 @@
 import * as BrowserFS from 'browserfs';
-import { join } from 'path-browserify';
 import { getFileType } from './apps';
 
-import { extname, basename, dirname } from 'path-browserify';
+import { join, extname, basename, dirname } from 'path-browserify';
 
 let fs = {};
 
@@ -55,7 +54,7 @@ export async function readDirectory(path) {
 export async function fetchTextFile(path) {
   //await new Promise(r => setTimeout(r,1500));
   //return fetchFile(path, { encoding: 'utf8' });
-  return fetchFile(path,{encoding:'utf8'})
+  return fetchFile(path, { encoding: 'utf8' });
 }
 
 export async function fetchFile(path, options = {}) {
@@ -90,7 +89,11 @@ export async function deleteFile(filePath) {
 
 export async function deleteDirectory(filePath) {
   if (await isEmptyDirectory(filePath)) {
-    await fs.rmdir(filePath);
+    await new Promise((resolve, reject) => {
+      fs.rmdir(filePath, function () {
+        resolve();
+      });
+    });
   } else {
     throw new Error('Folder is not empty!');
   }
@@ -148,8 +151,11 @@ export async function renamePath(filePath, newName) {
   await fs.rename(filePath, join(dirname(filePath), newName));
 }
 
-export async function moveFile(filePath, directory) {
-  await fs.rename(filePath, directory);
+export async function moveFile(oldFile, directory) {
+  await new Promise((resolve, reject) => {
+    const newFile = join(directory,basename(oldFile));
+      fs.rename(oldFile, newFile, resolve);
+  });
 }
 
 export async function copyFile(filePath, directory) {
@@ -158,13 +164,15 @@ export async function copyFile(filePath, directory) {
   let targetFile;
   while (true) {
     targetFile = join(directory, fileName);
-    let exists = await fs.exists(targetFile);
+    let exists = await existsPath(targetFile);
     if (!exists) {
       break;
     }
     fileName = 'copy of ' + fileName;
   }
-  await fs.writeFile(targetFile, fileContent);
+  await new Promise(resolve => {
+    fs.writeFile(targetFile, fileContent, {}, resolve);
+  });
 }
 
 export function isFile(filePath) {
@@ -186,11 +194,15 @@ function getFS() {
       options: {
         '/C:': {
           fs: 'IndexedDB',
-          options: {},
+          options: {
+            storeName: 'PartitionC',
+          },
         },
         '/D:': {
           fs: 'IndexedDB',
-          options: {}
+          options: {
+            storeName: 'PartitionD',
+          }
         },
       },
     }, function (e) {
@@ -206,10 +218,10 @@ function getFS() {
 
 async function existsPath(filePath) {
   return new Promise((resolve, reject) => {
-    fs.exists(filePath,exists =>{
+    fs.exists(filePath, exists => {
       resolve(exists);
     });
-  })
+  });
 }
 
 async function getNewFolderName(baseDir) {
@@ -235,7 +247,7 @@ async function getNewTextFileName(baseDir, fileName = 'Text File') {
 }
 
 async function isEmptyDirectory(filePath) {
-  const list = await fs.readdir(filePath);
+  const list = await readDirectory(filePath);
   return list.length === 0;
 }
 

@@ -291,7 +291,7 @@ export default {
           //todo alert cannot copy directory for now!
         }
       }
-      this.fetchDirectoryFiles();
+      await this.fetchDirectoryFiles();
     },
     addFileToRefs(el) {
       if (el) {
