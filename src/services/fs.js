@@ -95,7 +95,19 @@ export async function deleteDirectory(filePath) {
       });
     });
   } else {
-    throw new Error('Folder is not empty!');
+    const files = await readDirectory(filePath);
+    for (const file of files) {
+      if (isFile(file)) {
+        await deleteFile(file);
+      } else {
+        await deleteDirectory(file);
+        await new Promise((resolve, reject) => {
+          fs.rmdir(file, function () {
+            resolve();
+          });
+        });
+      }
+    }
   }
 }
 
@@ -188,15 +200,19 @@ export function reverseSlash(filePath) {
 }
 
 export async function copyDirectory(srcDirectory, dstDirectory) {
-  await makeDirectory(dstDirectory);
+  let targetDirectory = join(dstDirectory,basename(srcDirectory));
+  if (await existsPath(targetDirectory)){
+    //todo figure out what to do ? replace or rename?
+  }
+  await makeDirectory(targetDirectory);
 
   const files = await readDirectory(srcDirectory);
   for (const file of files) {
     if (isDirectory(file)) {
       const name = basename(file);
-      await copyDirectory(file, join(dstDirectory,name));
+      await copyDirectory(file, join(targetDirectory, name));
     } else {
-      await copyFile(file, dstDirectory);
+      await copyFile(file, targetDirectory);
     }
   }
 }
