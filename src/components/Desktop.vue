@@ -1,7 +1,7 @@
 <template>
   <div
     :class="$style.desktop"
-    :style="{backgroundImage :`url(${$wm.currentWallpaper.src})`}"
+    :style="{ backgroundImage: wallpaper }"
   >
     <FilesContainer
       path="C:/User/Desktop"
@@ -23,7 +23,7 @@ export default {
   components: {
     FilesContainer,
   },
-  ...inject('$wm', '$fs'),
+  ...inject('$wm', '$fs', '$cnf'),
   style({ className }) {
     return [
       className('desktop', {
@@ -37,6 +37,13 @@ export default {
     ];
   },
   computed: {
+    wallpaper() {
+      try {
+        return `url("${this.$fs.resolveFileByPath(this.$cnf.values.wallpaperPath).data.value}")`;
+      } catch (_e) {
+        return '';
+      }
+    },
     contextMenuExtras() {
       return {
         'Change Background': this.openChangeBackground,
@@ -45,11 +52,9 @@ export default {
   },
   methods: {
     openChangeBackground() {
-      const file = this.$fs.resolveFileByPath('C:/Program Files/ChangeBackground.exe');
-      if (!file) {
-        throw new Error('Program not found!');
-      }
-      this.$wm.openFile(file);
+      this.$wm.openFile(
+        this.$fs.resolveFileByPath('C:/Program Files/ChangeBackground.exe'),
+      );
     },
   },
 };
