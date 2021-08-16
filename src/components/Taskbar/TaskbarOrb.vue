@@ -62,25 +62,19 @@ export default {
       popup: false,
       searchString: '',
       leftFiles: [],
-      rightFiles:[],
+      rightFiles: [],
     };
   },
   async created() {
-    this.$fs.readDirectory('/C:/Program Files')
-      .then(files => {
-        this.leftFiles = [...files];
-      });
+    this.fetchLeftFiles();
 
     this.$fs.readDirectory('/C:/User/Start Menu')
-    .then(files => {
+      .then(files => {
         this.rightFiles = [...files];
-    })
+      });
   },
   computed: {
     leftContainerFiles() {
-      if (this.searchString) {
-        return this.$fs.searchFiles('', (theFile) => theFile.path.includes(this.searchString), true);
-      }
       return this.leftFiles;
     },
     rightContainerFiles() {
@@ -88,6 +82,9 @@ export default {
     },
   },
   watch: {
+    searchString(n, o) {
+      this.fetchLeftFiles();
+    },
     popup(popup) {
       if (popup) {
         this.$nextTick(() => {
@@ -105,6 +102,23 @@ export default {
       this.searchString = '';
       this.popup = true;
     },
+    fetchLeftFiles() {
+      this.leftFiles = [];
+      const {
+        searchString,
+        $fs
+      } = this;
+      if (searchString && searchString.trim().length) {
+        $fs.searchInDirectory('/C:/Program Files', searchString, file => {
+          this.leftFiles.push(file);
+        });
+      } else {
+        $fs.readDirectory('/C:/Program Files')
+          .then(files => {
+            this.leftFiles = [...files];
+          });
+      }
+    }
   },
   style({ className }) {
     const height = '600px';
