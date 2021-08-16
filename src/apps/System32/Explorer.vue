@@ -48,7 +48,7 @@ export default {
     const hasFile = this.filePath;
     return {
       path: hasFile ? this.filePath : '/',
-      search: hasFile ? {} /*this.file.data.search*/ : '',
+      search: '',
     };
   },
   computed: {
@@ -56,28 +56,21 @@ export default {
       if (!this.path || this.path === '/') {
         return 'My Computer';
       }
-      return reverseSlash(this.path).substring(1);
+      return reverseSlash(this.path)
+        .substring(1);
     },
     searchPlaceholder() {
       return `Search in ${this.$fs.getPathName(this.path) || 'Computer'}`;
     },
     filesContainerProps() {
-      //todo search
-      /*if (this.search) {
-        return {
-          files: this.$fs.searchFiles(
-            this.path,
-            (file) => this.$fs
-              .getPathName(file.path)
-              .toLowerCase()
-              .includes(this.search.toLowerCase()),
-            true,
-          ),
-        };
-      }*/
-      return {
+      const obj = {
         path: this.path || '/',
-      };
+      }
+      if (this.search && this.search.trim().length) {
+        obj.search = this.search;
+      }
+
+      return obj
     },
   },
   methods: {
@@ -92,6 +85,10 @@ export default {
     },
     back() {
       this.$snd.playSound(NavigateSound);
+      if (this.search) {
+        this.search = null;
+        return;
+      }
       if (this.path.includes('/') && this.path.length > 1) {
         this.path = this.path.substr(0, this.path.lastIndexOf('/'));
       } else {

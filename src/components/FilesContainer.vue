@@ -69,6 +69,7 @@ export default {
   ...props({
     //todo default value not working
     path: props.str('/'),
+    search: props.str(null),
     fileProps: props.obj(),
     direction: props.oneOf(['row', 'column'], 'row'),
   }),
@@ -84,6 +85,11 @@ export default {
       loading: false,
       files: [],
     };
+  },
+  watch: {
+    search(n, o) {
+      this.fetchDirectoryFiles();
+    }
   },
   computed: {
     staticPath() {
@@ -305,8 +311,14 @@ export default {
       this.loading = true;
       this.files = [];
       try {
-        const list = await window.$fs.readDirectory(this.path);
-        this.files = [...list];
+        if (!this.search) {
+          const list = await window.$fs.readDirectory(this.path);
+          this.files = [...list];
+        } else {
+          await window.$fs.searchInDirectory(this.path, this.search, (file) => {
+            this.files.push(file);
+          });
+        }
       } catch (e) {
         console.error(e);
       } finally {

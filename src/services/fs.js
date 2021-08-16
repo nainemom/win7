@@ -200,8 +200,8 @@ export function reverseSlash(filePath) {
 }
 
 export async function copyDirectory(srcDirectory, dstDirectory) {
-  let targetDirectory = join(dstDirectory,basename(srcDirectory));
-  if (await existsPath(targetDirectory)){
+  let targetDirectory = join(dstDirectory, basename(srcDirectory));
+  if (await existsPath(targetDirectory)) {
     //todo figure out what to do ? replace or rename?
   }
   await makeDirectory(targetDirectory);
@@ -215,6 +215,23 @@ export async function copyDirectory(srcDirectory, dstDirectory) {
       await copyFile(file, targetDirectory);
     }
   }
+}
+
+export async function searchInDirectory(path, search, addFile) {
+  //todo check is directory
+
+  //parallel walk top to bottom
+  const files = await readDirectory(path);
+
+  //search in current directory
+  files.filter(path => {
+    const name = basename(path).toLocaleLowerCase();
+    return name.includes(search);
+  })
+    .forEach(addFile);
+
+  const directories = files.filter(path => isDirectory(path));
+  await Promise.all(directories.map(dir => searchInDirectory(dir,search,addFile)));
 }
 
 async function makeDirectory(path, options = null) {
