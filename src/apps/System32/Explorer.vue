@@ -35,6 +35,7 @@ import FilesContainer from '../../components/FilesContainer.vue';
 import { props, inject } from '../../utils/vue';
 import { getFileType } from '../../services/apps';
 import { reverseSlash } from '../../services/fs';
+import { basename } from 'path-browserify';
 
 export default {
   ...inject('$fs', '$wm', '$snd'),
@@ -48,7 +49,7 @@ export default {
     const hasFile = this.filePath;
     return {
       path: hasFile ? this.filePath : '/',
-      search: '',
+      search: null,
     };
   },
   computed: {
@@ -60,17 +61,19 @@ export default {
         .substring(1);
     },
     searchPlaceholder() {
-      return `Search in ${this.$fs.getPathName(this.path) || 'Computer'}`;
+      const path = this.path;
+      let name = basename(path) || 'Computer';
+      return `Search in ${name}`;
     },
     filesContainerProps() {
       const obj = {
         path: this.path || '/',
-      }
+      };
       if (this.search && this.search.trim().length) {
         obj.search = this.search;
       }
 
-      return obj
+      return obj;
     },
   },
   methods: {
