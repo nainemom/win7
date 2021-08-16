@@ -9,13 +9,13 @@
       </p>
       <div :class="$style.box">
         <img
-          v-for="(it,key) in list"
+          v-for="(item, key) in list"
           :key="key"
           width="90"
           height="60"
-          :src="it"
+          :src="item.data.value"
           alt=""
-          @click="changeBackground(it)"
+          @click="changeBackground(item)"
         >
       </div>
     </div>
@@ -25,7 +25,6 @@
 <script>
 import icon from '../../../src/assets/icons/background-capplet.png';
 import { props, inject } from '../../../src/utils/vue';
-import { wallpapers } from '../../../src/styles/constants';
 import { px } from '../../../src/styles/utils';
 
 export default {
@@ -35,9 +34,10 @@ export default {
     title: 'Change Background',
     icon,
     width: 900,
-    height: 600,
+    height: 490,
+    maximizable: false,
   }),
-  ...inject('$wm'),
+  ...inject('$wm', '$fs', '$cnf'),
   ...props({
     file: props.obj(null),
     wmId: props.any(),
@@ -46,15 +46,14 @@ export default {
     return { list: [], loading: true };
   },
   async mounted() {
-    let val = await Promise.all(wallpapers);
-    val = val.map((it) => it.default);
-    this.list = val;
+    this.list = this.$fs.getDirectoryFiles('C:/Windows/Wallpapers');
     this.loading = false;
   },
   methods: {
-    changeBackground(src) {
-      this.$wm.currentWallpaper.src = src;
-      localStorage.setItem('wallpaper', src);
+    changeBackground(item) {
+      this.$cnf.setConfig({
+        wallpaperPath: item.path,
+      });
     },
   },
   style({ className }) {
@@ -76,6 +75,7 @@ export default {
         border: '1px solid black',
         borderRadius: px(2),
         padding: '1rem 0',
+        textAlign: 'center',
         img: {
           margin: '.5rem',
         },
@@ -91,7 +91,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-
-</style>
