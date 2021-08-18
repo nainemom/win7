@@ -46,7 +46,7 @@ export default {
     return { list: [], loading: true };
   },
   async mounted() {
-    this.list = getDirectoryFiles('C:/Windows/Wallpapers');
+    this.list = getDirectoryFiles('C:/Windows/system/wallpapers');
     this.loading = false;
   },
   methods: {

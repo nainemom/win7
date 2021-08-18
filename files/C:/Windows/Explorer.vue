@@ -74,7 +74,7 @@ export default {
       return `Search in ${getPathName(this.path) || 'Computer'}`;
     },
     navigateSound() {
-      return resolveFileByPath('C:/Windows/system/sounds/navigate.wav');
+      return resolveFileByPath('C:/Windows/system/sounds/navigate.mp3');
     },
     filesContainerProps() {
       if (this.search) {

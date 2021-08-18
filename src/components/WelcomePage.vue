@@ -24,7 +24,7 @@ export default {
       return !!window.document.fullscreenElement;
     },
     backgroundUrl() {
-      return resolveFileByPath('C:/Windows/system/images/login.png').data;
+      return resolveFileByPath('C:/Windows/system/images/login.jpg').data;
     },
   },
   methods: {
@@ -39,7 +39,7 @@ export default {
     },
     start() {
       startWindowManager();
-      playBackgroundSound(resolveFileByPath('C:/Windows/system/sounds/startup.wav'));
+      playBackgroundSound(resolveFileByPath('C:/Windows/system/sounds/startup.mp3'));
     },
     startFullscreen() {
       this.requestFullscreen();

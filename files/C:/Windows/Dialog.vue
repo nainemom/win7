@@ -35,10 +35,10 @@ const typeToIconMap = {
 };
 
 const typeToSoundMap = {
-  error: 'C:/Windows/system/sounds/error.wav',
-  info: 'C:/Windows/system/sounds/ding.wav',
-  warning: 'C:/Windows/system/sounds/ding.wav',
-  question: 'C:/Windows/system/sounds/ding.wav',
+  error: 'C:/Windows/system/sounds/error.mp3',
+  info: 'C:/Windows/system/sounds/ding.mp3',
+  warning: 'C:/Windows/system/sounds/ding.mp3',
+  question: 'C:/Windows/system/sounds/ding.mp3',
 };
 
 export default {

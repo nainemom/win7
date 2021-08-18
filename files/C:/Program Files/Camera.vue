@@ -63,7 +63,7 @@ export default {
       const fileName = `Photo ${Date.now()}.jpg`;
       const filePath = `C:/User/Pictures/${fileName}`;
       createNewFile(fileObject(filePath, 'image', canvas.toDataURL()));
-      playBackgroundSound(resolveFileByPath('C:/Windows/system/sounds/notif.wav'));
+      playBackgroundSound(resolveFileByPath('C:/Windows/system/sounds/notif.mp3'));
     },
     openDirectory() {
       openFile(fileObject('C:/User/Pictures', 'directory'));

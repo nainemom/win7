@@ -21,4 +21,4 @@ export const setConfig = (obj) => {
 };
 
 // list of config items and default values
-config.wallpaperPath = getConfigItem('wallpaperPath', 'C:/Windows/Wallpapers/01.jpg');
+config.wallpaperPath = getConfigItem('wallpaperPath', 'C:/Windows/system/wallpapers/01.jpg');
