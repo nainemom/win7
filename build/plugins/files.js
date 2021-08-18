@@ -85,8 +85,9 @@ const calculateFilesModule = () => {
 
 const handleFileCode = (file) => {
   const filePath = file.replace('?file', '');
+  const stats = fs.statSync(filePath);
   const varName = getFileHash(filePath);
-  const url = isDev ? datauri(filePath).content : `${varName}${path.extname(filePath)}`;
+  const url = isDev || stats.size < (1024 * 160) ? datauri(filePath).content : `${varName}${path.extname(filePath)}`;
   let code = 'export default ';
   if (urlFiles.includes(path.extname(file))) {
     code += `'${url}'`;
