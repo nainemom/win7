@@ -6,16 +6,26 @@ import datauri from 'datauri/sync';
 
 const FILES_DIR = path.resolve(__dirname, '../../files');
 const DIST_DIR = path.resolve(__dirname, '../../dist');
+
 let filesResult;
 let isDev = true;
-
-const urlFiles = ['.jpg', '.jpeg', '.png', '.mp3', '.wav'];
 
 const getDirFiles = (dir) => fs.readdirSync(dir).filter((x) => !['.gitkeep', '.files'].includes(x)).map((x) => path.resolve(dir, x));
 
 const realPathToAppPath = (thePath) => thePath.replace(`${FILES_DIR}/`, '');
 
 const getFileHash = (thePath) => `x${createHash('md5').update(thePath).digest('hex')}`;
+
+const getConvertDataType = (filePath) => {
+  const appPath = realPathToAppPath(filePath);
+  if (['.gif', '.jpg', '.jpeg', '.png', '.mp3', '.wav', '.mp4', '.mkv', '.avi'].includes(path.extname(appPath))) { // url or datauri
+    if (isDev || appPath.startsWith('C:')) {
+      return 'datauri';
+    }
+    return 'url';
+  }
+  return 'content';
+};
 
 const calculateFilesModule = () => {
   const imp = [];
@@ -85,13 +95,14 @@ const calculateFilesModule = () => {
 
 const handleFileCode = (file) => {
   const filePath = file.replace('?file', '');
-  const stats = fs.statSync(filePath);
   const varName = getFileHash(filePath);
-  const url = isDev || stats.size < (1024 * 160) ? datauri(filePath).content : `${varName}${path.extname(filePath)}`;
+  const convertDataType = getConvertDataType(filePath);
   let code = 'export default ';
-  if (urlFiles.includes(path.extname(file))) {
-    code += `'${url}'`;
-  } else {
+  if (convertDataType === 'datauri') {
+    code += `'${datauri(filePath).content}'`;
+  } else if (convertDataType === 'url') {
+    code += `'${varName}${path.extname(filePath)}'`;
+  } else if (convertDataType === 'content') {
     const content = fs.readFileSync(filePath).toString().trim();
     code += `\`${content}\``;
   }
