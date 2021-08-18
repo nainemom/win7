@@ -5,10 +5,6 @@ import { createHash } from 'crypto';
 import datauri from 'datauri/sync';
 
 const FILES_DIR = path.resolve(__dirname, '../../files');
-const DIST_DIR = path.resolve(__dirname, '../../dist');
-
-let filesResult;
-let isDev = true;
 
 const getDirFiles = (dir) => fs.readdirSync(dir).filter((x) => !['.gitkeep', '.files'].includes(x)).map((x) => path.resolve(dir, x));
 
@@ -19,7 +15,7 @@ const getFileHash = (thePath) => `x${createHash('md5').update(thePath).digest('h
 const getConvertDataType = (filePath) => {
   const appPath = realPathToAppPath(filePath);
   if (['.gif', '.jpg', '.jpeg', '.png', '.mp3', '.wav', '.mp4', '.mkv', '.avi'].includes(path.extname(appPath))) { // url or datauri
-    if (isDev || appPath.startsWith('C:')) {
+    if (appPath.startsWith('C:')) {
       // legacy check to only make default wallaper datauri and not the other ones
       if (!appPath.startsWith('C:/Windows/system/wallpapers') || appPath === 'C:/Windows/system/wallpapers/01.jpg') {
         return 'datauri';
@@ -33,7 +29,6 @@ const getConvertDataType = (filePath) => {
 const calculateFilesModule = () => {
   const imp = [];
   const exp = [];
-  const copyLater = [];
   const loadFiles = (filePath) => {
     const files = getDirFiles(filePath);
     files.forEach((file) => {
@@ -47,13 +42,16 @@ const calculateFilesModule = () => {
         loadFiles(file);
       } else {
         const varName = getFileHash(file);
-        const fromText = file;
+        let fromText = file;
         if (!file.endsWith('.vue')) {
-          const copyFileName = `${varName}${path.extname(file)}`;
-          copyLater.push({
-            src: file,
-            dst: path.resolve(DIST_DIR, copyFileName),
-          });
+          const convertDataType = getConvertDataType(file);
+          if (convertDataType === 'datauri') {
+            fromText += '?datauri'; // handled by current plugin
+          } else if (convertDataType === 'url') {
+            fromText += '?url'; // handled by vite
+          } else if (convertDataType === 'content') {
+            fromText += '?raw'; // handled by vite
+          }
         }
         imp.push({
           name: varName,
@@ -88,66 +86,27 @@ const calculateFilesModule = () => {
   code += ']';
 
   return {
-    imp,
-    exp,
     code,
     map: null,
-    copyLater,
-  };
-};
-
-const handleFileCode = (file) => {
-  const filePath = file.replace('?file', '');
-  const varName = getFileHash(filePath);
-  const convertDataType = getConvertDataType(filePath);
-  let code = 'export default ';
-  if (convertDataType === 'datauri') {
-    code += `'${datauri(filePath).content}'`;
-  } else if (convertDataType === 'url') {
-    code += `'${varName}${path.extname(filePath)}'`;
-  } else if (convertDataType === 'content') {
-    const content = fs.readFileSync(filePath).toString().trim();
-    code += `\`${content}\``;
-  }
-  code += ';';
-  return {
-    map: null,
-    code,
   };
 };
 
 export default () => ({
   name: 'files',
-  buildStart(options) {
-    isDev = !options.input;
-  },
-  transform(_src, id) {
+  transform(src, id) {
     if (id.endsWith('.files')) {
-      filesResult = calculateFilesModule();
+      const { code, map } = calculateFilesModule();
       return {
-        map: filesResult.map,
-        code: filesResult.code,
+        code,
+        map,
       };
     }
-
-    const copyLater = filesResult && filesResult.copyLater.find((x) => x.src === id);
-    if (copyLater) {
-      const result = handleFileCode(id);
+    if (/\?datauri$/.test(id) && src.length < 300) {
       return {
-        map: result.map,
-        code: result.code,
+        map: null,
+        code: `export default '${datauri(id.replace('?datauri', '')).content}';`,
       };
     }
     return null;
-  },
-  buildEnd() {
-    setTimeout(() => {
-      if (filesResult) {
-        filesResult.copyLater.forEach(({ src, dst }) => {
-          fs.mkdirSync(path.dirname(dst), { recursive: true });
-          fs.copyFileSync(src, dst);
-        });
-      }
-    });
   },
 });
