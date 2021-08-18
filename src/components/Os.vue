@@ -18,17 +18,15 @@
 </template>
 
 <script>
-import WelcomePage from './WelcomePage.vue';
-import Window from './Window.vue';
-import Desktop from './Desktop.vue';
-import Taskbar from './Taskbar/Taskbar.vue';
-import ContextMenu from './ContextMenu.vue';
+import WelcomePage from '@/components/WelcomePage.vue';
+import Window from '@/components/Window.vue';
+import Desktop from '@/components/Desktop.vue';
+import Taskbar from '@/components/Taskbar/Taskbar.vue';
+import ContextMenu from '@/components/ContextMenu.vue';
 
-import * as $fs from '../services/fs';
-import * as $wm from '../services/wm';
-import * as $snd from '../services/snd';
-import * as $cnf from '../services/cnf';
-import { fitSize } from '../styles/common';
+import * as $wm from '@/services/wm';
+import { fitSize } from '@/styles/common';
+import { customLog } from '@/utils/log';
 
 export default {
   components: {
@@ -37,15 +35,6 @@ export default {
     Desktop,
     Taskbar,
     ContextMenu,
-  },
-  provide() {
-    return {
-      $wm,
-      $fs,
-      $snd,
-      $cnf,
-      $os: this,
-    };
   },
   computed: {
     windowsList() {
@@ -59,8 +48,7 @@ export default {
     },
   },
   errorCaptured(e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    customLog('error', e);
     $wm.openDialog({
       type: 'error',
       content: e.toString(),

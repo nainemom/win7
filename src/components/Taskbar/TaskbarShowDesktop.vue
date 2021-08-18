@@ -6,18 +6,17 @@
 </template>
 
 <script>
-import { panelSize } from '../../styles/constants';
-import { rgba } from '../../styles/utils';
-import { inject } from '../../utils/vue';
+import { panelSize } from '@/styles/constants';
+import { rgba } from '@/styles/utils';
+import { windows, minimizeWindow } from '@/services/wm';
 
 export default {
-  ...inject('$wm'),
   methods: {
     onClick() {
-      const windowsList = this.$wm.windows.list;
+      const windowsList = windows.list;
       const isAllWindowsMinimized = windowsList.every((win) => win.minimized);
       windowsList.forEach((win) => {
-        this.$wm.minimizeWindow(win.id, !isAllWindowsMinimized);
+        minimizeWindow(win.id, !isAllWindowsMinimized);
       });
     },
   },

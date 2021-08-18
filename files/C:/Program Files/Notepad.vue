@@ -12,18 +12,18 @@
 </template>
 
 <script>
-import icon from '../../../src/assets/icons/notepad.png';
-import fileIcon from '../../../src/assets/icons/txt.png';
-import { rgba } from '../../../src/styles/utils';
-import { props, inject } from '../../../src/utils/vue';
+import { rgba } from '@/styles/utils';
+import { props } from '@/utils/vue';
+import { resolveFileByPath, createNewFile, fileObject } from '@/services/fs';
+import { closeWindow, openDialog } from '@/services/wm';
 
 export default {
-  ...inject('$wm', '$fs'),
-  canHandle: (file) => file.type === 'text',
-  windowProperties: (file) => ({
-    icon: file ? fileIcon : icon,
+  canHandle: (file) => !file || (file.path.endsWith('.txt') || file.path.endsWith('.json')),
+  metaData: (file) => ({
+    icon: resolveFileByPath(`C:/Windows/system/icons/${file ? 'txt' : 'notepad'}.png`),
     width: 600,
     height: 500,
+    title: file ? file.path : 'Notepad',
   }),
   ...props({
     file: props.obj(null),
@@ -31,7 +31,7 @@ export default {
   }),
   data() {
     return {
-      value: this.file ? this.file.data.value : '',
+      value: this.file ? this.file.data : '',
     };
   },
   mounted() {
@@ -39,12 +39,12 @@ export default {
   },
   methods: {
     exit() {
-      this.$wm.closeWindow(this.wmId);
+      closeWindow(this.wmId);
     },
     save() {
       if (this.file) {
-        this.file.data.value = this.value;
-        this.$wm.openDialog({
+        this.file.data = this.value;
+        openDialog({
           type: 'info',
           content: 'File Saved!',
           buttons: ['OK'],
@@ -52,10 +52,10 @@ export default {
       } else {
         const fileName = `Text File ${Date.now()}.txt`;
         const filePath = `C:/User/Documents/${fileName}`;
-        this.$fs.createNewFile(this.$fs.fileObject(filePath, 'text', {
+        createNewFile(fileObject(filePath, 'text', {
           value: this.value,
         }));
-        this.$fs.createNewFile(this.$fs.fileObject(`C:/User/Desktop/${fileName}`, 'shortcut', {
+        createNewFile(fileObject(`C:/User/Desktop/${fileName}`, 'shortcut', {
           src: filePath,
         }));
         this.exit();

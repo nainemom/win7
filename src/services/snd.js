@@ -1,9 +1,6 @@
 /* eslint-disable import/prefer-default-export */
-import { openFile } from './wm';
-import { fileObject } from './fs';
-
-export const playSound = (soundSrc) => new Promise((resolve) => openFile(fileObject('', 'sound', {
-  hidden: true,
-  value: soundSrc,
-  onEnd: resolve,
-})));
+export const playBackgroundSound = (soundFile) => new Promise((resolve) => {
+  const audio = new Audio(soundFile.data);
+  audio.play();
+  audio.onended = resolve;
+});

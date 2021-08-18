@@ -2,5 +2,9 @@
   "extends": [
     "airbnb-base",
     "plugin:vue/vue3-recommended"
-  ]
+  ],
+  "rules": {
+    "import/extensions": "off",
+    "import/no-unresolved": "off"
+  }
 }

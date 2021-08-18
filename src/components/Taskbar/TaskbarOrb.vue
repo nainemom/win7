@@ -44,15 +44,13 @@
 </template>
 
 <script>
-import Popup from '../Popup.vue';
-import File from '../File.vue';
-import { inject } from '../../utils/vue';
-import { panelSize } from '../../styles/constants';
-import OrbNormal from '../../assets/orb/normal.png';
-import { rgba } from '../../styles/utils';
+import Popup from '@/components/Popup.vue';
+import File from '@/components/File.vue';
+import { panelSize } from '@/styles/constants';
+import { rgba } from '@/styles/utils';
+import { searchFiles, getDirectoryFiles, resolveFileByPath } from '@/services/fs';
 
 export default {
-  ...inject('$fs'),
   components: {
     Popup,
     File,
@@ -66,12 +64,12 @@ export default {
   computed: {
     leftContainerFiles() {
       if (this.searchString) {
-        return this.$fs.searchFiles('', (theFile) => theFile.path.includes(this.searchString), true);
+        return searchFiles('', (theFile) => theFile.path.toLowerCase().includes(this.searchString.toLowerCase()), true);
       }
-      return this.$fs.getDirectoryFiles('C:/Program Files');
+      return getDirectoryFiles('C:/Program Files');
     },
     rightContainerFiles() {
-      return this.$fs.getDirectoryFiles('C:/User/Start Menu');
+      return getDirectoryFiles('C:/User/Start Menu');
     },
   },
   watch: {
@@ -138,7 +136,7 @@ export default {
         width: panelSize,
         minWidth: panelSize,
         height: panelSize,
-        backgroundImage: `url("${OrbNormal}");`,
+        backgroundImage: `url("${resolveFileByPath('C:/Windows/system/orb/normal.png').data}");`,
         backgroundPosition: 'center',
         backgroundSize: itemSize,
         backgroundRepeat: 'no-repeat',

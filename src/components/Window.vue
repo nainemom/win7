@@ -15,7 +15,7 @@
         ref="title"
         class="title"
       >
-        <img :src="window.icon">
+        <img :src="window.icon.data">
         {{ window.title }}
       </div>
       <div
@@ -53,7 +53,7 @@
       </div>
     </div>
     <component
-      :is="window.fsData.runner.data.component"
+      :is="window.fsData.runner.data"
       ref="content"
       :class="$style.content"
       :file="window.fsData.file"
@@ -63,21 +63,25 @@
 </template>
 
 <script>
-import { inject, props } from '../utils/vue';
-import { each } from '../utils/utils';
-import { rgba, px } from '../styles/utils';
-import { panelSize } from '../styles/constants';
-import swipe from '../utils/swipe';
-import MaximizeIcon from '../assets/window/maximize.png';
-import UnmaximizeIcon from '../assets/window/unmaximize.png';
-import MinimizeIcon from '../assets/window/minimize.png';
-import CloseIcon from '../assets/window/close.png';
+import {
+  isWindowFocused,
+  closeWindow,
+  focusWindow,
+  minimizeWindow,
+  maximizeWindow,
+} from '@/services/wm';
+import { resolveFileByPath } from '@/services/fs';
+import { props } from '@/utils/vue';
+import { rgba, px } from '@/styles/utils';
+import { panelSize } from '@/styles/constants';
+import swipe from '@/utils/swipe';
+import { each } from '@/utils/utils';
+import { log } from '@/utils/log';
 
 export default {
   ...props({
     window: props.obj(),
   }),
-  ...inject('$wm'),
   data() {
     return {
       mover: null,
@@ -87,15 +91,22 @@ export default {
   computed: {
     icons() {
       return {
-        maximize: MaximizeIcon,
-        unmaximize: UnmaximizeIcon,
-        minimize: MinimizeIcon,
-        close: CloseIcon,
+        maximize: resolveFileByPath('C:/Windows/system/window/maximize.png').data,
+        unmaximize: resolveFileByPath('C:/Windows/system/window/unmaximize.png').data,
+        minimize: resolveFileByPath('C:/Windows/system/window/minimize.png').data,
+        close: resolveFileByPath('C:/Windows/system/window/close.png').data,
       };
     },
     focused() {
-      return this.$wm.isWindowFocused(this.window.id);
+      return isWindowFocused(this.window.id);
     },
+  },
+  created() {
+    log(
+      `Window.vue ${this.window.title}`,
+      ['window:', this.window],
+      ['fsData:', this.window.fsData],
+    );
   },
   mounted() {
     this.setPosition({
@@ -120,10 +131,10 @@ export default {
   },
   methods: {
     close() {
-      this.$wm.closeWindow(this.window.id);
+      closeWindow(this.window.id);
     },
     focus() {
-      this.$wm.focusWindow(this.window.id);
+      focusWindow(this.window.id);
     },
     moveStart() {
       if (this.window.maximized) {
@@ -151,10 +162,10 @@ export default {
       });
     },
     minimize() {
-      this.$wm.minimizeWindow(this.window.id);
+      minimizeWindow(this.window.id);
     },
     maximize() {
-      this.$wm.maximizeWindow(this.window.id);
+      maximizeWindow(this.window.id);
     },
     setPosition(position) {
       each(position, (key, value) => {

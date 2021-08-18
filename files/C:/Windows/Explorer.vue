@@ -27,31 +27,32 @@
 </template>
 
 <script>
-import NavigateSound from '../../../src/assets/sounds/navigate.wav';
-import icon from '../../../src/assets/icons/my-computer.png';
-import folderIcon from '../../../src/assets/icons/folder.png';
-import driveIcon from '../../../src/assets/icons/drive.png';
-import { rgba } from '../../../src/styles/utils';
-import backIcon from '../../../src/assets/icons/back.png';
-import FilesContainer from '../../../src/components/FilesContainer.vue';
-import { props, inject } from '../../../src/utils/vue';
+import { rgba } from '@/styles/utils';
+import FilesContainer from '@/components/FilesContainer.vue';
+import { props } from '@/utils/vue';
+import {
+  resolveFileByPath,
+  getPathName,
+  searchFiles,
+  resolveFileSource,
+} from '@/services/fs';
+import { playBackgroundSound } from '@/services/snd';
 
 const calcIcon = (file) => {
   if (!file) {
-    return icon;
+    return resolveFileByPath('C:/Windows/system/icons/my-computer.png');
   }
-  return file.path.endsWith(':') ? driveIcon : folderIcon;
+  return resolveFileByPath(`C:/Windows/system/icons/${file.path.endsWith(':') ? 'drive' : 'folder'}.png`);
 };
 
 export default {
-  canHandle: (file) => file.type === 'directory',
-  windowProperties: (file) => ({
+  canHandle: (file) => !file || file.type === 'directory',
+  metaData: (file) => ({
     icon: calcIcon(file),
     width: 600,
     height: 500,
     title: !file ? 'Computer' : file.path,
   }),
-  ...inject('$fs', '$wm', '$snd'),
   ...props({
     file: props.obj(null),
   }),
@@ -62,7 +63,7 @@ export default {
     const hasFile = this.file && this.file.path;
     return {
       path: hasFile ? this.file.path : '',
-      search: hasFile ? this.file.data.search : '',
+      search: hasFile ? this.file.extraData?.search : '',
     };
   },
   computed: {
@@ -70,15 +71,17 @@ export default {
       return this.path.split('/').join('\\') || 'Computer';
     },
     searchPlaceholder() {
-      return `Search in ${this.$fs.getPathName(this.path) || 'Computer'}`;
+      return `Search in ${getPathName(this.path) || 'Computer'}`;
+    },
+    navigateSound() {
+      return resolveFileByPath('C:/Windows/system/sounds/navigate.wav');
     },
     filesContainerProps() {
       if (this.search) {
         return {
-          files: this.$fs.searchFiles(
+          files: searchFiles(
             this.path,
-            (file) => this.$fs
-              .getPathName(file.path).toLowerCase().includes(this.search.toLowerCase()),
+            (file) => getPathName(file.path).toLowerCase().includes(this.search.toLowerCase()),
             true,
           ),
         };
@@ -90,16 +93,16 @@ export default {
   },
   methods: {
     click(file) {
-      const theFile = this.$fs.resolveFileSource(file);
+      const theFile = resolveFileSource(file);
       if (theFile.type === 'directory') {
-        this.$snd.playSound(NavigateSound);
+        playBackgroundSound(this.navigateSound);
         this.path = theFile.path;
         return true;
       }
       return false;
     },
     back() {
-      this.$snd.playSound(NavigateSound);
+      playBackgroundSound(this.navigateSound);
       if (this.path.includes('/')) {
         this.path = this.path.substr(0, this.path.lastIndexOf('/'));
       } else {
@@ -120,7 +123,7 @@ export default {
         flexWrap: 'nowrap',
         marginBottom: '6px',
         '& > .back': {
-          backgroundImage: `url("${backIcon}")`,
+          backgroundImage: `url("${resolveFileByPath('C:/Windows/system/icons/back.png').data}")`,
           width: '32px',
           height: '32px',
           backgroundRepeat: 'no-repeat',
@@ -144,7 +147,7 @@ export default {
           lineHeight: '24px',
           padding: '0 5px',
           fontSize: '15px',
-          border: `solid 1px ${rgba(1, 0.5)}`,
+          border: `solid 1px ${rgba(0, 0.5)}`,
           background: rgba(255, 1),
           borderRadius: '2px',
         },

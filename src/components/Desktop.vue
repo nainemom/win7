@@ -13,21 +13,21 @@
 </template>
 
 <script>
-import { fitSize } from '../styles/common';
-import { inject } from '../utils/vue';
-import { panelSize } from '../styles/constants';
-import FilesContainer from './FilesContainer.vue';
+import { fitSize } from '@/styles/common';
+import { panelSize } from '@/styles/constants';
+import FilesContainer from '@/components/FilesContainer.vue';
+import { resolveFileByPath } from '@/services/fs';
+import { openFile } from '@/services/wm';
+import { config } from '@/services/cnf';
 
 export default {
   name: 'Desktop',
   components: {
     FilesContainer,
   },
-  ...inject('$wm', '$fs', '$cnf'),
   style({ className }) {
     return [
       className('desktop', {
-      //  background: `url("${WallpaperImage}")`,
         position: 'absolute',
         ...fitSize,
         paddingBottom: panelSize,
@@ -39,7 +39,7 @@ export default {
   computed: {
     wallpaper() {
       try {
-        return `url("${this.$fs.resolveFileByPath(this.$cnf.values.wallpaperPath).data.value}")`;
+        return `url("${resolveFileByPath(config.wallpaperPath).data}")`;
       } catch (_e) {
         return '';
       }
@@ -52,8 +52,8 @@ export default {
   },
   methods: {
     openChangeBackground() {
-      this.$wm.openFile(
-        this.$fs.resolveFileByPath('C:/Program Files/ChangeBackground.exe'),
+      openFile(
+        resolveFileByPath('C:/Windows/ChangeBackground.vue'),
       );
     },
   },

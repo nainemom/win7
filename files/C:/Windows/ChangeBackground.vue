@@ -13,7 +13,7 @@
           :key="key"
           width="90"
           height="60"
-          :src="item.data.value"
+          :src="item.data"
           alt=""
           @click="changeBackground(item)"
         >
@@ -23,21 +23,21 @@
 </template>
 
 <script>
-import icon from '../../../src/assets/icons/background-capplet.png';
-import { props, inject } from '../../../src/utils/vue';
-import { px } from '../../../src/styles/utils';
+import { props } from '@/utils/vue';
+import { px } from '@/styles/utils';
+import { resolveFileByPath, getDirectoryFiles } from '@/services/fs';
+import { setConfig } from '@/services/cnf';
 
 export default {
   name: 'ChangeBackground',
-  canHandle: () => false,
-  windowProperties: () => ({
+  canHandle: (file) => !file,
+  metaData: () => ({
     title: 'Change Background',
-    icon,
+    icon: resolveFileByPath('C:/Windows/system/icons/background-capplet.png'),
     width: 900,
     height: 490,
     maximizable: false,
   }),
-  ...inject('$wm', '$fs', '$cnf'),
   ...props({
     file: props.obj(null),
     wmId: props.any(),
@@ -46,12 +46,12 @@ export default {
     return { list: [], loading: true };
   },
   async mounted() {
-    this.list = this.$fs.getDirectoryFiles('C:/Windows/Wallpapers');
+    this.list = getDirectoryFiles('C:/Windows/Wallpapers');
     this.loading = false;
   },
   methods: {
     changeBackground(item) {
-      this.$cnf.setConfig({
+      setConfig({
         wallpaperPath: item.path,
       });
     },
