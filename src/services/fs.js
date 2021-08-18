@@ -197,7 +197,7 @@ export function isDirectory(filePath) {
 }
 
 export function reverseSlash(filePath) {
-  return filePath.replace(/\//g, '/');
+  return filePath.replaceAll('/', "\\");
 }
 
 export async function copyDirectory(srcDirectory, dstDirectory) {

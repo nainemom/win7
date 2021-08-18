@@ -41,6 +41,7 @@ export default {
   ...inject('$fs', '$wm', '$snd'),
   ...props({
     filePath: props.obj(null),
+
   }),
   components: {
     FilesContainer,
@@ -57,8 +58,8 @@ export default {
       if (!this.path || this.path === '/') {
         return 'My Computer';
       }
-      return reverseSlash(this.path)
-        .substring(1);
+      const reversed = reverseSlash(this.path);
+      return reversed.startsWith('\\') ? reversed.slice(1) : reversed;
     },
     searchPlaceholder() {
       const path = this.path;
