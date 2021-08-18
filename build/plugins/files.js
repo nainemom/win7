@@ -1,126 +1,138 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import path from 'path';
 import fs from 'fs';
+import { createHash } from 'crypto';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import datauri from 'datauri/sync';
 
 const FILES_DIR = path.resolve(__dirname, '../../files');
+const DIST_DIR = path.resolve(__dirname, '../../dist');
+let filesResult;
+let isDev = true;
 
-const getUniqueImportName = (filePath) => `File_${filePath.split('').reduce((sum, item) => `${sum}${item.charCodeAt(0)}`, '')}`;
+const urlFiles = ['.jpg', '.jpeg', '.png', '.mp3', '.wav'];
 
-const getFileObjectOfFsFile = (filePath) => {
-  try {
-    const stat = fs.lstatSync(filePath);
-    const appPath = (() => {
-      const withExt = filePath.replace(`${FILES_DIR}/`, '');
-      return withExt.replace(path.extname(withExt), '');
-    })();
-
-    if (stat.isDirectory()) {
-      return [appPath, 'directory'];
-    }
-
-    const extName = path.extname(filePath).substr(1);
-    const fileType = (() => {
-      if (extName === 'link') return 'shortcut';
-      if (extName === 'vue') return 'app';
-      if (extName === 'json') return 'json';
-      if (['jpg', 'jpeg', 'svg', 'png', 'bmp', 'gif'].includes(extName)) {
-        return 'image';
-      }
-      if (['mp3', 'wav', 'ogg'].includes(extName)) {
-        return 'sound';
-      }
-      if (['mp4', '3gp', 'mkv'].includes(extName)) {
-        return 'video';
-      }
-      return 'text';
-    })();
-    if (fileType === 'shortcut') {
-      return [appPath, 'shortcut', {
-        src: fs.readFileSync(filePath).toString().trim(),
-      }];
-    }
-    if (fileType === 'app') {
-      return [appPath, 'app']; // will filled later
-    }
-    if (fileType === 'json') {
-      const jsonContent = JSON.parse(fs.readFileSync(filePath));
-      return [appPath, ...jsonContent];
-    }
-    if (fileType === 'text') {
-      return [appPath, 'text', {
-        value: fs.readFileSync(filePath).toString(),
-      }];
-    }
-
-    return [appPath, fileType, {
-      value: datauri(filePath).content,
-    }];
-  } catch (e) {
-    return false;
-  }
-};
 const getDirFiles = (dir) => fs.readdirSync(dir).filter((x) => !['.gitkeep', '.files'].includes(x)).map((x) => path.resolve(dir, x));
 
-const calcListOfFiles = (dir) => {
-  let expRet = [];
-  let impRet = [];
-  const files = getDirFiles(dir);
-  files.forEach((filePath) => {
-    const fsPath = path.resolve(dir, filePath);
-    const fileObject = getFileObjectOfFsFile(fsPath);
-    if (fileObject[1] === 'app') {
-      const importName = getUniqueImportName(fsPath);
-      fileObject.push({
-        component: `%${importName}%`, // will remove %s when creating actual codes
-      });
-      impRet.push({
-        name: importName,
-        from: fsPath,
-      });
+const realPathToAppPath = (thePath) => thePath.replace(`${FILES_DIR}/`, '');
+
+const getFileHash = (thePath) => `x${createHash('md5').update(thePath).digest('hex')}`;
+
+const calculateFilesModule = () => {
+  const imp = [];
+  const exp = [];
+  const copyLater = [];
+  const loadFiles = (filePath) => {
+    const files = getDirFiles(filePath);
+    files.forEach((file) => {
+      const stat = fs.lstatSync(file);
+      const appPath = realPathToAppPath(file);
+      if (stat.isDirectory()) {
+        exp.push({
+          type: 'directory',
+          path: appPath,
+        });
+        loadFiles(file);
+      } else {
+        const varName = getFileHash(file);
+        const fromText = file;
+        if (!file.endsWith('.vue')) {
+          const copyFileName = `${varName}${path.extname(file)}`;
+          copyLater.push({
+            src: file,
+            dst: path.resolve(DIST_DIR, copyFileName),
+          });
+        }
+        imp.push({
+          name: varName,
+          from: fromText,
+        });
+        exp.push({
+          type: file.endsWith('.vue') ? 'app' : 'file',
+          path: appPath,
+          data: varName,
+        });
+      }
+    });
+  };
+  loadFiles(FILES_DIR);
+
+  let code = '';
+  // handle imports
+  code += imp
+    .map(
+      (impItem) => `import ${impItem.name} from '${impItem.from}';`,
+    )
+    .join(' ');
+  // handle export
+  code += 'export default [';
+  code += exp.map((expItem) => `
+    {
+      type: '${expItem.type}',
+      path: '${expItem.path}',
+      data: ${expItem.data}
     }
-    expRet = [
-      ...expRet,
-      fileObject,
-    ];
-    if (fileObject[1] === 'directory') {
-      const subList = calcListOfFiles(fsPath);
-      impRet = [
-        ...impRet,
-        ...subList.impRet,
-      ];
-      expRet = [
-        ...expRet,
-        ...subList.expRet,
-      ];
-    }
-  });
+  `).join(',');
+  code += ']';
+
   return {
-    impRet,
-    expRet,
+    imp,
+    exp,
+    code,
+    map: null,
+    copyLater,
+  };
+};
+
+const handleFileCode = (file) => {
+  const filePath = file.replace('?file', '');
+  const varName = getFileHash(filePath);
+  const url = isDev ? datauri(filePath).content : `/${varName}${path.extname(filePath)}`;
+  let code = 'export default ';
+  if (urlFiles.includes(path.extname(file))) {
+    code += `'${url}'`;
+  } else {
+    const content = fs.readFileSync(filePath).toString().trim();
+    code += `\`${content}\``;
+  }
+  code += ';';
+  return {
+    map: null,
+    code,
   };
 };
 
 export default () => ({
   name: 'files',
+  buildStart(options) {
+    isDev = !options.input;
+  },
   transform(_src, id) {
     if (id.endsWith('.files')) {
-      let codeImport = '';
-      let codeExport = 'export default [';
-      const files = calcListOfFiles(FILES_DIR);
-      files.impRet.forEach(({ name, from }) => {
-        codeImport = `${codeImport}import ${name} from '${from}';\n`;
-      });
-      files.expRet.forEach((fileObj) => {
-        codeExport += `${JSON.stringify(fileObj).split('"%').join('').split('%"')
-          .join('')},`;
-      });
-      codeExport += ']';
+      filesResult = calculateFilesModule();
       return {
-        map: null,
-        code: `${codeImport}${codeExport}`,
+        map: filesResult.map,
+        code: filesResult.code,
+      };
+    }
+
+    const copyLater = filesResult && filesResult.copyLater.find((x) => x.src === id);
+    if (copyLater) {
+      const result = handleFileCode(id);
+      return {
+        map: result.map,
+        code: result.code,
       };
     }
     return null;
+  },
+  buildEnd() {
+    setTimeout(() => {
+      if (filesResult) {
+        filesResult.copyLater.forEach(({ src, dst }) => {
+          fs.mkdirSync(path.dirname(dst), { recursive: true });
+          fs.copyFileSync(src, dst);
+        });
+      }
+    });
   },
 });
