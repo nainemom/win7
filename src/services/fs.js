@@ -1,9 +1,9 @@
 import { markRaw, reactive } from 'vue';
 
-export const fileObject = (path, type, data = {}) => ({
+export const fileObject = (path, type, data) => ({
   path,
   type,
-  data: markRaw(data),
+  data: typeof data === 'object' ? markRaw(data) : data,
 });
 
 export const files = reactive({
@@ -72,27 +72,29 @@ export const resolveFileSource = (theFile) => {
   if (!theFile) {
     throw new Error(`Cannot resolve ${theFile}`);
   }
-  if (theFile.type === 'shortcut') {
-    return resolveFileSource(resolveFileByPath(theFile.data.src));
+  if (theFile.path.endsWith('.link')) {
+    const src = theFile.data;
+    const srcFile = resolveFileByPath(src);
+    const resolvedSrcFile = resolveFileSource(srcFile);
+    return resolvedSrcFile;
   }
   return theFile;
 };
 
 export const resolveFileRunner = (_thefile) => {
+  const askRunner = (app, file) => {
+    const { canHandle } = (app || {}).data || {};
+    return (canHandle || (() => false))(file);
+  };
   const theFile = resolveFileSource(_thefile);
-  if (theFile.type === 'app') {
+  if (theFile.type === 'app' && askRunner(theFile)) {
     return theFile;
   }
-  const apps = [
-    ...getDirectoryFiles('C:/Windows'),
-    ...getDirectoryFiles('C:/Program Files'),
-  ];
-  const runner = apps.find((app) => {
-    if (app.data.component && typeof app.data.component.canHandle === 'function' && app.data.component.canHandle(theFile)) {
-      return true;
-    }
-    return false;
-  });
+  const apps = files.list.filter((file) => file.path.endsWith('.vue'));
+  const runner = apps.find((app) => askRunner(app, theFile));
+  if (!runner) {
+    return undefined;
+  }
   return runner;
 };
 
@@ -143,9 +145,7 @@ export const copyFileByPath = (pathFrom, pathTo) => {
   const clonedFile = {
     ...theFile,
     path: pathTo,
-    data: {
-      ...theFile.data,
-    },
+    data: theFile.data,
   };
   createNewFile(clonedFile);
   return true;
@@ -156,10 +156,40 @@ export const searchFiles = (basePath, matcher, recursive = true) => getDirectory
   recursive,
 ).filter(matcher);
 
-export const getFileWindowProperties = (_theFile) => {
-  const theFile = resolveFileSource(_theFile);
-  const runner = resolveFileRunner(theFile);
-  const isNotApp = theFile.type !== 'app';
-  const ret = runner && runner.data && runner.data.component && typeof runner.data.component.windowProperties === 'function' ? runner.data.component.windowProperties(isNotApp && theFile) : {};
+const defaultFileMetaData = () => ({
+  width: 400,
+  height: 400,
+  hidden: false,
+  title: 'Window',
+  maximizable: true,
+  closable: true,
+  minimizable: true,
+  movable: true,
+  resizable: true,
+  maximized: false,
+  minimized: false,
+  icon: resolveFileByPath('C:/Windows/system/icons/unknown.png'),
+});
+
+export const getFileMetaData = (_theFile) => {
+  let ret = defaultFileMetaData();
+  try {
+    const file = resolveFileSource(_theFile);
+    let propertiesFrom;
+    if (file.type === 'app') {
+      propertiesFrom = file;
+    } else {
+      propertiesFrom = resolveFileRunner(file);
+    }
+    const { metaData } = (propertiesFrom || {}).data || {};
+    if (typeof metaData === 'function') {
+      ret = {
+        ...ret,
+        ...metaData(file.type !== 'app' ? file : undefined),
+      };
+    }
+  } catch (_e) {
+    //
+  }
   return ret;
 };

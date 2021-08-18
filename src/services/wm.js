@@ -1,8 +1,10 @@
 import { reactive } from 'vue';
-import UnknownIcon from '../assets/icons/unknown.png';
 import {
-  resolveFileSource, resolveFileRunner, getFileWindowProperties, getPathName, fileObject,
-} from './fs';
+  resolveFileSource,
+  resolveFileRunner,
+  getFileMetaData,
+  fileObject,
+} from '@/services/fs';
 
 export const state = reactive({
   started: false,
@@ -60,54 +62,35 @@ export const windows = reactive({
 
 let latestZIndex = 20;
 
-export const calculateFileWindowProperties = (_theFile) => {
-  const theFile = resolveFileSource(_theFile);
-  const windowProperties = getFileWindowProperties(theFile) || {};
-  const getOr = (value, defaultvalue) => (typeof value === 'undefined' ? defaultvalue : value);
-  const width = getOr(windowProperties.width, 400);
-  const height = getOr(windowProperties.height, 400);
-  const hidden = getOr(windowProperties.hidden, false);
-  if (!hidden) {
-    latestZIndex += 1;
-  }
-  return {
-    title: windowProperties.title || getPathName(theFile.path) || 'Window',
-    maximizable: getOr(windowProperties.maximizable, true),
-    closable: getOr(windowProperties.closable, true),
-    minimizable: getOr(windowProperties.minimizable, true),
-    movable: true,
-    maximized: getOr(windowProperties.maximized, false),
-    minimized: getOr(windowProperties.maximized, false),
-    resizable: getOr(windowProperties.resizable, true),
-    hidden,
-    width,
-    height,
-    left: (window.innerWidth / 2) - (width / 2) + (Math.random() * 20) - 10,
-    top: (window.innerHeight / 2) - (height / 2) + (Math.random() * 20) - 10,
-    icon: getOr(windowProperties.icon, UnknownIcon),
-    zIndex: hidden ? -1 : latestZIndex,
-  };
-};
-
 export const openFile = (_theFile) => {
-  const theFile = resolveFileSource(_theFile);
-  const runner = resolveFileRunner(theFile);
-  const windowProperties = calculateFileWindowProperties(theFile);
+  const file = resolveFileSource(_theFile);
+  const runner = resolveFileRunner(file);
+  if (!runner) {
+    if (file.type === 'app') {
+      throw new Error(`"${file.path}" cannot open without input!`);
+    }
+    throw new Error(`None of installed apps can handle "${file.path}"!`);
+  }
+  const metaData = getFileMetaData(file);
   const id = `w-${Date.now()}-${Math.random()}`;
   const win = {
     id,
-    ...windowProperties,
+    ...metaData,
+    // eslint-disable-next-line no-plusplus
+    zIndex: metaData.hidden ? -1 : (++latestZIndex),
     fsData: Object.freeze({
       runner,
-      file: runner.path !== theFile.path ? theFile : null,
+      file: file === runner ? undefined : file,
     }),
   };
+  win.left = win.left || ((window.innerWidth / 2) - (win.width / 2)) + Math.random() * 20;
+  win.top = win.top || ((window.innerHeight / 2) - (win.height / 2)) + Math.random() * 20;
 
   windows.list.push(win);
   return win;
 };
 
-export const openDialog = (dialogObj) => new Promise((resolve) => openFile(fileObject('', 'dialog', {
+export const openDialog = (dialogObj) => new Promise((resolve) => openFile(fileObject('.dialog', 'file', {
   type: 'error',
   content: '---',
   buttons: ['OK'],

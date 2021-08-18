@@ -11,14 +11,14 @@ const getConfigItem = (key, defaultValue) => {
   }
 };
 
-export const values = reactive({});
+export const config = reactive({});
 
 export const setConfig = (obj) => {
   Object.entries(obj).forEach(([key, value]) => {
     localStorage.setItem(`config-${key}`, JSON.stringify(value));
-    values[key] = value;
+    config[key] = value;
   });
 };
 
 // list of config items and default values
-values.wallpaperPath = getConfigItem('wallpaperPath', 'C:/Windows/Wallpapers/1.jpg');
+config.wallpaperPath = getConfigItem('wallpaperPath', 'C:/Windows/Wallpapers/01.jpg');
