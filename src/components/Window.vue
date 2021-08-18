@@ -182,9 +182,6 @@ export default {
     },
   },
   style({ className }) {
-    const baseAlpha = 0.1;
-    const titleHeight = '32px';
-
     return [
       className('window', {
         userSelect: 'none',
@@ -193,22 +190,23 @@ export default {
           resize: 'both',
         }),
         background: `linear-gradient(180deg,
-          ${rgba(250, baseAlpha)} 0%,
-          ${rgba(100, baseAlpha)} 50%,
-          ${rgba(170, baseAlpha)} 100%
+          ${rgba(250, 0.1)} 0%,
+          ${rgba(255, 0.4)} 30%,
+          ${rgba(70, 0.2)} 40%,
+          ${rgba(170, 0.1)} 100%
         )`,
         boxShadow: `
-          0 0 0 1px ${rgba(255, 0.7)},
-          0 0 8px 3px ${rgba(10, 0.6)}
+          0 0 0 1px ${rgba(255, 0.8)},
+          0 0 8px 3px ${rgba(10, 0.8)}
         `,
-        backdropFilter: 'blur(7px) brightness(1.1)',
+        backdropFilter: 'blur(7px) brightness(0.9)',
         borderRadius: '8px',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
         fontSize: '15px',
         minWidth: '400px',
-        minHeight: titleHeight,
+        minHeight: '32px',
         '&.maximized': {
           width: '100% !important',
           height: `calc(100% - ${panelSize}) !important`,
@@ -231,7 +229,7 @@ export default {
         },
       }),
       className('titlebar', {
-        height: titleHeight,
+        height: '32px',
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
@@ -240,7 +238,7 @@ export default {
           textShadow: new Array(4).fill(`0 0 5px ${rgba(255, 1)}`).join(','),
           flexGrow: 1,
           height: '100%',
-          lineHeight: titleHeight,
+          lineHeight: '32px',
           '& > img': {
             width: '20px',
             marginRight: '5px',
@@ -250,11 +248,12 @@ export default {
         '& > .buttons': {
           display: 'flex',
           flexDirection: 'row',
-          height: '18px',
+          height: '19px',
           alignSelf: 'flex-start',
           boxShadow: `
-            inset 0 0 1px 1px ${rgba(255, 0.4)},
-            0 0 0 2px ${rgba(0, 0.2)}
+            0 0 3px ${rgba(255, 0.4)},
+            0 0 0 1px ${rgba(0, 0.5)},
+            inset 0 0 1px 2px ${rgba(255, 0.4)}
           `,
           borderTop: 'none',
           borderBottomLeftRadius: '5px',
@@ -262,11 +261,11 @@ export default {
           overflow: 'hidden',
           '& > *': {
             textAlign: 'center',
-            lineHeight: '18px',
+            lineHeight: '19px',
             fontSize: '12px',
             fontWeight: 'bold',
             color: '#fff',
-            width: '26px',
+            width: '28px',
             background: `linear-gradient(180deg,
               ${rgba(200, 0.5)} 0%,
               ${rgba(200, 0.5)} 40%,
@@ -296,13 +295,13 @@ export default {
             },
           },
           '& > .close': {
-            width: '42px',
+            width: '46px',
           },
           '&.focused > .close': {
             background: `linear-gradient(180deg,
               rgba(255, 107, 63, 0.8) 0%,
-              rgba(255, 104, 79, 0.7) 40%,
-              rgba(175, 61, 44, 0.9) 55%,
+              rgba(212, 116, 91, 0.7) 40%,
+              rgba(192, 55, 44, 0.9) 55%,
               rgba(204, 33, 33, 0.7) 80%,
               rgba(255, 125, 125, 0.9) 100%
             )`,
