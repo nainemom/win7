@@ -8,15 +8,20 @@
         Click a picture to make it your desktop background.
       </p>
       <div :class="$style.box">
-        <img
-          v-for="(item, key) in list"
-          :key="key"
-          width="90"
-          height="60"
-          :src="item"
-          alt=""
-          @click="changeBackground(item)"
-        >
+        <div v-if="loading" class="loading">
+          <p>loading...</p>
+        </div>
+        <template v-if="!loading">
+          <img
+            v-for="(item, key) in list"
+            :key="key"
+            width="90"
+            height="60"
+            :src="item.src"
+            alt=""
+            @click="changeBackground(item)"
+          >
+        </template>
       </div>
     </div>
   </div>
@@ -27,6 +32,8 @@ import icon from '../../assets/icons/background-capplet.png';
 import { props, inject } from '../../utils/vue';
 import { px } from '../../styles/utils';
 import { getWallpapersList } from '../../assets/images/Wallpapers/Wallpapers';
+import { fetchFile, readDirectory } from '../../services/fs';
+import { encode } from '../../utils/utils';
 
 export default {
   name: 'ChangeBackground',
@@ -36,17 +43,28 @@ export default {
     wmId: props.any(),
   }),
   data() {
-    return { list: [], loading: true };
+    return {
+      list: [],
+      loading: true
+    };
   },
   async mounted() {
-    const wallpapers = await getWallpapersList();
-    this.list = [...wallpapers];
+    const wallpapersFiles = await readDirectory('/C:/Windows/Wallpapers');
+    const wallpapers = wallpapersFiles.map(async file => {
+      const buffer = await fetchFile(file);
+      const bytes = new Uint8Array(buffer);
+      return {
+        file,
+        src: 'data:image/png;base64,'+encode(bytes),
+      };
+    });
+    this.list = await Promise.all(wallpapers);
     this.loading = false;
   },
   methods: {
     changeBackground(item) {
       this.$cnf.setConfig({
-        wallpaperPath: item,
+        wallpaperPath: item.src,
       });
     },
   },

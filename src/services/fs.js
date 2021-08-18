@@ -226,13 +226,14 @@ export async function searchInDirectory(path, search, addFile) {
 
   //search in current directory
   files.filter(path => {
-    const name = basename(path).toLocaleLowerCase();
+    const name = basename(path)
+      .toLocaleLowerCase();
     return name.includes(search);
   })
     .forEach(addFile);
 
   const directories = files.filter(path => isDirectory(path));
-  await Promise.all(directories.map(dir => searchInDirectory(dir,search,addFile)));
+  await Promise.all(directories.map(dir => searchInDirectory(dir, search, addFile)));
 }
 
 async function makeDirectory(path, options = null) {
@@ -371,13 +372,21 @@ async function _writeStartMenuItem() {
 }
 
 async function _writeWallpapers() {
+  console.log('downloading wallpapers');
   const wallpapers = await getWallpapersList();
   let basePath = '/C:/Windows/Wallpapers';
+/*
+  if (false && await existsPath(basePath)) {
+    return;
+  }
+*/
+
   await makeDirectory(basePath);
   for (let wallpaper of wallpapers) {
-    const name = basename(wallpaper) + '.link';
-    const file = join(basePath,name)
-    await writeTextFile(file,wallpaper);
+    console.log('wall',wallpaper);
+    const name = basename(wallpaper);
+    const file = join(basePath, name);
+    downloadFile(wallpaper, file);
   }
 }
 
@@ -403,3 +412,21 @@ async function populateFS() {
   await fs.writeFile('/C:/User/Desktop/TextFile.txt', 'hello world', { encoding: 'utf8' });
   await fs.writeFile('/C:/User/Music/Hayde - Saghi.mp3', 'https://dl.dl2musica.com/singles/0003/Hayedeh%20-%20Saghi.mp3', { encoding: 'utf8' });
 }
+
+async function downloadFile(url, path) {
+  try {
+    const Buffer =  BrowserFS.BFSRequire('buffer').Buffer;
+
+    console.log('check url',url);
+    const res = await fetch(url);
+    console.log('check res', res);
+    const data = await res.arrayBuffer();
+    console.log('data', data);
+    await new Promise(r => {
+      console.log('downloaded', url,'to',path);
+      fs.writeFile(path, Buffer.from(data), {  }, r);
+    });
+  } catch (e) {
+    console.error(e);
+  }
+};
