@@ -9,6 +9,7 @@
       />
     </div>
     <div :class="$style.try">
+      <TaskbarRepo />
       <TaskbarClock />
     </div>
     <TaskbarShowDesktop />
@@ -22,6 +23,7 @@ import { rgba } from '@/styles/utils';
 import TaskbarOrb from '@/components/Taskbar/TaskbarOrb.vue';
 import TaskbarRunningWindow from '@/components/Taskbar/TaskbarRunningWindow.vue';
 import TaskbarClock from '@/components/Taskbar/TaskbarClock.vue';
+import TaskbarRepo from '@/components/Taskbar/TaskbarRepo.vue';
 import TaskbarShowDesktop from '@/components/Taskbar/TaskbarShowDesktop.vue';
 
 export default {
@@ -29,6 +31,7 @@ export default {
     TaskbarOrb,
     TaskbarRunningWindow,
     TaskbarClock,
+    TaskbarRepo,
     TaskbarShowDesktop,
   },
   computed: {
