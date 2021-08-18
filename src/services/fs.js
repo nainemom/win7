@@ -73,7 +73,7 @@ export const resolveFileSource = (theFile) => {
     throw new Error(`Cannot resolve ${theFile}`);
   }
   if (theFile.path.endsWith('.link')) {
-    const src = theFile.data;
+    const src = theFile.data.trim();
     const srcFile = resolveFileByPath(src);
     const resolvedSrcFile = resolveFileSource(srcFile);
     return resolvedSrcFile;
