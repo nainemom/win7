@@ -8,10 +8,6 @@
         Click a picture to make it your desktop background.
       </p>
       <div :class="$style.box">
-        <div v-if="loading" class="loading">
-          <p>loading...</p>
-        </div>
-        <template v-if="!loading">
           <img
             v-for="(item, key) in list"
             :key="key"
@@ -21,7 +17,10 @@
             alt=""
             @click="changeBackground(item)"
           >
-        </template>
+
+        <div v-if="loading" class="loading">
+          <p>loading...</p>
+        </div>
       </div>
     </div>
   </div>
@@ -52,15 +51,16 @@ export default {
     await _downloadDefaultWallpapers();
 
     const wallpapersFiles = await readDirectory('/C:/Windows/Wallpapers');
-    const wallpapers = wallpapersFiles.map(async file => {
-      const buffer = await fetchFile(file);
-      const bytes = new Uint8Array(buffer);
-      return {
-        file,
-        src: 'data:image/png;base64,'+encode(bytes),
-      };
-    });
-    this.list = await Promise.all(wallpapers);
+    for (const file of wallpapersFiles) {
+      new Promise(async r => {
+        const buffer = await fetchFile(file);
+        const bytes = new Uint8Array(buffer);
+        this.list.push({
+          file,
+          src: 'data:image/png;base64,' + encode(bytes),
+        })
+      })
+    }
     this.loading = false;
   },
   methods: {

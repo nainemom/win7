@@ -373,16 +373,15 @@ async function _writeStartMenuItem() {
 
 export async function _downloadDefaultWallpapers() {
   let basePath = '/C:/Windows/Wallpapers';
-  if (await existsPath(basePath)) {
-    return;
-  }
-
   const wallpapers = await getWallpapersList();
   await makeDirectory(basePath);
   await Promise.all(wallpapers.map(wallpaper =>{
     const name = basename(wallpaper);
     const file = join(basePath, name);
-    return downloadFile(wallpaper, file);
+    if (!existsPath()) {
+      return downloadFile(wallpaper, file);
+    }
+    return Promise.resolve();
   }))
 }
 
