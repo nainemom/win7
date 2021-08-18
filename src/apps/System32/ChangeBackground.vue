@@ -32,7 +32,7 @@ import icon from '../../assets/icons/background-capplet.png';
 import { props, inject } from '../../utils/vue';
 import { px } from '../../styles/utils';
 import { getWallpapersList } from '../../assets/images/Wallpapers/Wallpapers';
-import { fetchFile, readDirectory } from '../../services/fs';
+import { _downloadDefaultWallpapers, fetchFile, readDirectory } from '../../services/fs';
 import { encode } from '../../utils/utils';
 
 export default {
@@ -49,6 +49,8 @@ export default {
     };
   },
   async mounted() {
+    await _downloadDefaultWallpapers();
+
     const wallpapersFiles = await readDirectory('/C:/Windows/Wallpapers');
     const wallpapers = wallpapersFiles.map(async file => {
       const buffer = await fetchFile(file);

@@ -371,23 +371,19 @@ async function _writeStartMenuItem() {
   await fs.writeFile('/C:/User/Start Menu/Pictures.link', '/C:/User/Pictures', { encoding: 'utf8' });
 }
 
-async function _writeWallpapers() {
-  console.log('downloading wallpapers');
-  const wallpapers = await getWallpapersList();
+export async function _downloadDefaultWallpapers() {
   let basePath = '/C:/Windows/Wallpapers';
-/*
-  if (false && await existsPath(basePath)) {
+  if (await existsPath(basePath)) {
     return;
   }
-*/
 
+  const wallpapers = await getWallpapersList();
   await makeDirectory(basePath);
-  for (let wallpaper of wallpapers) {
-    console.log('wall',wallpaper);
+  await Promise.all(wallpapers.map(wallpaper =>{
     const name = basename(wallpaper);
     const file = join(basePath, name);
-    downloadFile(wallpaper, file);
-  }
+    return downloadFile(wallpaper, file);
+  }))
 }
 
 async function populateFS() {
@@ -406,7 +402,6 @@ async function populateFS() {
   await fs.mkdir('/C:/User/Start Menu');
 
   await _writePrograms();
-  await _writeWallpapers();
   await _writeStartMenuItem();
 
   await fs.writeFile('/C:/User/Desktop/TextFile.txt', 'hello world', { encoding: 'utf8' });
@@ -416,14 +411,9 @@ async function populateFS() {
 async function downloadFile(url, path) {
   try {
     const Buffer =  BrowserFS.BFSRequire('buffer').Buffer;
-
-    console.log('check url',url);
     const res = await fetch(url);
-    console.log('check res', res);
     const data = await res.arrayBuffer();
-    console.log('data', data);
     await new Promise(r => {
-      console.log('downloaded', url,'to',path);
       fs.writeFile(path, Buffer.from(data), {  }, r);
     });
   } catch (e) {
