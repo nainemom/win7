@@ -2,6 +2,7 @@ import * as BrowserFS from 'browserfs';
 import { getFileType } from './apps';
 
 import { join, extname, basename, dirname } from 'path-browserify';
+import { getWallpapersList } from '../assets/images/Wallpapers/Wallpapers';
 
 let fs = {};
 
@@ -311,6 +312,7 @@ async function _writePrograms() {
   await writeTextFile('/C:/Windows/System32/Explorer.exe', 'Explorer',);
   await writeTextFile('/C:/Windows/System32/Notepad.exe', 'Notepad',);
   await writeTextFile('/C:/Windows/System32/MediaPlayer.exe', 'MediaPlayer',);
+  await writeTextFile('/C:/Windows/System32/ChangeBackground.exe', 'ChangeBackground',);
   //fs.writeFileSync('/C:/Windows/System32/BluePage.exe', 'BluePage', { encoding: 'utf8' });
   await writeTextFile('/C:/Program Files/Camera.exe', 'Camera',);
 
@@ -349,6 +351,7 @@ async function _writePrograms() {
   //shortcuts
   await writeTextFile('/C:/User/Desktop/My Computer.link', '/C:/Windows/System32/Explorer.exe',);
   await writeTextFile('/C:/User/Desktop/Notepad.link', '/C:/Windows/System32/Notepad.exe',);
+  await writeTextFile('/C:/User/Desktop/Change Background.link', '/C:/Windows/System32/ChangeBackground.exe',);
   await writeTextFile('/C:/User/Desktop/Hayde - Saghi.link', '/C:/User/Music/Hayde - Saghi.mp3',);
   await writeTextFile('/C:/User/Desktop/Method Draw.link', '/C:/Program Files/Method Draw.wapp',);
   await writeTextFile('/C:/User/Desktop/Snap!.link', '/C:/Program Files/Snap.wapp',);
@@ -367,6 +370,17 @@ async function _writeStartMenuItem() {
   await fs.writeFile('/C:/User/Start Menu/Pictures.link', '/C:/User/Pictures', { encoding: 'utf8' });
 }
 
+async function _writeWallpapers() {
+  const wallpapers = await getWallpapersList();
+  let basePath = '/C:/Windows/Wallpapers';
+  await makeDirectory(basePath);
+  for (let wallpaper of wallpapers) {
+    const name = basename(wallpaper) + '.link';
+    const file = join(basePath,name)
+    await writeTextFile(file,wallpaper);
+  }
+}
+
 async function populateFS() {
   await fs.mkdir('/C:');
   await fs.mkdir('/D:');
@@ -383,6 +397,7 @@ async function populateFS() {
   await fs.mkdir('/C:/User/Start Menu');
 
   await _writePrograms();
+  await _writeWallpapers();
   await _writeStartMenuItem();
 
   await fs.writeFile('/C:/User/Desktop/TextFile.txt', 'hello world', { encoding: 'utf8' });

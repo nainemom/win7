@@ -13,7 +13,7 @@
           :key="key"
           width="90"
           height="60"
-          :src="item.data.value"
+          :src="item"
           alt=""
           @click="changeBackground(item)"
         >
@@ -23,20 +23,13 @@
 </template>
 
 <script>
-import icon from '../../../src/assets/icons/background-capplet.png';
-import { props, inject } from '../../../src/utils/vue';
-import { px } from '../../../src/styles/utils';
+import icon from '../../assets/icons/background-capplet.png';
+import { props, inject } from '../../utils/vue';
+import { px } from '../../styles/utils';
+import { getWallpapersList } from '../../assets/images/Wallpapers/Wallpapers';
 
 export default {
   name: 'ChangeBackground',
-  canHandle: () => false,
-  windowProperties: () => ({
-    title: 'Change Background',
-    icon,
-    width: 900,
-    height: 490,
-    maximizable: false,
-  }),
   ...inject('$wm', '$fs', '$cnf'),
   ...props({
     file: props.obj(null),
@@ -46,13 +39,14 @@ export default {
     return { list: [], loading: true };
   },
   async mounted() {
-    this.list = this.$fs.getDirectoryFiles('C:/Windows/Wallpapers');
+    const wallpapers = await getWallpapersList();
+    this.list = [...wallpapers];
     this.loading = false;
   },
   methods: {
     changeBackground(item) {
       this.$cnf.setConfig({
-        wallpaperPath: item.path,
+        wallpaperPath: item,
       });
     },
   },

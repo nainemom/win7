@@ -38,11 +38,7 @@ export default {
   },
   computed: {
     wallpaper() {
-      try {
-        return `url("${this.$fs.resolveFileByPath(this.$cnf.values.wallpaperPath).data.value}")`;
-      } catch (_e) {
-        return '';
-      }
+      return `url("${this.$cnf.values.wallpaperPath}")`;
     },
     contextMenuExtras() {
       return {
@@ -52,9 +48,7 @@ export default {
   },
   methods: {
     openChangeBackground() {
-      this.$wm.openFile(
-        this.$fs.resolveFileByPath('C:/Program Files/ChangeBackground.exe'),
-      );
+      this.$wm.openFile('/C:/Windows/System32/ChangeBackground.exe');
     },
   },
 };

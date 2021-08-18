@@ -9,6 +9,7 @@ import notePadIcon from '../assets/icons/notepad.png?url';
 import mediaPlayerIcon from '../assets/icons/mp3.png?url';
 import driveIcon from '../assets/icons/drive.png?url';
 import folderIcon from '../assets/icons/folder.png?url';
+import icon from '../assets/icons/background-capplet.png';
 
 export default {
   'Explorer': {
@@ -58,10 +59,10 @@ export default {
       const fileContent = await fetchTextFile(filePath);
       const parsed = JSON.parse(fileContent);
       return {
-        title:'Method Draw',
+        title: 'Method Draw',
         icon: webAppIcon,
         width: 600,
-        height:  500,
+        height: 500,
         ...parsed,
         isSystemApp: true,
       };
@@ -74,6 +75,17 @@ export default {
       width: 600,
       height: 500,
       title: file ? getPathName(file.path) : 'Camera',
+    }),
+  },
+  'ChangeBackground': {
+    canHandle: () => false,
+    windowProperties: () => ({
+      title: 'Change Background',
+      icon,
+      width: 900,
+      height: 490,
+      maximizable: false,
+      isSystemApp: true,
     }),
   }
 };
