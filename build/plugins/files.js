@@ -86,7 +86,7 @@ const calculateFilesModule = () => {
 const handleFileCode = (file) => {
   const filePath = file.replace('?file', '');
   const varName = getFileHash(filePath);
-  const url = isDev ? datauri(filePath).content : `/${varName}${path.extname(filePath)}`;
+  const url = isDev ? datauri(filePath).content : `${varName}${path.extname(filePath)}`;
   let code = 'export default ';
   if (urlFiles.includes(path.extname(file))) {
     code += `'${url}'`;
