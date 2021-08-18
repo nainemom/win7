@@ -2,7 +2,7 @@
   <div :class="$style.dialog">
     <div class="body">
       <div class="icon">
-        <img :src="icon">
+        <img :src="iconSrc">
       </div>
       <div class="content">
         {{ file.data.content }}
@@ -21,66 +21,59 @@
 </template>
 
 <script>
-import ErrorIcon from '../../../src/assets/icons/error.png';
-import InfoIcon from '../../../src/assets/icons/info.png';
-import WarningIcon from '../../../src/assets/icons/warning.png';
-import QuestionIcon from '../../../src/assets/icons/question.png';
-import ErrorSound from '../../../src/assets/sounds/error.wav';
-import DingSound from '../../../src/assets/sounds/ding.wav';
-import { props, inject } from '../../../src/utils/vue';
-import { rgba } from '../../../src/styles/utils';
+import { props } from '@/utils/vue';
+import { rgba } from '@/styles/utils';
+import { resolveFileByPath } from '@/services/fs';
+import { playBackgroundSound } from '@/services/snd';
+import { closeWindow } from '@/services/wm';
 
 const typeToIconMap = {
-  error: ErrorIcon,
-  info: InfoIcon,
-  warning: WarningIcon,
-  question: QuestionIcon,
+  error: 'C:/Windows/system/icons/error.png',
+  info: 'C:/Windows/system/icons/info.png',
+  warning: 'C:/Windows/system/icons/warning.png',
+  question: 'C:/Windows/system/icons/question.png',
 };
 
 const typeToSoundMap = {
-  error: ErrorSound,
-  info: DingSound,
-  warning: DingSound,
-  question: DingSound,
+  error: 'C:/Windows/system/sounds/error.wav',
+  info: 'C:/Windows/system/sounds/ding.wav',
+  warning: 'C:/Windows/system/sounds/ding.wav',
+  question: 'C:/Windows/system/sounds/ding.wav',
 };
 
 export default {
-  canHandle: (file) => file.type === 'dialog',
-  windowProperties: (file) => ({
-    icon: file && file.data.type ? typeToIconMap[file.data.type] : WarningIcon,
+  canHandle: (file) => file && file.path.endsWith('.dialog'),
+  metaData: (file) => ({
+    ...(file && {
+      icon: resolveFileByPath(typeToIconMap[file.data.type]),
+      title: file.data.title,
+    }),
     width: 580,
     height: 200,
     maximizable: false,
-    title: file && file.data.title ? file.data.title : 'Dialog',
   }),
-  ...inject('$fs', '$wm', '$snd'),
   ...props({
     file: props.obj(null),
     wmId: props.any(),
   }),
   computed: {
-    dialogData() {
-      return {
-        ...(this.file && this.file.data),
-      };
-    },
-    icon() {
-      return typeToIconMap[this.dialogData.type];
+    iconSrc() {
+      return resolveFileByPath(typeToIconMap[this.file.data.type] || typeToIconMap.error).data;
     },
     sound() {
-      return typeToSoundMap[this.dialogData.type];
+      return resolveFileByPath(typeToSoundMap[this.file.data.type] || typeToSoundMap.error);
     },
   },
   mounted() {
-    this.$snd.playSound(this.sound);
+    playBackgroundSound(this.sound);
   },
   methods: {
     emitClick(button) {
-      if (typeof this.dialogData.onClick === 'function') {
-        this.dialogData.onClick(button);
+      if (typeof this.file.data.onClick === 'function') {
+        this.file.data.onClick(button);
       }
-      if (this.dialogData.autoClose) {
-        this.$wm.closeWindow(this.wmId);
+      if (this.file.data.autoClose) {
+        closeWindow(this.wmId);
       }
     },
   },
