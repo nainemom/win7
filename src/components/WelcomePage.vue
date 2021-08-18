@@ -13,16 +13,18 @@
 </template>
 
 <script>
-import { inject } from '../utils/vue';
-import { rgba } from '../styles/utils';
-import LoginWallpaper from '../assets/login.png';
-import StartupSound from '../assets/sounds/startup.wav';
+import { resolveFileByPath } from '@/services/fs';
+import { startWindowManager } from '@/services/wm';
+import { playBackgroundSound } from '@/services/snd';
+import { rgba } from '@/styles/utils';
 
 export default {
-  ...inject('$wm', '$snd'),
   computed: {
     isFullScreen() {
       return !!window.document.fullscreenElement;
+    },
+    backgroundUrl() {
+      return resolveFileByPath('C:/Windows/system/images/login.png').data;
     },
   },
   methods: {
@@ -36,8 +38,8 @@ export default {
       }
     },
     start() {
-      this.$wm.startWindowManager();
-      this.$snd.playSound(StartupSound);
+      startWindowManager();
+      playBackgroundSound(resolveFileByPath('C:/Windows/system/sounds/startup.wav'));
     },
     startFullscreen() {
       this.requestFullscreen();
@@ -53,7 +55,7 @@ export default {
         overflow: 'hidden',
         left: 0,
         top: 0,
-        background: `url("${LoginWallpaper}")`,
+        background: `url("${this.backgroundUrl}")`,
         backgroundSize: 'cover',
         backgroundPosition: 'bottom',
         display: 'flex',

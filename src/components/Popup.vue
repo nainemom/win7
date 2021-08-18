@@ -15,9 +15,9 @@
 </template>
 
 <script>
-import { rgba } from '../styles/utils';
-import { props } from '../utils/vue';
-import { addEventListener, removeEventListener } from '../utils/eventListener';
+import { rgba } from '@/styles/utils';
+import { props } from '@/utils/vue';
+import { addEventListener, removeEventListener } from '@/utils/eventListener';
 
 export default {
   inheritAttrs: false,

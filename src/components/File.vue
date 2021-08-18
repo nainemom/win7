@@ -45,9 +45,17 @@
 </template>
 
 <script>
-import { inject, props } from '../utils/vue';
-import ShortcutIcon from '../assets/icons/shortcut.png';
-import { rgba } from '../styles/utils';
+import {
+  getFileMetaData,
+  resolveFileByPath,
+  getPathName,
+  moveFileByPath,
+  getPathDir,
+} from '@/services/fs';
+import { markedFiles, openFile } from '@/services/wm';
+import { inject, props } from '@/utils/vue';
+import { rgba } from '@/styles/utils';
+import { log } from '@/utils/log';
 
 export default {
   ...props({
@@ -59,7 +67,7 @@ export default {
     singleClick: props.bool(),
     onClick: props.func(null),
   }),
-  ...inject('$wm', '$fs', '$filesContainer'),
+  ...inject('$filesContainer'),
   data() {
     return {
       selected: false,
@@ -68,20 +76,31 @@ export default {
   },
   computed: {
     icon() {
-      return this.$wm.calculateFileWindowProperties(this.file).icon;
+      return getFileMetaData(this.file).icon.data;
     },
     shortcutIcon() {
-      return this.file.type === 'shortcut' ? ShortcutIcon : '';
+      return this.file.path.endsWith('.link') ? resolveFileByPath('C:/Windows/system/icons/shortcut.png').data : '';
     },
     name() {
-      return this.$fs.getPathName(this.file.path);
+      return getPathName(this.file.path)
+        .replace(/\.link$/, '')
+        .replace(/\.dialog$/, '')
+        .replace(/\.webapp$/, '.exe')
+        .replace(/\.vue$/, '.exe');
     },
     isCutting() {
-      return this.$wm.markedFiles.cutList.includes(this.file.path);
+      return markedFiles.cutList.includes(this.file.path);
     },
     isCopying() {
-      return this.$wm.markedFiles.copyList.includes(this.file.path);
+      return markedFiles.copyList.includes(this.file.path);
     },
+  },
+  created() {
+    log(
+      `File.vue ${this.file.path}`,
+      ['file:', this.file],
+      ['metaData:', getFileMetaData(this.file)],
+    );
   },
   methods: {
     select() {
@@ -107,7 +126,7 @@ export default {
       if (this.onClick && this.onClick(this.file) === true) {
         return;
       }
-      this.$wm.openFile(this.file);
+      openFile(this.file);
     },
     startRename() {
       this.renaming = this.name;
@@ -117,7 +136,7 @@ export default {
     },
     renameDone(isOk) {
       if (isOk) {
-        this.$fs.moveFileByPath(this.file.path, `${this.$fs.getPathDir(this.file.path)}/${this.renaming}`);
+        moveFileByPath(this.file.path, `${getPathDir(this.file.path)}/${this.renaming}`);
       }
       this.renaming = false;
     },

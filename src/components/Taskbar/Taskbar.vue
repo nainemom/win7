@@ -16,17 +16,15 @@
 </template>
 
 <script>
-import { inject } from '../../utils/vue';
-
-import { panelSize } from '../../styles/constants';
-import { rgba } from '../../styles/utils';
-import TaskbarOrb from './TaskbarOrb.vue';
-import TaskbarRunningWindow from './TaskbarRunningWindow.vue';
-import TaskbarClock from './TaskbarClock.vue';
-import TaskbarShowDesktop from './TaskbarShowDesktop.vue';
+import { windows } from '@/services/wm';
+import { panelSize } from '@/styles/constants';
+import { rgba } from '@/styles/utils';
+import TaskbarOrb from '@/components/Taskbar/TaskbarOrb.vue';
+import TaskbarRunningWindow from '@/components/Taskbar/TaskbarRunningWindow.vue';
+import TaskbarClock from '@/components/Taskbar/TaskbarClock.vue';
+import TaskbarShowDesktop from '@/components/Taskbar/TaskbarShowDesktop.vue';
 
 export default {
-  ...inject('$wm'),
   components: {
     TaskbarOrb,
     TaskbarRunningWindow,
@@ -35,7 +33,7 @@ export default {
   },
   computed: {
     windowsList() {
-      return this.$wm.windows.list.filter((win) => !win.hidden);
+      return windows.list.filter((win) => !win.hidden);
     },
   },
   style({ className }) {

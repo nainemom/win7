@@ -17,11 +17,11 @@
 </template>
 
 <script>
-import { rgba } from '../../styles/utils';
-import { panelSize } from '../../styles/constants';
-import Popup from '../Popup.vue';
-import ClockWidget from './ClockWidget.vue';
-import CalendarWidget from './CalendarWidget.vue';
+import { rgba } from '@/styles/utils';
+import { panelSize } from '@/styles/constants';
+import Popup from '@/components/Popup.vue';
+import ClockWidget from '@/components/Taskbar/ClockWidget.vue';
+import CalendarWidget from '@/components/Taskbar/CalendarWidget.vue';
 
 export default {
   components: {

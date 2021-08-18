@@ -19,12 +19,31 @@
 </template>
 
 <script>
-import { rgba, px } from '../styles/utils';
-import { props, provideAs, inject } from '../utils/vue';
-import { offsetTo, asyncEach } from '../utils/utils';
-import swipe from '../utils/swipe';
-import { drag, drop } from '../utils/dragndrop';
-import File from './File.vue';
+import {
+  getDirectoryFiles,
+  deleteFileByPath,
+  createNewFolder,
+  createNewFile,
+  fileObject,
+  getPathName,
+  isPathExists,
+  copyFileByPath,
+  moveFileByPath,
+} from '@/services/fs';
+import {
+  markedFiles,
+  openContextMenu,
+  markFileForCut,
+  markFileForCopy,
+  unmarkFiles,
+  openDialog,
+} from '@/services/wm';
+import { rgba, px } from '@/styles/utils';
+import { props, provideAs } from '@/utils/vue';
+import { offsetTo, asyncEach } from '@/utils/utils';
+import swipe from '@/utils/swipe';
+import { drag, drop } from '@/utils/dragndrop';
+import File from '@/components/File.vue';
 
 const fixSelectionPosition = (selection) => {
   if (!selection) {
@@ -49,7 +68,6 @@ const fixSelectionPosition = (selection) => {
 };
 
 export default {
-  ...inject('$wm', '$fs'),
   components: {
     File,
   },
@@ -80,7 +98,7 @@ export default {
     },
     dirFiles() {
       if (this.staticPath) {
-        return this.$fs.getDirectoryFiles(this.path);
+        return getDirectoryFiles(this.path);
       }
       return this.files;
     },
@@ -148,7 +166,7 @@ export default {
           ...contextMenuItems,
           'Refresh',
           ...(this.staticPath ? ['Create New Folder', 'Create New Text File'] : []),
-          ...(this.staticPath && (this.$wm.markedFiles.copyList.length || this.$wm.markedFiles.cutList.length) ? ['Paste'] : []),
+          ...(this.staticPath && (markedFiles.copyList.length || markedFiles.cutList.length) ? ['Paste'] : []),
           ...Object.keys(this.contextMenuExtras),
         ];
       } else {
@@ -167,11 +185,11 @@ export default {
         }
       }
 
-      this.$wm.openContextMenu(e, contextMenuItems, (item) => {
+      openContextMenu(e, contextMenuItems, (item) => {
         if (item === 'Open') {
           selectedFiles.forEach((file) => file.click(null));
         } else if (item === 'Delete') {
-          selectedFiles.forEach((file) => this.$fs.deleteFileByPath(file.file.path));
+          selectedFiles.forEach((file) => deleteFileByPath(file.file.path));
         } else if (item === 'Refresh') {
           this.$el.classList.add('refreshing');
           this.$nextTick(() => {
@@ -180,23 +198,23 @@ export default {
             }, 100);
           });
         } else if (item === 'Create New Folder') {
-          this.$fs.createNewFolder(this.path);
+          createNewFolder(this.path);
         } else if (item === 'Create New Text File') {
           const dst = `${this.path}/Text File ${Date.now()}.txt`;
-          this.$fs.createNewFile(this.$fs.fileObject(dst, 'text'));
+          createNewFile(fileObject(dst, 'text'));
         } else if (item === 'Rename') {
           selectedFiles.forEach((file) => file.startRename());
         } else if (item === 'Cut') {
-          selectedFiles.forEach((file) => this.$wm.markFileForCut(file.file));
+          selectedFiles.forEach((file) => markFileForCut(file.file));
         } else if (item === 'Copy') {
-          selectedFiles.forEach((file) => this.$wm.markFileForCopy(file.file));
+          selectedFiles.forEach((file) => markFileForCopy(file.file));
         } else if (item === 'Paste') {
           Promise.all([
-            this.copyOrMoveFilesHere('copy', this.$wm.markedFiles.copyList),
-            this.copyOrMoveFilesHere('move', this.$wm.markedFiles.cutList),
+            this.copyOrMoveFilesHere('copy', markedFiles.copyList),
+            this.copyOrMoveFilesHere('move', markedFiles.cutList),
           ])
             .then(() => {
-              this.$wm.unmarkFiles();
+              unmarkFiles();
             });
         } else if (this.contextMenuExtras[item]) {
           if (typeof this.contextMenuExtras[item] === 'function') {
@@ -269,12 +287,12 @@ export default {
     async copyOrMoveFilesHere(action, listOfFiles) {
       if (!listOfFiles.length) return;
       const doActionOnSingleFile = async (filePath) => {
-        const newPath = `${this.path}/${this.$fs.getPathName(filePath)}`;
+        const newPath = `${this.path}/${getPathName(filePath)}`;
         if (filePath === newPath) {
           return;
         }
-        if (this.$fs.isPathExists(newPath)) {
-          const userAnswer = await this.$wm.openDialog({
+        if (isPathExists(newPath)) {
+          const userAnswer = await openDialog({
             type: 'warning',
             title: 'File Already Exists',
             content: `The '${newPath}' is already exists. Do you want to override?`,
@@ -288,7 +306,11 @@ export default {
             return;
           }
         }
-        this.$fs[`${action}FileByPath`](filePath, newPath, true);
+        const actions = {
+          copy: copyFileByPath,
+          move: moveFileByPath,
+        };
+        actions[action](filePath, newPath, true);
       };
       try {
         asyncEach(listOfFiles, doActionOnSingleFile);

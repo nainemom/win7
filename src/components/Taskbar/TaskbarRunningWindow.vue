@@ -4,41 +4,47 @@
     @click="click"
     @contextmenu="openContextMenu"
   >
-    <img :src="window.icon"> {{ window.title }}
+    <img :src="window.icon.data"> {{ window.title }}
   </div>
 </template>
 
 <script>
-import { inject, props } from '../../utils/vue';
-import { rgba } from '../../styles/utils';
+import { props } from '@/utils/vue';
+import { rgba } from '@/styles/utils';
+import {
+  isWindowFocused,
+  openContextMenu,
+  minimizeWindow,
+  maximizeWindow,
+  closeWindow,
+} from '@/services/wm';
 
 export default {
   emits: ['close', 'minimize'],
-  ...inject('$wm'),
   ...props({
     window: props.obj(),
   }),
   computed: {
     focused() {
-      return this.$wm.isWindowFocused(this.window.id);
+      return isWindowFocused(this.window.id);
     },
   },
   methods: {
     click() {
-      this.$wm.minimizeWindow(this.window.id, this.focused);
+      minimizeWindow(this.window.id, this.focused);
     },
     openContextMenu(event) {
-      this.$wm.openContextMenu(event, [
+      openContextMenu(event, [
         ...(this.window.maximizable && !this.window.minimized ? [this.window.maximized ? 'Unmaximize' : 'Maximize'] : []),
         ...(this.window.minimizable ? [this.window.minimized ? 'Restore' : 'Minimize'] : []),
         ...(this.window.closable ? ['Close'] : []),
       ], (item) => {
         if (['Maximize', 'Unmaximize'].includes(item)) {
-          this.$wm.maximizeWindow(this.window.id);
+          maximizeWindow(this.window.id);
         } else if (['Minimize', 'Restore'].includes(item)) {
-          this.$wm.minimizeWindow(this.window.id);
+          minimizeWindow(this.window.id);
         } else if (item === 'Close') {
-          this.$wm.closeWindow(this.window.id);
+          closeWindow(this.window.id);
         }
       });
     },

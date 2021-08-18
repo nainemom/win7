@@ -19,11 +19,12 @@
 </template>
 
 <script>
-import { inject, props } from '../utils/vue';
-import { each } from '../utils/utils';
-import { contextMenuWidth, contextMenuItemHeight } from '../styles/constants';
-import { rgba, px } from '../styles/utils';
-import { addEventListener, removeEventListener } from '../utils/eventListener';
+import { props } from '@/utils/vue';
+import { each } from '@/utils/utils';
+import { contextMenuWidth, contextMenuItemHeight } from '@/styles/constants';
+import { rgba, px } from '@/styles/utils';
+import { closeContextMenu } from '@/services/wm';
+import { addEventListener, removeEventListener } from '@/utils/eventListener';
 
 export default {
   emits: ['click'],
@@ -33,7 +34,6 @@ export default {
     items: props.arr([]),
     onClick: props.func(() => {}),
   }),
-  ...inject(['$wm']),
   data() {
     return {
       position: null,
@@ -89,7 +89,7 @@ export default {
     },
     close() {
       this.unbindEvents();
-      this.$wm.closeContextMenu();
+      closeContextMenu();
     },
     bindEvents() {
       setTimeout(() => {
