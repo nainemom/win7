@@ -20,7 +20,10 @@ const getConvertDataType = (filePath) => {
   const appPath = realPathToAppPath(filePath);
   if (['.gif', '.jpg', '.jpeg', '.png', '.mp3', '.wav', '.mp4', '.mkv', '.avi'].includes(path.extname(appPath))) { // url or datauri
     if (isDev || appPath.startsWith('C:')) {
-      return 'datauri';
+      // legacy check to only make default wallaper datauri and not the other ones
+      if (!appPath.startsWith('C:/Windows/system/wallpapers') || appPath === 'C:/Windows/system/wallpapers/01.jpg') {
+        return 'datauri';
+      }
     }
     return 'url';
   }
