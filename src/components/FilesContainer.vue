@@ -84,9 +84,6 @@ export default {
   ...provideAs('$filesContainer'),
   data() {
     return {
-      mover: null,
-      dragger: null,
-      dropper: null,
       selecting: false,
       fileRefs: [],
       selectionRectangle: null,
