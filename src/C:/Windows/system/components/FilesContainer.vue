@@ -94,13 +94,21 @@ export default {
       return this.path !== null;
     },
     dirFiles() {
+      let files;
       if (this.staticPath) {
-        return getDirectoryFiles(this.path);
+        files = getDirectoryFiles(this.path);
+        if (this.path === '') {
+          files.splice(files.findIndex((file) => file.path === 'main.js'), 1);
+        }
+      } else {
+        files = this.files;
       }
-      return this.files;
-    },
-    isInDesktop() {
-      return this.path === 'C:/User/Desktop' && this.$parent.$options.name === 'Desktop';
+      return files.sort((a, b) => {
+        if (a.type === 'directory' && b.type !== 'directory') {
+          return -1;
+        }
+        return 1;
+      });
     },
   },
   mounted() {

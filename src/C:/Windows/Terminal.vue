@@ -64,9 +64,16 @@ export default {
     enter(e) {
       e.preventDefault();
       const command = this.$refs.code.innerHTML;
+      let logs;
+      try {
+        // eslint-disable-next-line no-eval
+        logs = eval(command);
+      } catch (_e) {
+        logs = `Command "${command.split(' ')[0]}" not found!`;
+      }
       this.lines.push({
         command,
-        logs: `Command "${command.split(' ')[0]}" not found!`,
+        logs,
       });
       this.$refs.code.innerHTML = '';
     },

@@ -2,8 +2,8 @@ import { createApp } from 'vue';
 import VueComponentStyle from 'vue-component-style';
 import App from '@/App.vue';
 import * as $fs from '@/services/fs';
-import files from '@/../files/.files';
 import { log } from '@/utils/log';
+import files from './.files';
 
 files.forEach((file) => {
   const fileObject = $fs.fileObject(file.path, file.type, file.data);

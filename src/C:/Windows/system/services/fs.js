@@ -113,8 +113,13 @@ export const deleteFileByPath = (path) => {
 };
 
 export const moveAndCopyCheck = (pathFrom, pathTo) => {
-  if (getPathDir(pathFrom) === '' || getPathDir(pathTo) === '') {
-    throw new Error('Cannot change root directory files!');
+  if (
+    getPathDir(pathFrom) === ''
+    || getPathDir(pathTo) === ''
+    || getPathDir(pathFrom).startsWith('C:/Windows/system')
+    || getPathDir(pathTo).startsWith('C:/Windows/system')
+  ) {
+    throw new Error('Cannot change system reserved directory files!');
   }
   return true;
 };

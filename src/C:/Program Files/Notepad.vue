@@ -18,7 +18,7 @@ import { resolveFileByPath, createNewFile, fileObject } from '@/services/fs';
 import { closeWindow, openDialog } from '@/services/wm';
 
 export default {
-  canHandle: (file) => !file || (file.path.endsWith('.txt') || file.path.endsWith('.json')),
+  canHandle: (file) => !file || (file.path.endsWith('.txt') || file.path.endsWith('.json') || file.path.endsWith('.js')),
   metaData: (file) => ({
     icon: resolveFileByPath(`C:/Windows/system/icons/${file ? 'txt' : 'notepad'}.png`),
     width: 600,

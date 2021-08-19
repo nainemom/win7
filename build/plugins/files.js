@@ -4,7 +4,7 @@ import { createHash } from 'crypto';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import datauri from 'datauri/sync';
 
-const FILES_DIR = path.resolve(__dirname, '../../files');
+let FILES_DIR;
 
 const getDirFiles = (dir) => fs.readdirSync(dir).filter((x) => !['.gitkeep', '.files'].includes(x)).map((x) => path.resolve(dir, x));
 
@@ -14,7 +14,8 @@ const getFileHash = (thePath) => `x${createHash('md5').update(thePath).digest('h
 
 const getConvertDataType = (filePath) => {
   const appPath = realPathToAppPath(filePath);
-  if (['.gif', '.jpg', '.jpeg', '.png', '.mp3', '.wav', '.mp4', '.mkv', '.avi'].includes(path.extname(appPath))) { // url or datauri
+  const extName = path.extname(appPath);
+  if (['.gif', '.jpg', '.jpeg', '.png', '.mp3', '.wav', '.mp4', '.mkv', '.avi'].includes(extName)) { // url or datauri
     if (appPath.startsWith('C:')) {
       // legacy check to only make default wallaper datauri and not the other ones
       if (!appPath.startsWith('C:/Windows/system/wallpapers') || appPath === 'C:/Windows/system/wallpapers/01.jpg') {
@@ -22,6 +23,9 @@ const getConvertDataType = (filePath) => {
       }
     }
     return 'url';
+  }
+  if (extName === '.js') {
+    return '';
   }
   return 'content';
 };
@@ -51,6 +55,18 @@ const calculateFilesModule = () => {
             fromText += '?url'; // handled by vite
           } else if (convertDataType === 'content') {
             fromText += '?raw'; // handled by vite
+          } else {
+            exp.push({
+              type: 'file',
+              path: appPath,
+              data: `'${fs.readFileSync(file)
+                .toString()
+                .split('\'')
+                .join('\\\'')
+                .split('\n')
+                .join('\\n')}'`,
+            });
+            return;
           }
         }
         imp.push({
@@ -95,6 +111,7 @@ export default () => ({
   name: 'files',
   transform(src, id) {
     if (id.endsWith('.files')) {
+      FILES_DIR = path.dirname(id);
       const { code, map } = calculateFilesModule();
       return {
         code,

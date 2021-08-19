@@ -68,7 +68,7 @@ export default {
   },
   computed: {
     pathBar() {
-      return this.path.split('/').join('\\') || 'Computer';
+      return this.path || 'Computer';
     },
     searchPlaceholder() {
       return `Search in ${getPathName(this.path) || 'Computer'}`;
