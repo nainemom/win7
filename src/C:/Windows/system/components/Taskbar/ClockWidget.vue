@@ -8,17 +8,8 @@
 
 <script>
 export default {
-  data() {
-    return {
-      clockTimer: null,
-    };
-  },
   mounted() {
     this.drawClock();
-    this.clockTimer = setInterval(this.drawClock, 1000);
-  },
-  beforeUnmount() {
-    clearInterval(this.clockTimer);
   },
   methods: {
     drawClock() {
@@ -72,7 +63,7 @@ export default {
       const now = new Date();
       let hour = now.getHours();
       let minute = now.getMinutes();
-      let second = now.getSeconds();
+      const second = now.getSeconds();
       // hour
       hour %= 12;
       hour = ((hour * Math.PI) / 6)
@@ -83,8 +74,8 @@ export default {
       minute = ((minute * Math.PI) / 30) + ((second * Math.PI) / (30 * 60));
       this.drawHand(ctx, minute, radius * 0.8, radius * 0.07);
       // second
-      second = ((second * Math.PI) / 30);
-      this.drawHand(ctx, second, radius * 0.9, radius * 0.02);
+      // second = ((second * Math.PI) / 30);
+      // this.drawHand(ctx, second, radius * 0.9, radius * 0.02);
     },
     drawHand(ctx, pos, length, width) {
       ctx.beginPath();
